@@ -163,6 +163,8 @@ public class SearchPaper extends javax.swing.JFrame {
     private void display(int startYear, int endYear) {
         //Tạo Graph từ GraphStream
         Graph graph = new SingleGraph("Citation");
+        Random random;
+        String colorCode;
         // Kết nối
         Connection con;
         try {
@@ -175,8 +177,6 @@ public class SearchPaper extends javax.swing.JFrame {
             stmt = con.prepareStatement(querry);
             ResultSet rs = stmt.executeQuery();
             
-            Random random;
-            String colorCode;
             //Lấy dữ liệu về 
             while (rs.next()) {
                 System.out.println("p1: " + rs.getString("p1"));
@@ -185,7 +185,7 @@ public class SearchPaper extends javax.swing.JFrame {
                 random = new Random();
                  //In node với màu ngẫu nhiên 
                 colorCode = String.format("#%06x", random.nextInt(256*256*256));
-                graph.addAttribute("ui.stylesheet", "node:clicked { size: 40px, 40px; text-background-mode: plain; text-background-color: black; text-mode: normal; text-color: white; text-alignment: at-right; text-padding: 3; text-size: 15;} edge { arrow-shape: arrow; }");
+                graph.addAttribute("ui.stylesheet", "node:clicked { size: 50px, 50px; text-background-mode: plain; text-background-color: black; text-mode: normal; text-color: white; text-alignment: at-right; text-padding: 3; text-size: 15;} edge { arrow-shape: arrow; }");
                 
                 
                 //Chuyển thành JSON
@@ -201,7 +201,8 @@ public class SearchPaper extends javax.swing.JFrame {
                     graph.addNode(nodeIdP1);
                     graph.getNode(nodeIdP1).setAttribute("xyz", random.nextInt(5), random.nextInt(5), 0);
                     graph.getNode(nodeIdP1).addAttribute("ui.label", "Label: " + nodeLabelP1 + ", ID: " + nodeIdP1);
-                    graph.getNode(nodeIdP1).addAttribute("ui.style", "fill-color: #96c95c; size: 30px, 30px; stroke-mode: plain; stroke-color: #8bc34a; stroke-width: 2px; text-mode: hidden;");
+                    graph.getNode(nodeIdP1).addAttribute("ui.style", "fill-color: #96c95c, #ff7575; size: 30px, 30px; stroke-mode: plain; text-mode: hidden; shape: pie-chart;");
+                    graph.getNode(nodeIdP1).addAttribute("ui.pie-values", "0.5, 0.5");
                 }
                 JSONObject p2Obj = new JSONObject(rs.getString("p2"));
                 String nodeIdP2 = String.valueOf(p2Obj.getInt("id"));
