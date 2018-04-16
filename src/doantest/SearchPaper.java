@@ -20,11 +20,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
+import javafx.scene.control.ProgressIndicator;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.json.JSONObject;
 import org.json.JSONArray;
+import org.graphstream.ui.swingViewer.ViewPanel;
+import org.graphstream.ui.view.Viewer;
 
 /**
  *
@@ -40,6 +43,8 @@ public class SearchPaper extends javax.swing.JFrame {
         // Set JFrame vào giữa màn hình
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
+        endYear.setValue(1981);        
+        startYear.setValue(1980);
     }
 
     /**
@@ -52,29 +57,32 @@ public class SearchPaper extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jSpinner1 = new javax.swing.JSpinner();
-        jSpinner2 = new javax.swing.JSpinner();
-        jComboBox1 = new javax.swing.JComboBox<>();
-        jComboBox2 = new javax.swing.JComboBox<>();
+        startYear = new javax.swing.JSpinner();
+        endYear = new javax.swing.JSpinner();
+        topicSelection = new javax.swing.JComboBox<>();
+        displaySeletion = new javax.swing.JComboBox<>();
         button1 = new java.awt.Button();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 255));
         setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        setPreferredSize(new java.awt.Dimension(900, 600));
 
         jPanel1.setBackground(new java.awt.Color(204, 204, 204));
         jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jPanel1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
-        jSpinner1.setMinimumSize(new java.awt.Dimension(30, 20));
+        startYear.setMinimumSize(new java.awt.Dimension(30, 20));
 
-        jSpinner2.setMinimumSize(new java.awt.Dimension(30, 20));
+        endYear.setMinimumSize(new java.awt.Dimension(30, 20));
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        topicSelection.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "All", "43", "44" }));
 
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        displaySeletion.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Graph", "Time Column" }));
 
         button1.setLabel("Search");
         button1.addActionListener(new java.awt.event.ActionListener() {
@@ -83,35 +91,60 @@ public class SearchPaper extends javax.swing.JFrame {
             }
         });
 
+        jLabel1.setText("From");
+
+        jLabel2.setText("To");
+
+        jLabel3.setText("Topic");
+
+        jLabel4.setText("Display");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(button1, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jSpinner2, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(29, Short.MAX_VALUE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(topicSelection, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel3)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(startYear, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE)
+                            .addComponent(jLabel1)
+                            .addComponent(endYear, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE)
+                            .addComponent(jLabel2)
+                            .addComponent(displaySeletion, 0, 140, Short.MAX_VALUE)
+                            .addComponent(jLabel4)
+                            .addComponent(button1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(35, 35, 35)
+                .addGap(31, 31, 31)
                 .addComponent(button1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 49, Short.MAX_VALUE)
-                .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(45, 45, 45)
-                .addComponent(jSpinner2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(67, 67, 67)
-                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(37, 37, 37)
-                .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(80, 80, 80))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(startYear, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(endYear, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(topicSelection, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel4)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(displaySeletion, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(160, 160, 160))
         );
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
@@ -121,7 +154,7 @@ public class SearchPaper extends javax.swing.JFrame {
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 566, Short.MAX_VALUE)
+            .addGap(0, 585, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -157,10 +190,11 @@ public class SearchPaper extends javax.swing.JFrame {
 
     private void button1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button1ActionPerformed
         // TODO add your handling code here:
-        display(1983, 1985);
+        display((int)startYear.getValue(), (int)endYear.getValue(), (String)topicSelection.getSelectedItem());
     }//GEN-LAST:event_button1ActionPerformed
 
-    private void display(int startYear, int endYear) {
+    private void display(int startYear, int endYear, String topic) {
+        
         //Tạo Graph từ GraphStream
         Graph graph = new SingleGraph("Citation");
         Random random;
@@ -172,20 +206,30 @@ public class SearchPaper extends javax.swing.JFrame {
             PreparedStatement stmt = null;
             // Querying
 //            String querry = "MATCH (p:Paper) WHERE p.Year = " + year + " RETURN p LIMIT 10";
-            String querry = "MATCH (p1:Paper)-[:CITES]->(p2:Paper), (p1)-[:RELATED_TO]->(t:Topic) WHERE p1.Year >= " + startYear + " AND p1.Year <= " + endYear + " AND p2.Year >= " + startYear + " AND p2.Year <= " + endYear + " AND t.TopicId = 43 RETURN p1, p2, t LIMIT 5";
+            String querry = "";
+            
+            // Hiển thị tất cả các chủ đề 
+            if(topic.equals("All"))
+            {
+                querry = "MATCH (p1:Paper)-[:CITES]->(p2:Paper), (p1)-[r:RELATED_TO]->(t:Topic) WHERE p1.Year >= " + startYear + " AND p1.Year <= " + endYear + " AND p2.Year >= " + startYear + " AND p2.Year <= " + endYear + " RETURN p1, p2, t, r.Proportion AS propotion LIMIT 5";
+            }
+            else {
+                querry = "MATCH (p1:Paper)-[:CITES]->(p2:Paper), (p1)-[r:RELATED_TO]->(t:Topic) WHERE p1.Year >= " + startYear + " AND p1.Year <= " + endYear + " AND p2.Year >= " + startYear + " AND p2.Year <= " + endYear + " AND t.TopicId = " + topic + " RETURN p1, p2, t, r.Proportion AS propotion LIMIT 5";
+            }
             
             stmt = con.prepareStatement(querry);
             ResultSet rs = stmt.executeQuery();
             
             //Lấy dữ liệu về 
             while (rs.next()) {
-                System.out.println("p1: " + rs.getString("p1"));
-                System.out.println("p2: " + rs.getString("p2"));
+//                System.out.println("p1: " + rs.getString("p1"));
+//                System.out.println("p2: " + rs.getString("p2"));
+                   System.out.println("propotion: " + rs.getDouble("propotion"));
                 
                 random = new Random();
                  //In node với màu ngẫu nhiên 
                 colorCode = String.format("#%06x", random.nextInt(256*256*256));
-                graph.addAttribute("ui.stylesheet", "node:clicked { size: 50px, 50px; text-background-mode: plain; text-background-color: black; text-mode: normal; text-color: white; text-alignment: at-right; text-padding: 3; text-size: 15;} edge { arrow-shape: arrow; }");
+                graph.addAttribute("ui.stylesheet", "node:clicked { size: 60px, 60px; text-background-mode: plain; text-background-color: black; text-mode: normal; text-color: white; text-alignment: at-right; text-padding: 3; text-size: 15;} edge { arrow-shape: arrow; }");
                 
                 
                 //Chuyển thành JSON
@@ -201,7 +245,7 @@ public class SearchPaper extends javax.swing.JFrame {
                     graph.addNode(nodeIdP1);
                     graph.getNode(nodeIdP1).setAttribute("xyz", random.nextInt(5), random.nextInt(5), 0);
                     graph.getNode(nodeIdP1).addAttribute("ui.label", "Label: " + nodeLabelP1 + ", ID: " + nodeIdP1);
-                    graph.getNode(nodeIdP1).addAttribute("ui.style", "fill-color: #96c95c, #ff7575; size: 30px, 30px; stroke-mode: plain; text-mode: hidden; shape: pie-chart;");
+                    graph.getNode(nodeIdP1).addAttribute("ui.style", "fill-color: #fb9692, #ff7575; size: 30px, 30px; stroke-mode: plain; stroke-color: #f84f48;text-mode: hidden; shape: pie-chart;");
                     graph.getNode(nodeIdP1).addAttribute("ui.pie-values", "0.5, 0.5");
                 }
                 JSONObject p2Obj = new JSONObject(rs.getString("p2"));
@@ -215,10 +259,11 @@ public class SearchPaper extends javax.swing.JFrame {
                     }
                     graph.getNode(nodeIdP2).setAttribute("xyz", random.nextInt(5), random.nextInt(5), 0);
                     graph.getNode(nodeIdP2).addAttribute("ui.label",  "Label: " + nodeLabelP2 + ", ID: " + nodeIdP2);
-                    graph.getNode(nodeIdP2).addAttribute("ui.style", "fill-color: #96c95c; size: 30px, 30px; stroke-mode: plain; stroke-color: #8bc34a; stroke-width: 2px; text-mode: hidden;");
+                    graph.getNode(nodeIdP2).addAttribute("ui.style", "fill-color: #fb9692; size: 30px, 30px; stroke-mode: plain; stroke-color: #f84f48; stroke-width: 2px; text-mode: hidden;");
 
                 }
                 
+                // Tạo node Topic nếu chưa có node đó
                 JSONObject tObj = new JSONObject(rs.getString("t"));
                 String nodeIdT = String.valueOf(tObj.getInt("id"));
                 if(graph.getNode(nodeIdT) == null) {
@@ -229,8 +274,8 @@ public class SearchPaper extends javax.swing.JFrame {
                         nodeLabelT += labelArrayT.getString(i) + " ";
                     }
                     graph.getNode(nodeIdT).setAttribute("xyz", random.nextInt(5), random.nextInt(5), 0);
-                    graph.getNode(nodeIdP2).addAttribute("ui.label",  "Label: " + nodeLabelT + ", ID: " + nodeIdT);
-                    graph.getNode(nodeIdT).addAttribute("ui.style", "fill-color: #ff7575; size: 30px, 30px; stroke-mode: plain; stroke-color: #ff6666; stroke-width: 2px; text-mode: hidden;");
+                    graph.getNode(nodeIdT).addAttribute("ui.label",  "Label: " + nodeLabelT + ", ID: " + nodeIdT);
+                    graph.getNode(nodeIdT).addAttribute("ui.style", "fill-color: #c0d6e4; size: 40px, 40px; stroke-mode: plain; stroke-color: #8ab3cd; stroke-width: 3px; text-mode: hidden;");
                 }
                 
                 // Nếu chưa có Edge thì thêm Edge
@@ -240,24 +285,26 @@ public class SearchPaper extends javax.swing.JFrame {
                 }
                 if(graph.getEdge(nodeIdP1 + nodeIdT) == null) {
                     graph.addEdge(nodeIdP1 + nodeIdT, nodeIdP1, nodeIdT);
-                    graph.getEdge(nodeIdP1 + nodeIdT).addAttribute("ui.style", "fill-color: blue; arrow-shape: arrow; arrow-size: 2;");
+                    graph.getEdge(nodeIdP1 + nodeIdT).addAttribute("ui.style", "fill-color: blue; shape: line; arrow-size: 3px, 2px;");
                 }
                 
             }
         } catch (SQLException ex) {
-            Logger.getLogger(DoAnTest.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MainMenu.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         //Tạo View Panel để chứa Graph
-//        Viewer viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
-//        ViewPanel viewPanel = viewer.addDefaultView(false);
+        Viewer viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
+        viewer.enableAutoLayout(); // cho graph chuyển động 
+        ViewPanel viewPanel = viewer.addDefaultView(false);
 
-        //Panel chứa viewpanel
-        jPanel2.add(graph.display().getDefaultView());
-//        jPanel2.add(graph.display().addDefaultView(false));
-
-    }
-    
+        jPanel2.removeAll();
+        jPanel2.setLayout(new GridLayout());
+        //Panel chứa graph
+        jPanel2.add(viewPanel);
+        jPanel2.revalidate();
+}
+        
     /**
      * @param args the command line arguments
      */
@@ -295,11 +342,15 @@ public class SearchPaper extends javax.swing.JFrame {
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private java.awt.Button button1;
-    private javax.swing.JComboBox<String> jComboBox1;
-    private javax.swing.JComboBox<String> jComboBox2;
+    private javax.swing.JComboBox<String> displaySeletion;
+    private javax.swing.JSpinner endYear;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JSpinner jSpinner1;
-    private javax.swing.JSpinner jSpinner2;
+    private javax.swing.JSpinner startYear;
+    private javax.swing.JComboBox<String> topicSelection;
     // End of variables declaration//GEN-END:variables
 }
