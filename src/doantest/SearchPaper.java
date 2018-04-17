@@ -28,6 +28,10 @@ import org.json.JSONObject;
 import org.json.JSONArray;
 import org.graphstream.ui.swingViewer.ViewPanel;
 import org.graphstream.ui.view.Viewer;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.control.ProgressIndicator;
+import javafx.stage.Stage;
 
 /**
  *
@@ -192,7 +196,7 @@ public class SearchPaper extends javax.swing.JFrame {
         // TODO add your handling code here:
         display((int)startYear.getValue(), (int)endYear.getValue(), (String)topicSelection.getSelectedItem());
     }//GEN-LAST:event_button1ActionPerformed
-
+    
     private void display(int startYear, int endYear, String topic) {
         
         //Tạo Graph từ GraphStream
@@ -229,8 +233,7 @@ public class SearchPaper extends javax.swing.JFrame {
                 random = new Random();
                  //In node với màu ngẫu nhiên 
                 colorCode = String.format("#%06x", random.nextInt(256*256*256));
-                graph.addAttribute("ui.stylesheet", "node:clicked { size: 60px, 60px; text-background-mode: plain; text-background-color: black; text-mode: normal; text-color: white; text-alignment: at-right; text-padding: 3; text-size: 15;} edge { arrow-shape: arrow; }");
-                
+                graph.addAttribute("ui.stylesheet", "node:clicked { size: 60px, 60px; text-background-mode: plain; text-background-color: black; text-mode: normal; text-color: white; text-alignment: at-right; text-padding: 3; text-size: 15;} edge { shape: line; fill-mode: dyn-plain; }");
                 
                 //Chuyển thành JSON
                 JSONObject p1Obj = new JSONObject(rs.getString("p1"));
