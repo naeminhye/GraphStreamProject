@@ -172,9 +172,10 @@
         <Component class="java.awt.Button" name="button1">
           <Properties>
             <Property name="label" type="java.lang.String" value="Search"/>
+            <Property name="name" type="java.lang.String" value="searchBtn" noResource="true"/>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="button1ActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="searchBtnActionPerformed"/>
           </Events>
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel1">

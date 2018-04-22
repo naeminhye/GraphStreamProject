@@ -1,18 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package doantest;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import javax.swing.JFrame;
 
-/**
- *
- * @author Hieu Nguyen
- */
 public class MainMenu extends javax.swing.JFrame {
 
     /**

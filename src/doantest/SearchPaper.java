@@ -9,11 +9,17 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.GridLayout;
+import java.awt.MouseInfo;
+import java.awt.PointerInfo;
 import java.awt.Toolkit;
+import java.awt.event.MouseListener;
+import java.sql.Array;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Random;
 import java.util.logging.Level;
@@ -32,6 +38,9 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.ProgressIndicator;
 import javafx.stage.Stage;
+
+import doantest.style.StyleImporter;
+import java.util.Map;
 
 /**
  *
@@ -89,9 +98,10 @@ public class SearchPaper extends javax.swing.JFrame {
         displaySeletion.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Graph", "Time Column" }));
 
         button1.setLabel("Search");
+        button1.setName("searchBtn"); // NOI18N
         button1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                button1ActionPerformed(evt);
+                searchBtnActionPerformed(evt);
             }
         });
 
@@ -192,52 +202,59 @@ public class SearchPaper extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void button1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button1ActionPerformed
-        // TODO add your handling code here:
-        display((int)startYear.getValue(), (int)endYear.getValue(), (String)topicSelection.getSelectedItem());
-    }//GEN-LAST:event_button1ActionPerformed
+    private void searchBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchBtnActionPerformed
+        // Hiển thị các Node và Edge sau khi click vào button "Search"
+//        display((int)startYear.getValue(), (int)endYear.getValue(), (String)topicSelection.getSelectedItem());
+           newDisplay((int)startYear.getValue(), (int)endYear.getValue(), (String)topicSelection.getSelectedItem());
+    }//GEN-LAST:event_searchBtnActionPerformed
     
     private void display(int startYear, int endYear, String topic) {
         
         //Tạo Graph từ GraphStream
         Graph graph = new SingleGraph("Citation");
         Random random;
-        String colorCode;
+//        String colorCode;
         // Kết nối
         Connection con;
         try {
             con = DriverManager.getConnection("jdbc:neo4j:bolt://localhost:11005", "neo4j", "123");
-            PreparedStatement stmt = null;
+            PreparedStatement stmt = null, subStmt = null;
             // Querying
 //            String querry = "MATCH (p:Paper) WHERE p.Year = " + year + " RETURN p LIMIT 10";
-            String querry = "";
+            String query = "";
             
             // Hiển thị tất cả các chủ đề 
             if(topic.equals("All"))
             {
-                querry = "MATCH (p1:Paper)-[:CITES]->(p2:Paper), (p1)-[r:RELATED_TO]->(t:Topic) WHERE p1.Year >= " + startYear + " AND p1.Year <= " + endYear + " AND p2.Year >= " + startYear + " AND p2.Year <= " + endYear + " RETURN p1, p2, t, r.Proportion AS propotion LIMIT 5";
+                query = "MATCH (p1:Paper)-[:CITES]->(p2:Paper), (p1)-[r:RELATED_TO]->(t:Topic) WHERE p1.Year >= " + startYear + " AND p1.Year <= " + endYear + " AND p2.Year >= " + startYear + " AND p2.Year <= " + endYear + " RETURN p1, p2, t, r.Proportion AS propotion LIMIT 5";
+//                query = "MATCH (p1:Paper)-[:CITES]->(p2:Paper), (p1)-[r:RELATED_TO]->(t:Topic)  WHERE p1.Year >= " + startYear + " AND p1.Year <= " + endYear + " AND p2.Year >= " + startYear + " AND p2.Year <= " + endYear + " RETURN p1,collect({ paper: p2 }) AS paperCitedFrom, collect({ topic: t, proportion: r.Proportion }) AS topicRelationship LIMIT 3";
             }
             else {
-                querry = "MATCH (p1:Paper)-[:CITES]->(p2:Paper), (p1)-[r:RELATED_TO]->(t:Topic) WHERE p1.Year >= " + startYear + " AND p1.Year <= " + endYear + " AND p2.Year >= " + startYear + " AND p2.Year <= " + endYear + " AND t.TopicId = " + topic + " RETURN p1, p2, t, r.Proportion AS propotion LIMIT 5";
+                query = "MATCH (p1:Paper)-[:CITES]->(p2:Paper), (p1)-[r:RELATED_TO]->(t:Topic) WHERE p1.Year >= " + startYear + " AND p1.Year <= " + endYear + " AND p2.Year >= " + startYear + " AND p2.Year <= " + endYear + " AND t.TopicId = " + topic + " RETURN p1, p2, t, r.Proportion AS propotion LIMIT 5";
+//                query = "MATCH (p1:Paper)-[:CITES]->(p2:Paper), (p1)-[r:RELATED_TO]->(t:Topic)  WHERE p1.Year >= " + startYear + " AND p1.Year <= " + endYear + " AND p2.Year >= " + startYear + " AND p2.Year <= " + endYear + " AND t.TopicId = 43 RETURN p1,collect({ paper: p2 }) AS paperCitedFrom, collect({ topic: t, proportion: r.Proportion }) AS topicRelationship LIMIT 3";
             }
             
-            stmt = con.prepareStatement(querry);
+            stmt = con.prepareStatement(query);
             ResultSet rs = stmt.executeQuery();
-            
             //Lấy dữ liệu về 
             while (rs.next()) {
-//                System.out.println("p1: " + rs.getString("p1"));
-//                System.out.println("p2: " + rs.getString("p2"));
-                   System.out.println("propotion: " + rs.getDouble("propotion"));
-                
                 random = new Random();
+                Map<String, Object> e = (Map<String, Object>) rs.getObject("p1");
+                System.out.println("PaperId: " + e.get("PaperId"));
+                
                  //In node với màu ngẫu nhiên 
-                colorCode = String.format("#%06x", random.nextInt(256*256*256));
-                graph.addAttribute("ui.stylesheet", "node:clicked { size: 60px, 60px; text-background-mode: plain; text-background-color: black; text-mode: normal; text-color: white; text-alignment: at-right; text-padding: 3; text-size: 15;} edge { shape: line; fill-mode: dyn-plain; }");
+//                colorCode = String.format("#%06x", random.nextInt(256*256*256));
+
+                // Import style từ file css thông qua lớp StyleImporter
+                String style = StyleImporter.getStyle("style.css");
+                // Add style vào graph
+                graph.addAttribute("ui.stylesheet", style);
                 
                 //Chuyển thành JSON
                 JSONObject p1Obj = new JSONObject(rs.getString("p1"));
                 String nodeIdP1 = String.valueOf(p1Obj.getInt("id"));
+                System.out.println("Node ID *: " + nodeIdP1);
+
                 JSONArray labelArray = p1Obj.getJSONArray("labels");
                 String nodeLabelP1 = "";
                 for(int i = 0; i < labelArray.length(); i++){
@@ -245,11 +262,13 @@ public class SearchPaper extends javax.swing.JFrame {
                 }
                          
                 if(graph.getNode(nodeIdP1) == null) {
+                    
                     graph.addNode(nodeIdP1);
                     graph.getNode(nodeIdP1).setAttribute("xyz", random.nextInt(5), random.nextInt(5), 0);
                     graph.getNode(nodeIdP1).addAttribute("ui.label", "Label: " + nodeLabelP1 + ", ID: " + nodeIdP1);
                     graph.getNode(nodeIdP1).addAttribute("ui.style", "fill-color: #fb9692, #ff7575; size: 30px, 30px; stroke-mode: plain; stroke-color: #f84f48;text-mode: hidden; shape: pie-chart;");
                     graph.getNode(nodeIdP1).addAttribute("ui.pie-values", "0.5, 0.5");
+                    
                 }
                 JSONObject p2Obj = new JSONObject(rs.getString("p2"));
                 String nodeIdP2 = String.valueOf(p2Obj.getInt("id"));
@@ -299,7 +318,10 @@ public class SearchPaper extends javax.swing.JFrame {
         //Tạo View Panel để chứa Graph
         Viewer viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
         viewer.enableAutoLayout(); // cho graph chuyển động 
+
+        
         ViewPanel viewPanel = viewer.addDefaultView(false);
+//        viewPanel.addMouseListener(new MouseListener());
 
         jPanel2.removeAll();
         jPanel2.setLayout(new GridLayout());
@@ -307,7 +329,142 @@ public class SearchPaper extends javax.swing.JFrame {
         jPanel2.add(viewPanel);
         jPanel2.revalidate();
 }
+    
+    private void newDisplay(int startYear, int endYear, String topic) {
         
+        //Tạo Graph từ GraphStream
+        Graph graph = new SingleGraph("Citation2");
+        Random random;
+        // Kết nối
+        Connection con;
+        try {
+            con = DriverManager.getConnection("jdbc:neo4j:bolt://localhost:11005", "neo4j", "123");
+            PreparedStatement stmt = null;
+            String query = "";
+            
+            // Hiển thị tất cả các chủ đề 
+            if(topic.equals("All"))
+            {
+                //query = "MATCH (p1:Paper)-[:CITES]->(p2:Paper), (p1)-[r:RELATED_TO]->(t:Topic) WHERE p1.Year >= " + startYear + " AND p1.Year <= " + endYear + " AND p2.Year >= " + startYear + " AND p2.Year <= " + endYear + " RETURN p1, p2, t, r.Proportion AS propotion LIMIT 5";
+                query = "MATCH (p1:Paper)-[:CITES]->(p2:Paper), (p1)-[r:RELATED_TO]->(t:Topic) "
+                        + "WHERE p1.Year >= " + startYear + " AND p1.Year <= " + endYear + " "
+                        + "WITH p1,  t, r, collect({ paper: p2 }) AS paperCitedFrom "
+                        + "ORDER BY paperCitedFrom LIMIT 3 "
+                        + "WITH p1, paperCitedFrom, collect({ topic: t, proportion: r.Proportion }) AS topicRelationship "
+                        + "ORDER BY topicRelationship LIMIT 3 "
+                        + "RETURN p1, paperCitedFrom, topicRelationship LIMIT 5";
+            }
+            else {
+                //query = "MATCH (p1:Paper)-[:CITES]->(p2:Paper), (p1)-[r:RELATED_TO]->(t:Topic) WHERE p1.Year >= " + startYear + " AND p1.Year <= " + endYear + " AND p2.Year >= " + startYear + " AND p2.Year <= " + endYear + " AND t.TopicId = " + topic + " RETURN p1, p2, t, r.Proportion AS propotion LIMIT 5";
+                query = "MATCH (p1:Paper)-[:CITES]->(p2:Paper), (p1)-[r:RELATED_TO]->(t:Topic) "
+                        + "WHERE p1.Year >= " + startYear + " AND p1.Year <= " + endYear + " AND t.TopicId = " + topic + " "
+                        + "WITH p1,  t, r, collect({ paper: p2 }) AS paperCitedFrom "
+                        + "ORDER BY paperCitedFrom LIMIT 3 "
+                        + "WITH p1, paperCitedFrom, collect({ topic: t, proportion: r.Proportion }) AS topicRelationship "
+                        + "ORDER BY topicRelationship LIMIT 3 "
+                        + "RETURN p1, paperCitedFrom, topicRelationship LIMIT 3";
+            }
+            stmt = con.prepareStatement(query);
+            ResultSet rs = stmt.executeQuery();
+            
+//            ResultSetMetaData rsmd = rs.getMetaData();
+//            int columnsNumber = rsmd.getColumnCount();
+            while (rs.next()) {
+                Map<String, Object> e = (Map<String, Object>) rs.getObject("p1");
+                System.out.println("PaperId: " + e.get("PaperId"));
+                JSONObject topicR = new JSONObject(rs.getArray("topicRelationship"));
+                System.out.println("topicR: " + topicR.getJSONArray("array").getJSONObject(0));
+                               
+//                for (int i = 1; i <= columnsNumber; i++) {
+//                    if (i > 1) System.out.print(",  ");
+//                    String columnValue = rs.getString(i);
+//                    System.out.print(columnValue + " " + rsmd.getColumnName(i));
+//                }
+//                System.out.println(" ");
+
+//                count++;
+                random = new Random();
+                 //In node với màu ngẫu nhiên 
+                graph.addAttribute("ui.stylesheet", "node:clicked { size: 60px, 60px; text-background-mode: plain; text-background-color: black; text-mode: normal; text-color: white; text-alignment: at-right; text-padding: 3; text-size: 15;} edge { shape: line; fill-mode: dyn-plain; }");
+                
+                //Chuyển thành JSON
+                JSONObject p1Obj = new JSONObject(rs.getString("p1"));
+                String nodeIdP1 = String.valueOf(p1Obj.getInt("id"));
+                JSONArray labelArray = p1Obj.getJSONArray("labels");
+                String nodeLabelP1 = "";
+                for(int i = 0; i < labelArray.length(); i++){
+                    nodeLabelP1 += labelArray.getString(i) + " ";
+                }
+
+                         
+                if(graph.getNode(nodeIdP1) == null) {
+                    
+                    graph.addNode(nodeIdP1);
+                    graph.getNode(nodeIdP1).setAttribute("xyz", random.nextInt(5), random.nextInt(5), 0);
+                    graph.getNode(nodeIdP1).addAttribute("ui.label", "Label: " + nodeLabelP1 + ", ID: " + nodeIdP1);
+                    graph.getNode(nodeIdP1).addAttribute("ui.style", "fill-color: #fb9692, #ff7575; size: 30px, 30px; stroke-mode: plain; stroke-color: #f84f48;text-mode: hidden; shape: pie-chart;");
+                    graph.getNode(nodeIdP1).addAttribute("ui.pie-values", "0.5, 0.5");
+                    
+                }
+////                JSONObject p2Obj = new JSONObject(rs.getString("p2"));
+////                String nodeIdP2 = String.valueOf(p2Obj.getInt("id"));
+////                if(graph.getNode(nodeIdP2) == null) {
+////                    graph.addNode(nodeIdP2);
+////                    JSONArray labelArrayP2 = p2Obj.getJSONArray("labels");
+////                    String nodeLabelP2 = "";
+////                    for(int i = 0; i < labelArrayP2.length(); i++){
+////                        nodeLabelP2 += labelArrayP2.getString(i) + " ";
+////                    }
+////                    graph.getNode(nodeIdP2).setAttribute("xyz", random.nextInt(5), random.nextInt(5), 0);
+////                    graph.getNode(nodeIdP2).addAttribute("ui.label",  "Label: " + nodeLabelP2 + ", ID: " + nodeIdP2);
+////                    graph.getNode(nodeIdP2).addAttribute("ui.style", "fill-color: #fb9692; size: 30px, 30px; stroke-mode: plain; stroke-color: #f84f48; stroke-width: 2px; text-mode: hidden;");
+////
+////                }
+////                
+////                // Tạo node Topic nếu chưa có node đó
+////                JSONObject tObj = new JSONObject(rs.getString("t"));
+////                String nodeIdT = String.valueOf(tObj.getInt("id"));
+////                if(graph.getNode(nodeIdT) == null) {
+////                    graph.addNode(nodeIdT);
+////                    JSONArray labelArrayT = tObj.getJSONArray("labels");
+////                    String nodeLabelT = "";
+////                    for(int i = 0; i < labelArrayT.length(); i++){
+////                        nodeLabelT += labelArrayT.getString(i) + " ";
+////                    }
+////                    graph.getNode(nodeIdT).setAttribute("xyz", random.nextInt(5), random.nextInt(5), 0);
+////                    graph.getNode(nodeIdT).addAttribute("ui.label",  "Label: " + nodeLabelT + ", ID: " + nodeIdT);
+////                    graph.getNode(nodeIdT).addAttribute("ui.style", "fill-color: #c0d6e4; size: 40px, 40px; stroke-mode: plain; stroke-color: #8ab3cd; stroke-width: 3px; text-mode: hidden;");
+////                }
+////                
+////                // Nếu chưa có Edge thì thêm Edge
+////                if(graph.getEdge(nodeIdP1 + nodeIdP2) == null) {
+////                    graph.addEdge(nodeIdP1 + nodeIdP2, nodeIdP1, nodeIdP2);
+////                    graph.getEdge(nodeIdP1 + nodeIdP2).addAttribute("ui.style", "fill-color: red;");
+////                }
+////                if(graph.getEdge(nodeIdP1 + nodeIdT) == null) {
+////                    graph.addEdge(nodeIdP1 + nodeIdT, nodeIdP1, nodeIdT);
+////                    graph.getEdge(nodeIdP1 + nodeIdT).addAttribute("ui.style", "fill-color: blue; shape: line; arrow-size: 3px, 2px;");
+////                }
+//                
+            }
+//        System.out.println("COunt: " + count);
+        } catch (SQLException ex) {
+            Logger.getLogger(MainMenu.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        //Tạo View Panel để chứa Graph
+        Viewer viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
+        viewer.enableAutoLayout(); // cho graph chuyển động 
+        
+        ViewPanel viewPanel = viewer.addDefaultView(false);
+
+        jPanel2.removeAll();
+        jPanel2.setLayout(new GridLayout());
+        //Panel chứa graph
+        jPanel2.add(viewPanel);
+        jPanel2.revalidate();
+    }
+    
     /**
      * @param args the command line arguments
      */
