@@ -27,7 +27,9 @@ import org.graphstream.ui.view.Viewer;
 import doantest.style.StyleImporter;
 import java.awt.MouseInfo;
 import java.awt.Point;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.ResultSetMetaData;
 import java.util.Arrays;
 import java.util.Map;
 import javax.swing.event.MouseInputListener;
@@ -319,6 +321,7 @@ public class SearchPaper extends javax.swing.JFrame {
                 String nodeP1Id = addNodeToGraph(graph, new JSONObject(rs.getString("p1")), "");
 //                String nodeP2Id = addNodeToGraph(graph, new JSONObject(rs.getString("p2")));
                 nodeP1 = (Node)graph.getNode(nodeP1Id);
+                System.out.println("[NODE P1 TO STRING] " + nodeP1.toString()); //getOutDegree
                 String nodeTId = addNodeToGraph(graph, new JSONObject(rs.getString("t")), colorCode);
                 String prop = String.valueOf(rs.getDouble("prop"));
                 System.out.println("prop: " + prop);
@@ -389,7 +392,7 @@ public class SearchPaper extends javax.swing.JFrame {
                 
                 
             }
-                System.out.println("proportion: " + Arrays.toString(proportion));
+            System.out.println("proportion: " + Arrays.toString(proportion));
                 
             nodeP1.addAttribute("ui.style", "fill-color: " + Utils.printString(colors, ",") + "; size: 30px, 30px; stroke-mode: plain; stroke-color: #f84f48;text-mode: hidden; shape: pie-chart;");
             nodeP1.addAttribute("ui.pie-values", Utils.doubleArraytoString(proportion, ","));
@@ -404,14 +407,18 @@ public class SearchPaper extends javax.swing.JFrame {
         viewer.enableAutoLayout(); // cho graph chuyển động 
         
         ViewPanel viewPanel = viewer.addDefaultView(false);
-        // Xử lí sự kiện về Mouse của View Panel
-        viewPanel.addMouseListener(new MouseHandler(graph, viewer));
 
         jPanel2.removeAll();
         jPanel2.setLayout(new GridLayout());
         //Panel chứa graph
         jPanel2.add(viewPanel);
         jPanel2.revalidate();
+        
+        // Xử lí sự kiện về Mouse của View Panel
+        ViewerPipe fromViewer = viewer.newViewerPipe();
+        fromViewer.addSink(graph);
+        fromViewer.addViewerListener(new MouseHandler(graph, viewPanel, fromViewer));
+//        viewPanel.addMouseListener(new MouseHandler(graph, viewer));
 }
     
     private void newDisplay(int startYear, int endYear, String topic) {
@@ -451,45 +458,45 @@ public class SearchPaper extends javax.swing.JFrame {
             stmt = con.prepareStatement(query);
             ResultSet rs = stmt.executeQuery();
             
-//            ResultSetMetaData rsmd = rs.getMetaData();
-//            int columnsNumber = rsmd.getColumnCount();
+            ResultSetMetaData rsmd = rs.getMetaData();
+            int columnsNumber = rsmd.getColumnCount();
             while (rs.next()) {
                 Map<String, Object> e = (Map<String, Object>) rs.getObject("p1");
                 System.out.println("PaperId: " + e.get("PaperId"));
                 JSONObject topicR = new JSONObject(rs.getArray("topicRelationship"));
                 System.out.println("topicR: " + topicR.getJSONArray("array").getJSONObject(0).getJSONObject("topic"));
             
-//                for (int i = 1; i <= columnsNumber; i++) {
-//                    if (i > 1) System.out.print(",  ");
-//                    String columnValue = rs.getString(i);
-//                    System.out.print(columnValue + " " + rsmd.getColumnName(i));
-//                }
-//                System.out.println(" ");
+                for (int i = 1; i <= columnsNumber; i++) {
+                    if (i > 1) System.out.print(",  ");
+                    String columnValue = rs.getString(i);
+                    System.out.print(columnValue + " " + rsmd.getColumnName(i));
+                }
+                System.out.println(" ");
 
 //                count++;
-                random = new Random();
-                 //In node với màu ngẫu nhiên 
-                graph.addAttribute("ui.stylesheet", "node:clicked { size: 60px, 60px; text-background-mode: plain; text-background-color: black; text-mode: normal; text-color: white; text-alignment: at-right; text-padding: 3; text-size: 15;} edge { shape: line; fill-mode: dyn-plain; }");
-                
-                //Chuyển thành JSON
-                JSONObject p1Obj = new JSONObject(rs.getString("p1"));
-                String nodeIdP1 = String.valueOf(p1Obj.getInt("id"));
-                JSONArray labelArray = p1Obj.getJSONArray("labels");
-                String nodeLabelP1 = "";
-                for(int i = 0; i < labelArray.length(); i++){
-                    nodeLabelP1 += labelArray.getString(i) + " ";
-                }
-
-                         
-                if(graph.getNode(nodeIdP1) == null) {
-                    
-                    graph.addNode(nodeIdP1);
-                    graph.getNode(nodeIdP1).setAttribute("xyz", random.nextInt(5), random.nextInt(5), 0);
-                    graph.getNode(nodeIdP1).addAttribute("ui.label", "Label: " + nodeLabelP1 + ", ID: " + nodeIdP1);
-                    graph.getNode(nodeIdP1).addAttribute("ui.style", "fill-color: #fb9692, #ff7575; size: 30px, 30px; stroke-mode: plain; stroke-color: #f84f48;text-mode: hidden; shape: pie-chart;");
-                    graph.getNode(nodeIdP1).addAttribute("ui.pie-values", "0.5, 0.5");
-                    
-                }
+//                random = new Random();
+//                 //In node với màu ngẫu nhiên 
+//                graph.addAttribute("ui.stylesheet", "node:clicked { size: 60px, 60px; text-background-mode: plain; text-background-color: black; text-mode: normal; text-color: white; text-alignment: at-right; text-padding: 3; text-size: 15;} edge { shape: line; fill-mode: dyn-plain; }");
+//                
+//                //Chuyển thành JSON
+//                JSONObject p1Obj = new JSONObject(rs.getString("p1"));
+//                String nodeIdP1 = String.valueOf(p1Obj.getInt("id"));
+//                JSONArray labelArray = p1Obj.getJSONArray("labels");
+//                String nodeLabelP1 = "";
+//                for(int i = 0; i < labelArray.length(); i++){
+//                    nodeLabelP1 += labelArray.getString(i) + " ";
+//                }
+//
+//                         
+//                if(graph.getNode(nodeIdP1) == null) {
+//                    
+//                    graph.addNode(nodeIdP1);
+//                    graph.getNode(nodeIdP1).setAttribute("xyz", random.nextInt(5), random.nextInt(5), 0);
+//                    graph.getNode(nodeIdP1).addAttribute("ui.label", "Label: " + nodeLabelP1 + ", ID: " + nodeIdP1);
+//                    graph.getNode(nodeIdP1).addAttribute("ui.style", "fill-color: #fb9692, #ff7575; size: 30px, 30px; stroke-mode: plain; stroke-color: #f84f48;text-mode: hidden; shape: pie-chart;");
+//                    graph.getNode(nodeIdP1).addAttribute("ui.pie-values", "0.5, 0.5");
+//                    
+//                }
 ////                JSONObject p2Obj = new JSONObject(rs.getString("p2"));
 ////                String nodeIdP2 = String.valueOf(p2Obj.getInt("id"));
 ////                if(graph.getNode(nodeIdP2) == null) {

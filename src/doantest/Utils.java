@@ -2,6 +2,7 @@ package doantest;
 
 import java.sql.ResultSet;
 import org.graphstream.graph.Graph;
+import org.graphstream.graph.Node;
 
 public class Utils {
     
@@ -45,4 +46,24 @@ public class Utils {
         
         return nodes;
     }
+    
+    public static void setNodesSizes(Graph graph, int minimumsize,int maximumsize){
+		int smaller = -1;
+		int greater = -1;
+		for(Node n:graph.getEachNode()){
+			if(n.getDegree() > greater || smaller == -1)
+				greater = n.getDegree();
+			if(n.getDegree() < smaller || greater == -1)
+				smaller = n.getDegree();
+		}
+		for(Node n:graph.getEachNode()){
+			double scale = (double)(n.getDegree() - smaller)/(double)(greater - smaller);
+			if(null != n.getAttribute("ui.style")){
+				n.setAttribute("ui.style", n.getAttribute("ui.style") + " size:"+ Math.round((scale*maximumsize)+minimumsize) +"px;");
+			}
+			else{
+				n.addAttribute("ui.style", " size:"+ Math.round((scale*maximumsize)+minimumsize) +"px;");
+			}
+		}
+	}
 }
