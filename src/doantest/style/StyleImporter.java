@@ -4,8 +4,16 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-
+/**
+ *  Đọc file css
+ */
 public class StyleImporter { 
+    
+    /**
+     * 
+     * @param stylesheet: đường dẫn tới file css
+     * @return 
+     */
     public static String getStyle(String stylesheet)
     {		
             InputStream input;
