@@ -41,7 +41,7 @@ public class InfiniteProgressPanel extends JComponent implements MouseListener {
     /** Message displayed below the circular shape. */
     protected String  text       = "";
     /** Amount of bars composing the circular shape. */
-    protected int     barsCount  = 14;
+    protected int     barsCount  = 7;
     /** Amount of frames per seconde. Lowers this to save CPU. */
     protected float   fps        = 15.0f;
     /** Rendering hints to set anti aliasing. */
@@ -51,7 +51,7 @@ public class InfiniteProgressPanel extends JComponent implements MouseListener {
      * Creates a new progress panel with default values:<br />
      * <ul>
      * <li>No message</li>
-     * <li>14 bars</li>
+     * <li>7 bars</li>
      * <li>Veil's alpha level is 70%</li>
      * <li>15 frames per second</li>
      * <li>Fade in/out last 300 ms</li>
@@ -65,7 +65,7 @@ public class InfiniteProgressPanel extends JComponent implements MouseListener {
     /**
      * Creates a new progress panel with default values:<br />
      * <ul>
-     * <li>14 bars</li>
+     * <li>7 bars</li>
      * <li>Veil's alpha level is 70%</li>
      * <li>15 frames per second</li>
      * <li>Fade in/out last 300 ms</li>
@@ -74,7 +74,7 @@ public class InfiniteProgressPanel extends JComponent implements MouseListener {
      */
     public InfiniteProgressPanel(String text)
     {
-        this(text, 14);
+        this(text, 7);
     }
 
     /**
@@ -142,7 +142,7 @@ public class InfiniteProgressPanel extends JComponent implements MouseListener {
         this.rampDelay = rampDelay >= 0 ? rampDelay : 0;
         this.shield    = shield >= 0.0f ? shield : 0.0f;
         this.fps       = fps > 0.0f ? fps : 15.0f;
-        this.barsCount = barsCount > 0 ? barsCount : 14;
+        this.barsCount = barsCount > 0 ? barsCount : 7;
 
         this.hints = new RenderingHints(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
         this.hints.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);

@@ -5,6 +5,7 @@
  */
 package doantest;
 
+import static doantest.Utils.showMoreNodeInfo;
 import java.awt.event.MouseEvent;
 import javax.swing.event.MouseInputListener;
 import org.graphstream.algorithm.Toolkit;
@@ -99,6 +100,7 @@ public class MouseHandler implements ViewerListener, MouseInputListener{
     public void buttonPushed(String id) {
         if(this.graph.getNode(id) != this.thisNode || this.thisNode == null) {
             this.thisNode = this.graph.getNode(id);
+            showMoreNodeInfo(graph, id);
             toggleNode(this.thisNode, ToggleType.ON);
             for (Node otherNode : graph.getEachNode()) {
                 if(otherNode != thisNode) {

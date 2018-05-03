@@ -1,5 +1,6 @@
 package doantest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -27,25 +28,50 @@ public class Utils {
         CITES
     }
     
+    /**
+     * 
+     * @param graph
+     * @param nodeObj 
+     */
+    public static void showMoreNodeInfo(Graph graph, String NodeId) {
+        
+        if(graph.getNode(NodeId) != null) { 
+            graph.getNode(NodeId).addAttribute("ui.label", "ID: " + NodeId);
+        }
+    }
+    
+    /**
+     * 
+     * @param graph
+     * @param nodeObj 
+     */
+    public static void showLessNodeInfo(Graph graph, String NodeId) {
+        
+        if(graph.getNode(NodeId) != null) { 
+            graph.getNode(NodeId).addAttribute("ui.label", "ID: " + NodeId);
+        }
+    }
+    
     public static String addNodeToGraph(Graph graph, JSONObject nodeObj, String color) {
         
         String NodeId = String.valueOf(nodeObj.getInt("id"));
-//        System.out.println("Node ID *: " + nodeIdP1);
 
         String NodeLabel = nodeObj.getJSONArray("labels").getString(0);
         Random random = new Random();
         
         if(graph.getNode(NodeId) == null) {
-            graph.addNode(NodeId);
+            graph.addNode(NodeId);        
+//            System.out.println("Node: " + nodeObj);
+
             graph.getNode(NodeId).setAttribute("xyz", random.nextInt(5), random.nextInt(5), 0);
-            graph.getNode(NodeId).addAttribute("ui.label", "Label: " + NodeLabel + ", ID: " + NodeId);
+            showLessNodeInfo(graph, NodeId);
+//            graph.getNode(NodeId).addAttribute("ui.label", "ID: " + NodeId);
+//            graph.getNode(NodeId).addAttribute("ui.label", "Label: " + NodeLabel + ", ID: " + NodeId);
             switch(NodeLabel) {
                 case "Paper":
-                    graph.getNode(NodeId).addAttribute("ui.style", "size: 20px, 20px; stroke-mode: plain; stroke-color: #f84f48;text-mode: hidden; shape: pie-chart;");
-                    graph.getNode(NodeId).addAttribute("ui.pie-values", Utils.printString(new String[]{"0.5", "0.5"}, ","));
                     break;
                 case "Topic":
-                    graph.getNode(NodeId).addAttribute("ui.style", "fill-color: " + color + "; size: 20px; stroke-mode: plain; stroke-color: #8ab3cd; stroke-width: 3px; text-mode: hidden;");
+                    graph.getNode(NodeId).addAttribute("ui.style", "fill-color: " + color + ";");
                     break;
                 default:
                     break;
@@ -72,6 +98,19 @@ public class Utils {
         }
     }
     
+    private static boolean arrayContainsObject(JSONArray arr, JSONObject obj) {
+        int length = arr.length();
+        for(int i = 0; i < length; i ++) {
+//            System.out.println("obj: " + obj.toString());
+//            System.out.println("arr.get(i).toString(): " + arr.get(i).toString());
+
+            if(obj.toString().equals(arr.get(i).toString())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     /**
      * execute tham số query, nhận resultset rồi lưu các node, edge vào graph
      * @param query
@@ -96,6 +135,7 @@ public class Utils {
             con = DriverManager.getConnection(Constants.CONNECTION_URL, Constants.USERNAME, Constants.PASSWORD);
             stmt = con.prepareStatement(query);
             rs = stmt.executeQuery();
+            DBTablePrinter.printResultSet(rs);
             
             while (rs.next()) {                
                 /** In node với màu ngẫu nhiên */
@@ -108,8 +148,7 @@ public class Utils {
                 
                 JSONObject p1 = new JSONObject(rs.getString("p1"));
                 JSONObject p2 = new JSONObject(rs.getString("p2"));
-                JSONObject t = new JSONObject(rs.getString("t")).put("color", colorCode);
-                System.out.println("[Topic]: " + t);
+                JSONObject t = new JSONObject(rs.getString("t"));
                 String prop = String.valueOf(rs.getDouble("prop"));
                 /** 
                  *  Tạo một JSONObject lưu các relationship loại related_to,
@@ -118,9 +157,7 @@ public class Utils {
                 JSONObject related_to = new JSONObject()
                                             .put("paper", p1.get("id").toString())
                                             .put("topic", t.get("id").toString())
-                                            .put("proportion", prop)
-                                            .put("color", colorCode);
-
+                                            .put("proportion", prop);
                 JSONObject cites = new JSONObject()
                                             .put("sourcePaper", p1.get("id").toString())
                                             .put("targetPaper", p2.get("id").toString());
@@ -134,42 +171,25 @@ public class Utils {
                 String nodeP1Id = addNodeToGraph(graph, p1, "");
                 if(jsonObj.isNull("papers")) {
                     jsonObj.put("papers", new JSONArray().put(p1));
+                    
                 } else {
-                    if(!jsonObj.getJSONArray("papers").toList().contains(p1)) {
+                    if(!arrayContainsObject(jsonObj.getJSONArray("papers"), p1)) {
                         jsonObj.getJSONArray("papers").put(p1);
                     }
                 }
                 
                 String nodeP2Id = addNodeToGraph(graph, p2, "");
-                if(jsonObj.isNull("papers")) {
-                    jsonObj.put("papers", new JSONArray().put(p2));
-                } else {
-                    if(!jsonObj.getJSONArray("papers").toList().contains(p2)) {
-                        jsonObj.getJSONArray("papers").put(p2);
-                    }
-                }
                 
                 String nodeTId = addNodeToGraph(graph, t, colorCode);
                 if(jsonObj.isNull("topics")) {
                     jsonObj.put("topics", new JSONArray().put(t));
+                    jsonObj.put("topic_colors", new JSONArray().put(colorCode));
                 } else {
-                    if(!jsonObj.getJSONArray("topics").toList().contains(t)) {
+                    if(!arrayContainsObject(jsonObj.getJSONArray("topics"), t)) {
                         jsonObj.getJSONArray("topics").put(t);
+                        jsonObj.getJSONArray("topic_colors").put(colorCode);
                     }
                 }
-                
-                if(jsonObj.isNull("cites")) {
-                    jsonObj.put("cites", new JSONArray().put(cites));
-//                    graph.addEdge(p1.get("id").toString() + p2.get("id").toString(), p1.get("id").toString(), p2.get("id").toString());
-                } else {
-                    if(!jsonObj.getJSONArray("cites").toList().contains(cites)) {
-                        jsonObj.getJSONArray("cites").put(cites);
-//                        graph.addEdge(p1.get("id").toString() + p2.get("id").toString(), p1.get("id").toString(), p2.get("id").toString());
-                    }
-                }
-                addEdgeToGraph(graph, p1.get("id").toString(), p2.get("id").toString(), TypeOfRelationship.CITES);
-
-               System.out.println("jsonObj.getJSONArray(\"cites\")" + jsonObj.getJSONArray("cites"));
                 /**  
                  * Tương tự đối với related_to 
                  */
@@ -177,12 +197,13 @@ public class Utils {
                     jsonObj.put("related_to", new JSONArray().put(related_to));
 //                    graph.addEdge(p1.get("id").toString() + t.get("id").toString(), p1.get("id").toString(), t.get("id").toString());
                 } else {
-                    if(!jsonObj.getJSONArray("related_to").toList().contains(related_to)) {
+                    if(!arrayContainsObject(jsonObj.getJSONArray("related_to"), related_to)) {
                         jsonObj.getJSONArray("related_to").put(related_to);
 //                        graph.addEdge(p1.get("id").toString() + t.get("id").toString(), p1.get("id").toString(), t.get("id").toString());
                     }
                 }
                 addEdgeToGraph(graph, p1.get("id").toString(), t.get("id").toString(), TypeOfRelationship.RELATED_TO);
+                
 
             }
         } 
@@ -202,38 +223,27 @@ public class Utils {
                 
                 ArrayList<String> proportion = new ArrayList<>();
                 ArrayList<String> colors = new ArrayList<>();
-
-                jsonObj.getJSONArray("related_to").forEach(rls -> {
+                for(int i = 0; i < jsonObj.getJSONArray("related_to").length(); i ++) {
+                    jsonObj.getJSONArray("related_to").getJSONObject(i).put("color", jsonObj.getJSONArray("topic_colors").get(i));
+                    JSONObject rls = (JSONObject) jsonObj.getJSONArray("related_to").getJSONObject(i);
                     if(((JSONObject) rls).getString("paper").equals(paperId)) {
                         proportion.add(((JSONObject) rls).getString("proportion"));
                         colors.add(((JSONObject) rls).getString("color"));
                     }
-                });
-                graph.getNode(paperId).addAttribute("ui.style", "fill-color: " + Utils.printString(colors.toArray(new String[colors.size()]), ",") + "; size: 20px; stroke-mode: plain; stroke-color: #f84f48;text-mode: hidden; shape: pie-chart;");
-                graph.getNode(paperId).addAttribute("ui.pie-values", Utils.printString(proportion.toArray(new String[proportion.size()]), ","));
+                }
+                colors.add("#fff");
+                
+                System.out.println("[papers]: " + jsonObj.getJSONArray("papers"));
+                System.out.println("[related_to]: " + jsonObj.getJSONArray("related_to"));
+                System.out.println("[proportion]: " + proportion);
+                System.out.println("[colors]: " + colors);
+
+
+                graph.getNode(paperId).addAttribute("ui.style", "fill-color: " + Utils.printString(colors.toArray(new String[colors.size()]), ",") + "; shape: pie-chart;");
+                graph.getNode(paperId).addAttribute("ui.pie-values", Utils.printStringForDouble(proportion.toArray(new String[proportion.size()]), ","));
             }
         });
     }
-    
-    // 
-//    public static String doubleArraytoString(double[] array, String delimiter) {
-//      StringBuilder sb = new StringBuilder();
-//      double sum = 0;
-//      for (int i = 0; i < array.length; i++) {
-//          sum += array[i];
-//         if (i > 0) {
-//            sb.append(delimiter);
-//         }
-//         double item = array[i];
-//         sb.append(item);
-//      }
-//      if(sum < 1) {
-//          sb.append(delimiter);
-//          sb.append(1 - sum);
-//      }
-//
-//      return sb.toString();
-//   }
     
     /**
      * 
@@ -242,25 +252,44 @@ public class Utils {
      * @return trả về một String, ví dụ "a,b,c"
      */
     public static String printString(String[] array, String delimiter) {
-      StringBuilder sb = new StringBuilder();
-      for (int i = 0; i < array.length; i++) {
-         if (i > 0) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < array.length; i++) {
+           if (i > 0) {
+              sb.append(delimiter);
+           }
+           String item = array[i];
+           sb.append(item);
+        }
+        return sb.toString();
+    }
+    
+    public static String printStringForDouble(String[] array, String delimiter) {
+        StringBuilder sb = new StringBuilder();
+        double sum = 0;
+        for (int i = 0; i < array.length; i++) {
+           if (i > 0) {
+              sb.append(delimiter);
+           }
+           sum = sum + Double.parseDouble(array[i]);
+           String item = array[i];
+           sb.append(item);
+        }
+        if(sum < 1) {
             sb.append(delimiter);
-         }
-         String item = array[i];
-         sb.append(item);
-      }
-
-      return sb.toString();
-   }
+            sb.append(1 - sum);
+        }
+        return sb.toString();
+    }
     
-//    public Object readNodes(ResultSet rs, Graph graph) {
-//        Object nodes = null;
-//        
-//        
-//        return nodes;
-//    }
+    public static void getLabel(){
+        
+    }
     
+    /** 
+     * 
+     * @param graph
+     * @param minimumsize
+     * @param maximumsize 
     public static void setNodesSizes(Graph graph, int minimumsize,int maximumsize){
         int smaller = -1;
         int greater = -1;
@@ -280,4 +309,7 @@ public class Utils {
                 }
         }
     }
+    
+     */
+    
 }

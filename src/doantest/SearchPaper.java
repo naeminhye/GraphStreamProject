@@ -180,7 +180,7 @@ public class SearchPaper extends javax.swing.JFrame {
 
     private void searchBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchBtnActionPerformed
         glassPane = new InfiniteProgressPanel();
-        setGlassPane(glassPane);
+        this.setGlassPane(glassPane);
         glassPane.start();
         new Thread(new Runnable() {
             public void run() {
@@ -191,7 +191,6 @@ public class SearchPaper extends javax.swing.JFrame {
             }
         }, "Performer").start();
         
-//        performer.start();
     }//GEN-LAST:event_searchBtnActionPerformed
    
     private void display3(int startYear, int endYear, String topic) {

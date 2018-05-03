@@ -1,15 +1,21 @@
 node.clicked { 
-    text-background-mode: plain; 
-    text-background-color: black;
+    text-background-mode: rounded-box; 
+    text-background-color: #80808080;
     text-mode: normal; 
     text-color: white; 
     text-alignment: at-right; 
     text-padding: 3; 
     text-size: 15;
+    text-offset: 5px, 0px;
 } 
 node {
-    stroke-mode: plain; 
-    stroke-color: #999; 
+    size: 20px; 
+    text-alignment: at-right; 
+    text-padding: 3px, 2px; 
+    text-background-mode: rounded-box; 
+    text-background-color: #e6e6e6e6; 
+    text-color: #222;
+    text-offset: 5px, 0px;
     shadow-mode: gradient-radial; 
     shadow-width: 2px; 
     shadow-color: #999, white; 
