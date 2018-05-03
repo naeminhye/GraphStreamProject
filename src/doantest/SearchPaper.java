@@ -13,6 +13,8 @@ import org.graphstream.graph.implementations.SingleGraph;
 import org.graphstream.ui.swingViewer.ViewPanel;
 import org.graphstream.ui.view.Viewer;
 import org.graphstream.ui.view.ViewerPipe;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  *
@@ -197,11 +199,12 @@ public class SearchPaper extends javax.swing.JFrame {
         
         //Tạo Graph từ GraphStream
         Graph graph = new SingleGraph("Citation");
+        JSONArray shownNodes = new JSONArray();
         
         String query = "";
         query = "MATCH (p1:Paper)-[r:RELATED_TO]->(t:Topic), (p1)-[:CITES]->(p2:Paper) WHERE p1.Year >= " + startYear + " AND p1.Year <= " + endYear + " RETURN p1, p2, t, r.Proportion AS prop LIMIT 10";
         
-        Utils.setGraph(query, graph);
+        Utils.setGraph(query, graph, shownNodes);
 
         //Tạo View Panel để chứa Graph
         Viewer viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
@@ -218,7 +221,7 @@ public class SearchPaper extends javax.swing.JFrame {
         // Xử lí sự kiện về Mouse của View Panel
         ViewerPipe fromViewer = viewer.newViewerPipe();
         fromViewer.addSink(graph);
-        fromViewer.addViewerListener(new MouseHandler(graph, viewPanel, fromViewer));
+        fromViewer.addViewerListener(new MouseHandler(graph, viewPanel, fromViewer, shownNodes));
     }
     
     /**

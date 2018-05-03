@@ -1,12 +1,12 @@
 node.clicked { 
     text-background-mode: rounded-box; 
-    text-background-color: #80808080;
+    text-background-color: #808080;
     text-mode: normal; 
     text-color: white; 
-    text-alignment: at-right; 
-    text-padding: 3; 
-    text-size: 15;
-    text-offset: 5px, 0px;
+    text-alignment: under; 
+    text-padding: 5px, 4px; 
+    text-size: 15px;
+    text-offset: 0px, 5px;
 } 
 node {
     size: 20px; 
@@ -23,6 +23,12 @@ node {
 }
 
 edge { 
-    shape: line; 
-    fill-mode: dyn-plain; 
+    /*shape: line;*/ 
+    /*fill-mode: dyn-plain;*/ 
+    arrow-shape: arrow;
+    arrow-size: 20px, 4px;
+}
+
+sprite {
+    text-alignment: along;
 }

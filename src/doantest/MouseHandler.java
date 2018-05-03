@@ -5,6 +5,7 @@
  */
 package doantest;
 
+import static doantest.Utils.showLessNodeInfo;
 import static doantest.Utils.showMoreNodeInfo;
 import java.awt.event.MouseEvent;
 import javax.swing.event.MouseInputListener;
@@ -15,6 +16,7 @@ import org.graphstream.graph.Node;
 import org.graphstream.ui.view.View;
 import org.graphstream.ui.view.ViewerListener;
 import org.graphstream.ui.view.ViewerPipe;
+import org.json.JSONArray;
 
 /**
  *
@@ -27,19 +29,21 @@ public class MouseHandler implements ViewerListener, MouseInputListener{
     private ViewerPipe pipe;
     private View view;
     private Node thisNode = null;
+    private JSONArray shownNodes;
     
     public enum ToggleType {
         ON,
         OFF
     }
     
-    public MouseHandler(Graph graph, View view, ViewerPipe pipe) {
+    public MouseHandler(Graph graph, View view, ViewerPipe pipe, JSONArray array) {
         this.loop = true;
         this.graph = graph;
         this.view = view;
         this.pipe = pipe;
         // Add mouse listener.
         this.view.addMouseListener(this);
+        this.shownNodes = array;
     }
 
     @Override
@@ -100,10 +104,11 @@ public class MouseHandler implements ViewerListener, MouseInputListener{
     public void buttonPushed(String id) {
         if(this.graph.getNode(id) != this.thisNode || this.thisNode == null) {
             this.thisNode = this.graph.getNode(id);
-            showMoreNodeInfo(graph, id);
+            showMoreNodeInfo(graph, id, shownNodes);
             toggleNode(this.thisNode, ToggleType.ON);
             for (Node otherNode : graph.getEachNode()) {
                 if(otherNode != thisNode) {
+                    showLessNodeInfo(graph, otherNode.getId());
                     if(null != otherNode.getAttribute("ui.style")){
                         otherNode.setAttribute("ui.style", thisNode.getAttribute("ui.style") + " size: 20px;");
                         otherNode.removeAttribute("ui.class");
@@ -116,6 +121,7 @@ public class MouseHandler implements ViewerListener, MouseInputListener{
             }
         }
         else {
+            showLessNodeInfo(graph, id);
             toggleNode(this.thisNode, ToggleType.OFF);
             this.thisNode = null;
         }
