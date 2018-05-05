@@ -41,9 +41,9 @@ public class InfiniteProgressPanel extends JComponent implements MouseListener {
     /** Message displayed below the circular shape. */
     protected String  text       = "";
     /** Amount of bars composing the circular shape. */
-    protected int     barsCount  = 7;
-    /** Amount of frames per seconde. Lowers this to save CPU. */
-    protected float   fps        = 15.0f;
+    protected int     barsCount  = 14;
+    /** Amount of frames per second. Lowers this to save CPU. */
+    protected float   fps        = 10.0f;
     /** Rendering hints to set anti aliasing. */
     protected RenderingHints hints = null;
 
@@ -74,7 +74,7 @@ public class InfiniteProgressPanel extends JComponent implements MouseListener {
      */
     public InfiniteProgressPanel(String text)
     {
-        this(text, 7);
+        this(text, 14);
     }
 
     /**
@@ -105,7 +105,7 @@ public class InfiniteProgressPanel extends JComponent implements MouseListener {
      */
     public InfiniteProgressPanel(String text, int barsCount, float shield)
     {
-        this(text, barsCount, shield, 15.0f);
+        this(text, barsCount, shield, 10.0f);
     }
 
     /**
@@ -141,8 +141,8 @@ public class InfiniteProgressPanel extends JComponent implements MouseListener {
         this.text 	   = text;
         this.rampDelay = rampDelay >= 0 ? rampDelay : 0;
         this.shield    = shield >= 0.0f ? shield : 0.0f;
-        this.fps       = fps > 0.0f ? fps : 15.0f;
-        this.barsCount = barsCount > 0 ? barsCount : 7;
+        this.fps       = fps > 0.0f ? fps : 10.0f;
+        this.barsCount = barsCount > 0 ? barsCount : 14;
 
         this.hints = new RenderingHints(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
         this.hints.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -214,6 +214,7 @@ public class InfiniteProgressPanel extends JComponent implements MouseListener {
         }
     }
 
+    @Override
     public void paintComponent(Graphics g)
     {
         if (started)
@@ -315,6 +316,7 @@ public class InfiniteProgressPanel extends JComponent implements MouseListener {
         public void run()
         {
             Point2D.Double center = new Point2D.Double((double) getWidth() / 2, (double) getHeight() / 2);
+
             double fixedIncrement = 2.0 * Math.PI / ((double) barsCount);
             AffineTransform toCircle = AffineTransform.getRotateInstance(fixedIncrement, center.getX(), center.getY());
     

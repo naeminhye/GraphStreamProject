@@ -8,6 +8,8 @@ package doantest;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.graphstream.ui.swingViewer.ViewPanel;
@@ -34,8 +36,24 @@ public class SearchPaper extends javax.swing.JFrame {
         
         // Set giá trị mặc định cho 2 number box startYear và endYear
         endYear.setValue(1981);        
-        startYear.setValue(1980);
+        startYear.setValue(1980);        
         
+        glassPane = new InfiniteProgressPanel("Loading ...");
+        this.setGlassPane(glassPane);
+        
+        button1.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                glassPane.start();
+                new Thread(new Runnable() {
+                    public void run() {
+                            // Hiển thị các Node và Edge sau khi click vào button "Search"
+                            display3((int)startYear.getValue(), (int)endYear.getValue(), (String)topicSelection.getSelectedItem());
+
+                            glassPane.stop();
+                        }
+                }, "Performer").start();
+            }
+        });
     }
 
     /**
@@ -77,11 +95,6 @@ public class SearchPaper extends javax.swing.JFrame {
 
         button1.setLabel("Search");
         button1.setName("searchBtn"); // NOI18N
-        button1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                searchBtnActionPerformed(evt);
-            }
-        });
 
         jLabel1.setText("From");
 
@@ -179,21 +192,6 @@ public class SearchPaper extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void searchBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchBtnActionPerformed
-        glassPane = new InfiniteProgressPanel();
-        this.setGlassPane(glassPane);
-        glassPane.start();
-        new Thread(new Runnable() {
-            public void run() {
-                // Hiển thị các Node và Edge sau khi click vào button "Search"
-                display3((int)startYear.getValue(), (int)endYear.getValue(), (String)topicSelection.getSelectedItem());
-                
-                glassPane.stop();
-            }
-        }, "Performer").start();
-        
-    }//GEN-LAST:event_searchBtnActionPerformed
    
     private void display3(int startYear, int endYear, String topic) {
         
