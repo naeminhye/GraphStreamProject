@@ -18,7 +18,7 @@ import static doantest.style.StyleImporter.getStyle;
 import java.util.Iterator;
 import org.graphstream.ui.spriteManager.*;
 
-public class Utils {
+public class GraphUtils {
     
     public enum TypeOfNode {
         PAPER,
@@ -76,6 +76,7 @@ public class Utils {
 
         String NodeLabel = nodeObj.getJSONArray("labels").getString(0);
         Random random = new Random();
+        String workingDir = System.getProperty("user.dir");
         
         if(graph.getNode(NodeId) == null) {
             graph.addNode(NodeId);        
@@ -87,6 +88,7 @@ public class Utils {
 //            graph.getNode(NodeId).addAttribute("ui.label", "Label: " + NodeLabel + ", ID: " + NodeId);
             switch(NodeLabel) {
                 case "Paper":
+                    graph.getNode(NodeId).addAttribute("ui.style", " fill-mode: image-scaled; shadow-mode: none; shape: box; fill-image: url('" + workingDir + "/src/images/icon-news-32.png');");
                     break;
                 case "Topic":
                     graph.getNode(NodeId).addAttribute("ui.style", "fill-color: " + color + ";");
@@ -132,15 +134,20 @@ public class Utils {
         return false;
     }
     
-    /**
+    /** 
+     * Tạo mới graph với parameter "query" truyền vào
      * execute tham số query, nhận resultset rồi lưu các node, edge vào graph
-     * @param query
+     * @param startYear
+     * @param endYear
+     * @param topic
      * @param graph
      * @param shownNodes 
      */
-    public static void setGraph(String query, Graph graph, JSONArray shownNodes) {
+    public static void setGraph(int startYear, int endYear, String topic, Graph graph, JSONArray shownNodes) {
         Random random;
         String colorCode;
+        
+        String query = "MATCH (p1:Paper)-[r:RELATED_TO]->(t:Topic), (p1)-[:CITES]->(p2:Paper) WHERE p1.Year >= " + startYear + " AND p1.Year <= " + endYear + " RETURN p1, p2, t, r.Proportion AS prop LIMIT 10";
         
         /** 
          *  Tạo một biến JSONObject 
@@ -216,7 +223,7 @@ public class Utils {
                         jsonObj.getJSONArray("nodes").put(p2);
                     }
                 }
-                addEdgeToGraph(graph, p1.get("id").toString(), p2.get("id").toString(), TypeOfRelationship.CITES, colorCode);
+                addEdgeToGraph(graph, p1.get("id").toString(), p2.get("id").toString(), TypeOfRelationship.CITES, "black");
                 
                 addNodeToGraph(graph, t, colorCode);
                 if(jsonObj.isNull("topics")) {
@@ -293,8 +300,8 @@ public class Utils {
                 System.out.println("[colors]: " + colors);
 
 
-                graph.getNode(paperId).addAttribute("ui.style", "fill-color: " + Utils.printString(colors.toArray(new String[colors.size()]), ",") + "; shape: pie-chart;");
-                graph.getNode(paperId).addAttribute("ui.pie-values", Utils.printStringForDouble(proportion.toArray(new String[proportion.size()]), ","));
+                graph.getNode(paperId).addAttribute("ui.style", "fill-color: " + GraphUtils.printString(colors.toArray(new String[colors.size()]), ",") + "; shape: pie-chart;");
+                graph.getNode(paperId).addAttribute("ui.pie-values", GraphUtils.printStringForDouble(proportion.toArray(new String[proportion.size()]), ","));
             }
         });
     }
@@ -335,35 +342,56 @@ public class Utils {
         return sb.toString();
     }
     
-    public static void getLabel(){
-        
-    }
-    
-    /** 
-     * 
+    /**
+     * Thêm node vào graph đã có sau khi double click một node
      * @param graph
-     * @param minimumsize
-     * @param maximumsize 
-    public static void setNodesSizes(Graph graph, int minimumsize,int maximumsize){
-        int smaller = -1;
-        int greater = -1;
-        for(Node n:graph.getEachNode()){
-                if(n.getDegree() > greater || smaller == -1)
-                        greater = n.getDegree();
-                if(n.getDegree() < smaller || greater == -1)
-                        smaller = n.getDegree();
+     * @param nodeId
+     * @param shownNodes 
+     */
+    public static void getMoreNodes(Graph graph, String nodeId, JSONArray shownNodes){
+        
+        JSONObject jsonObj = new JSONObject(); 
+        ResultSet rs;
+        PreparedStatement stmt = null;
+        String query = "MATCH (p1:Paper)-[:CITES]->(p2:Paper) WHERE p1.PaperId = " + nodeId + " RETURN p2 LIMIT 10";
+        
+        // Kết nối
+        Connection con;
+        try {
+            con = DriverManager.getConnection(Constants.CONNECTION_URL, Constants.USERNAME, Constants.PASSWORD);
+            stmt = con.prepareStatement(query);
+            rs = stmt.executeQuery();
+            
+            while (rs.next()) {    
+                JSONObject p2 = new JSONObject(rs.getString("p2"));
+                JSONObject cites = new JSONObject()
+                                            .put("sourcePaper", nodeId)
+                                            .put("targetPaper", p2.get("id").toString());
+                addNodeToGraph(graph, p2, "");
+                if(jsonObj.isNull("nodes_of_" + nodeId)) {
+                    jsonObj.put("nodes_of_" + nodeId, new JSONArray().put(p2));
+
+                } else {
+                    if(!arrayContainsObject(jsonObj.getJSONArray("nodes_of_" + nodeId), p2)) {
+                        jsonObj.getJSONArray("nodes_of_" + nodeId).put(p2);
+                    }
+                }
+                addEdgeToGraph(graph, nodeId, p2.get("id").toString(), TypeOfRelationship.CITES, "black");
+            }
+        } 
+        catch (SQLException ex) {
+            Logger.getLogger(MainMenu.class.getName()).log(Level.SEVERE, null, ex);
         }
-        for(Node n:graph.getEachNode()){
-                double scale = (double)(n.getDegree() - smaller)/(double)(greater - smaller);
-                if(null != n.getAttribute("ui.style")){
-                        n.setAttribute("ui.style", n.getAttribute("ui.style") + " size:"+ Math.round((scale*maximumsize)+minimumsize) +"px;");
-                }
-                else{
-                        n.addAttribute("ui.style", " size:"+ Math.round((scale*maximumsize)+minimumsize) +"px;");
-                }
+        if(!jsonObj.isNull("nodes_of_" + nodeId)) {
+            /** Lưu danh sách thông tin các node hiển thị trên màn hình */
+            for(int j = 0; j < jsonObj.getJSONArray("nodes_of_" + nodeId).length(); j ++) {
+                JSONObject obj = (JSONObject) jsonObj.getJSONArray("nodes_of_" + nodeId).get(j);
+                shownNodes.put(obj);
+            }
+
+            /** Kiểm tra thông tin JSON đã lưu lại */
+            System.out.println("[nodes_of_" + nodeId + "]: " + jsonObj.getJSONArray("nodes_of_" + nodeId));
         }
     }
-    
-     */
     
 }

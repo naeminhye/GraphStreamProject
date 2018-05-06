@@ -5,9 +5,10 @@
  */
 package doantest;
 
-import static doantest.Utils.showLessNodeInfo;
-import static doantest.Utils.showMoreNodeInfo;
+import static doantest.GraphUtils.showLessNodeInfo;
+import static doantest.GraphUtils.showMoreNodeInfo;
 import java.awt.event.MouseEvent;
+import javax.swing.JPanel;
 import javax.swing.event.MouseInputListener;
 import org.graphstream.algorithm.Toolkit;
 import org.graphstream.graph.Edge;
@@ -26,24 +27,29 @@ public class MouseHandler implements ViewerListener, MouseInputListener{
 	
     protected boolean loop = true;
     private Graph graph;
+    private JPanel panel;
     private ViewerPipe pipe;
     private View view;
+    private String selectedId = "";
     private Node thisNode = null;
     private JSONArray shownNodes;
+    private InfiniteProgressPanel glassPane;
     
     public enum ToggleType {
         ON,
         OFF
     }
     
-    public MouseHandler(Graph graph, View view, ViewerPipe pipe, JSONArray array) {
+    public MouseHandler(Graph graph, View view, ViewerPipe pipe, JSONArray array, JPanel pnl, InfiniteProgressPanel glassPane) {
         this.loop = true;
         this.graph = graph;
+        this.panel = pnl;
         this.view = view;
         this.pipe = pipe;
         // Add mouse listener.
         this.view.addMouseListener(this);
         this.shownNodes = array;
+        this.glassPane = glassPane;
     }
 
     @Override
@@ -56,6 +62,52 @@ public class MouseHandler implements ViewerListener, MouseInputListener{
 
     @Override
     public void mouseClicked(MouseEvent e){
+        if(this.selectedId.equals("") == false) {
+            if (e.getClickCount() == 2 && !e.isConsumed()) {
+                e.consume();
+                /** Nhấp đôi vào một node bất kì để hiện thêm node */
+                if(this.thisNode != null) {
+                    System.out.println("Double click on node " + selectedId);
+                    
+                    glassPane.start();
+                    new Thread(new Runnable() {
+                        public void run() {
+                                GraphUtils.getMoreNodes(graph, selectedId, shownNodes);
+                                SearchPaper.showGraphOnPanel(graph, shownNodes, panel, glassPane);
+
+                                glassPane.stop();
+                            }
+                    }, "Performer").start();
+                }
+           }
+            else {
+                if(this.graph.getNode(this.selectedId) != this.thisNode || (this.selectedId.equals("") &&  this.thisNode == null)) {
+                    this.thisNode = this.graph.getNode(this.selectedId);
+                    showMoreNodeInfo(graph, this.selectedId, shownNodes);
+                    toggleNode(this.thisNode, ToggleType.ON);
+                    for (Node otherNode : graph.getEachNode()) {
+                        if(otherNode != thisNode) {
+                            showLessNodeInfo(graph, otherNode.getId());
+                            toggleNode(otherNode, ToggleType.OFF);
+                        }
+                    }
+                    for (Edge edge : graph.getEachEdge()) {
+                        for (Edge _e : thisNode.getEachEdge()){
+                            _e.addAttribute("ui.style", "shadow-mode: plain; shadow-width: 3px; shadow-color: #ffff66; shadow-offset: 0px;");
+    
+                            if(edge != _e)
+                            edge.addAttribute("ui.style", "shadow-mode: none;");
+                        }
+                    }
+                }
+                else {
+                    showLessNodeInfo(graph, this.selectedId);
+                    toggleNode(this.thisNode, ToggleType.OFF);
+                    this.thisNode = null;
+                }
+                this.selectedId = "";
+            }
+        }
     }
 
     @Override
@@ -102,47 +154,16 @@ public class MouseHandler implements ViewerListener, MouseInputListener{
      * @param id - string id of node
      */
     public void buttonPushed(String id) {
-        if(this.graph.getNode(id) != this.thisNode || this.thisNode == null) {
-            this.thisNode = this.graph.getNode(id);
-            showMoreNodeInfo(graph, id, shownNodes);
-            toggleNode(this.thisNode, ToggleType.ON);
-            for (Node otherNode : graph.getEachNode()) {
-                if(otherNode != thisNode) {
-                    showLessNodeInfo(graph, otherNode.getId());
-                    if(null != otherNode.getAttribute("ui.style")){
-                        otherNode.setAttribute("ui.style", thisNode.getAttribute("ui.style") + " size: 20px;");
-                        otherNode.removeAttribute("ui.class");
-                    }
-                    else{
-                        otherNode.addAttribute("ui.style", " size: 20px;");
-                        otherNode.removeAttribute("ui.class");
-                    }
-                }
-            }
-        }
-        else {
-            showLessNodeInfo(graph, id);
-            toggleNode(this.thisNode, ToggleType.OFF);
-            this.thisNode = null;
-        }
-//        for (Edge edge : graph.getEachEdge()) {
-//            for (Edge e : thisNode.getEachEdge()){
-//                e.addAttribute("ui.style", "fill-color: red; shape: line; arrow-size: 3px, 2px;");
-//
-//                if(edge != e)
-//                    edge.addAttribute("ui.style", "fill-color: black; shape: line; arrow-size: 3px, 2px;");
-//            }
-//        }
+        
+        this.selectedId = id;
     }
     
     private static void toggleNode(Node node, ToggleType toggle) {
         switch(toggle) {
             case ON:
-                node.addAttribute("ui.style", " size: 40px;");
                 node.addAttribute("ui.class", "clicked");
                 break;
             case OFF:
-                node.addAttribute("ui.style", " size: 20px;");
                 node.removeAttribute("ui.class");
                 break;
             default:

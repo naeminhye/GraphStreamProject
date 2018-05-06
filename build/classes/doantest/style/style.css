@@ -1,4 +1,5 @@
 node.clicked { 
+    size: 40px;
     text-background-mode: rounded-box; 
     text-background-color: #808080;
     text-mode: normal; 
@@ -27,6 +28,14 @@ edge {
     /*fill-mode: dyn-plain;*/ 
     arrow-shape: arrow;
     arrow-size: 20px, 4px;
+    /*shadow-mode: none;*/
+}
+
+edge.clicked {
+    shadow-mode: plain; 
+    shadow-width: 3px; 
+    shadow-color: #ffff66; 
+    shadow-offset: 0px;
 }
 
 sprite {

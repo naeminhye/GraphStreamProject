@@ -10,6 +10,7 @@ import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.JPanel;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.graphstream.ui.swingViewer.ViewPanel;
@@ -24,6 +25,10 @@ import org.json.JSONObject;
  */
 public class SearchPaper extends javax.swing.JFrame {
     protected InfiniteProgressPanel glassPane;
+        //Tạo Graph từ GraphStream
+    protected Graph graph = new SingleGraph("Citation");
+    protected JSONArray shownNodes = new JSONArray();
+        
     
     /**
      * Creates new form SearchPaper
@@ -36,24 +41,28 @@ public class SearchPaper extends javax.swing.JFrame {
         
         // Set giá trị mặc định cho 2 number box startYear và endYear
         endYear.setValue(1981);        
-        startYear.setValue(1980);        
+        startYear.setValue(1980);      
         
-        glassPane = new InfiniteProgressPanel("Loading ...");
+        glassPane = new InfiniteProgressPanel("Loading ...", 8);
         this.setGlassPane(glassPane);
         
         button1.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                glassPane.start();
-                new Thread(new Runnable() {
-                    public void run() {
-                            // Hiển thị các Node và Edge sau khi click vào button "Search"
-                            display3((int)startYear.getValue(), (int)endYear.getValue(), (String)topicSelection.getSelectedItem());
-
-                            glassPane.stop();
-                        }
-                }, "Performer").start();
+                loading();
             }
         });
+    }
+    
+    public void loading() {
+        glassPane.start();
+        new Thread(new Runnable() {
+            public void run() {
+                    // Hiển thị các Node và Edge sau khi click vào button "Search"
+                    display();
+
+                    glassPane.stop();
+                }
+        }, "Performer").start();
     }
 
     /**
@@ -65,7 +74,7 @@ public class SearchPaper extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel1 = new javax.swing.JPanel();
+        controlPanel = new javax.swing.JPanel();
         startYear = new javax.swing.JSpinner();
         endYear = new javax.swing.JSpinner();
         topicSelection = new javax.swing.JComboBox<>();
@@ -75,15 +84,15 @@ public class SearchPaper extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        jPanel2 = new javax.swing.JPanel();
+        displayPanel = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 255));
         setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
-        jPanel1.setBackground(new java.awt.Color(204, 204, 204));
-        jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        jPanel1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        controlPanel.setBackground(new java.awt.Color(204, 204, 204));
+        controlPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        controlPanel.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
         startYear.setMinimumSize(new java.awt.Dimension(30, 20));
 
@@ -104,20 +113,20 @@ public class SearchPaper extends javax.swing.JFrame {
 
         jLabel4.setText("Display");
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        javax.swing.GroupLayout controlPanelLayout = new javax.swing.GroupLayout(controlPanel);
+        controlPanel.setLayout(controlPanelLayout);
+        controlPanelLayout.setHorizontalGroup(
+            controlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(controlPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addGroup(controlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, controlPanelLayout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(controlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(topicSelection, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel3)))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(controlPanelLayout.createSequentialGroup()
+                        .addGroup(controlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(startYear, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE)
                             .addComponent(jLabel1)
                             .addComponent(endYear, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE)
@@ -128,9 +137,9 @@ public class SearchPaper extends javax.swing.JFrame {
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        controlPanelLayout.setVerticalGroup(
+            controlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(controlPanelLayout.createSequentialGroup()
                 .addGap(31, 31, 31)
                 .addComponent(button1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -152,17 +161,17 @@ public class SearchPaper extends javax.swing.JFrame {
                 .addGap(160, 160, 160))
         );
 
-        jPanel2.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel2.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        displayPanel.setBackground(new java.awt.Color(255, 255, 255));
+        displayPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout displayPanelLayout = new javax.swing.GroupLayout(displayPanel);
+        displayPanel.setLayout(displayPanelLayout);
+        displayPanelLayout.setHorizontalGroup(
+            displayPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 585, Short.MAX_VALUE)
         );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        displayPanelLayout.setVerticalGroup(
+            displayPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 0, Short.MAX_VALUE)
         );
 
@@ -172,9 +181,9 @@ public class SearchPaper extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(controlPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(displayPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -182,44 +191,41 @@ public class SearchPaper extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(controlPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(displayPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
-        jPanel1.getAccessibleContext().setAccessibleName("Search Filter");
-        jPanel1.getAccessibleContext().setAccessibleDescription("");
+        controlPanel.getAccessibleContext().setAccessibleName("Search Filter");
+        controlPanel.getAccessibleContext().setAccessibleDescription("");
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
    
-    private void display3(int startYear, int endYear, String topic) {
+    private void display() {
         
-        //Tạo Graph từ GraphStream
-        Graph graph = new SingleGraph("Citation");
-        JSONArray shownNodes = new JSONArray();
+        GraphUtils.setGraph((int)startYear.getValue(), (int)endYear.getValue(), (String)topicSelection.getSelectedItem(), graph, shownNodes);
+        showGraphOnPanel(graph, shownNodes, displayPanel, glassPane);
         
-        String query = "";
-        query = "MATCH (p1:Paper)-[r:RELATED_TO]->(t:Topic), (p1)-[:CITES]->(p2:Paper) WHERE p1.Year >= " + startYear + " AND p1.Year <= " + endYear + " RETURN p1, p2, t, r.Proportion AS prop LIMIT 10";
-        
-        Utils.setGraph(query, graph, shownNodes);
-
+    }
+    
+    public static void showGraphOnPanel(Graph graph, JSONArray shownNodes, JPanel panel, InfiniteProgressPanel glassPane) {
         //Tạo View Panel để chứa Graph
         Viewer viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
         viewer.enableAutoLayout(); // cho graph chuyển động 
         
         ViewPanel viewPanel = viewer.addDefaultView(false);
-
-        jPanel2.removeAll();
-        jPanel2.setLayout(new GridLayout());
+        
+        panel.removeAll();
+        panel.setLayout(new GridLayout());
         //Panel chứa graph
-        jPanel2.add(viewPanel);
-        jPanel2.revalidate();
+        panel.add(viewPanel);
+        panel.revalidate();
         
         // Xử lí sự kiện về Mouse của View Panel
         ViewerPipe fromViewer = viewer.newViewerPipe();
         fromViewer.addSink(graph);
-        fromViewer.addViewerListener(new MouseHandler(graph, viewPanel, fromViewer, shownNodes));
+        fromViewer.addViewerListener(new MouseHandler(graph, viewPanel, fromViewer, shownNodes, panel, glassPane));
     }
     
     /**
@@ -259,14 +265,14 @@ public class SearchPaper extends javax.swing.JFrame {
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private java.awt.Button button1;
+    private javax.swing.JPanel controlPanel;
+    private javax.swing.JPanel displayPanel;
     private javax.swing.JComboBox<String> displaySeletion;
     private javax.swing.JSpinner endYear;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JSpinner startYear;
     private javax.swing.JComboBox<String> topicSelection;
     // End of variables declaration//GEN-END:variables

@@ -269,7 +269,9 @@ public class InfiniteProgressPanel extends JComponent implements MouseListener {
             Area primitive = buildPrimitive();
 
             AffineTransform toCenter = AffineTransform.getTranslateInstance(center.getX(), center.getY());
-            AffineTransform toBorder = AffineTransform.getTranslateInstance(45.0, -6.0);
+//            AffineTransform toBorder = AffineTransform.getTranslateInstance(45.0, -6.0);
+            AffineTransform toBorder = AffineTransform.getTranslateInstance(10.0, -3.0);
+
             AffineTransform toCircle = AffineTransform.getRotateInstance(-i * fixedAngle, center.getX(), center.getY());
 
             AffineTransform toWheel = new AffineTransform();
@@ -290,9 +292,12 @@ public class InfiniteProgressPanel extends JComponent implements MouseListener {
      */
     private Area buildPrimitive()
     {
-        Rectangle2D.Double body = new Rectangle2D.Double(6, 0, 30, 12);
-        Ellipse2D.Double   head = new Ellipse2D.Double(0, 0, 12, 12);
-        Ellipse2D.Double   tail = new Ellipse2D.Double(30, 0, 12, 12);
+//        Rectangle2D.Double body = new Rectangle2D.Double(6, 0, 30, 12);
+//        Ellipse2D.Double   head = new Ellipse2D.Double(0, 0, 12, 12);
+//        Ellipse2D.Double   tail = new Ellipse2D.Double(30, 0, 12, 12);
+        Rectangle2D.Double body = new Rectangle2D.Double(3, 0, 15, 6);
+        Ellipse2D.Double   head = new Ellipse2D.Double(0, 0, 6, 6);
+        Ellipse2D.Double   tail = new Ellipse2D.Double(15, 0, 6, 6);
 
         Area tick = new Area(body);
         tick.add(new Area(head));
