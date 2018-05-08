@@ -72,7 +72,7 @@ public class MouseHandler implements ViewerListener, MouseInputListener{
                     glassPane.start();
                     new Thread(new Runnable() {
                         public void run() {
-                                GraphUtils.getMoreNodes(graph, selectedId, shownNodes);
+                                GraphUtils.getMoreNodes(graph, selectedId, shownNodes, 25);
                                 SearchPaper.showGraphOnPanel(graph, shownNodes, panel, glassPane);
 
                                 glassPane.stop();

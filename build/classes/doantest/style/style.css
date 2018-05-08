@@ -26,8 +26,7 @@ node {
 edge { 
     /*shape: line;*/ 
     /*fill-mode: dyn-plain;*/ 
-    arrow-shape: arrow;
-    arrow-size: 20px, 4px;
+    arrow-shape: arrow; arrow-size: 5px, 3px;
     /*shadow-mode: none;*/
 }
 
