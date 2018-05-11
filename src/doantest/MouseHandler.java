@@ -18,6 +18,7 @@ import org.graphstream.ui.view.View;
 import org.graphstream.ui.view.ViewerListener;
 import org.graphstream.ui.view.ViewerPipe;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  *
@@ -32,7 +33,7 @@ public class MouseHandler implements ViewerListener, MouseInputListener{
     private View view;
     private String selectedId = "";
     private Node thisNode = null;
-    private JSONArray shownNodes;
+    private JSONObject graphInfo;
     private InfiniteProgressPanel glassPane;
     
     public enum ToggleType {
@@ -40,7 +41,7 @@ public class MouseHandler implements ViewerListener, MouseInputListener{
         OFF
     }
     
-    public MouseHandler(Graph graph, View view, ViewerPipe pipe, JSONArray array, JPanel pnl, InfiniteProgressPanel glassPane) {
+    public MouseHandler(Graph graph, View view, ViewerPipe pipe, JSONObject array, JPanel pnl, InfiniteProgressPanel glassPane) {
         this.loop = true;
         this.graph = graph;
         this.panel = pnl;
@@ -48,7 +49,7 @@ public class MouseHandler implements ViewerListener, MouseInputListener{
         this.pipe = pipe;
         // Add mouse listener.
         this.view.addMouseListener(this);
-        this.shownNodes = array;
+        this.graphInfo = array;
         this.glassPane = glassPane;
     }
 
@@ -72,8 +73,8 @@ public class MouseHandler implements ViewerListener, MouseInputListener{
                     glassPane.start();
                     new Thread(new Runnable() {
                         public void run() {
-                                GraphUtils.getMoreNodes(graph, selectedId, shownNodes, 25);
-                                SearchPaper.showGraphOnPanel(graph, shownNodes, panel, glassPane);
+                                GraphUtils.getMoreNodes(graph, selectedId, graphInfo, 25);
+                                SearchPaper.showGraphOnPanel(graph, graphInfo, panel, glassPane);
 
                                 glassPane.stop();
                             }
@@ -83,7 +84,7 @@ public class MouseHandler implements ViewerListener, MouseInputListener{
             else {
                 if(this.graph.getNode(this.selectedId) != this.thisNode || (this.selectedId.equals("") &&  this.thisNode == null)) {
                     this.thisNode = this.graph.getNode(this.selectedId);
-                    showMoreNodeInfo(graph, this.selectedId, shownNodes);
+                    showMoreNodeInfo(graph, this.selectedId, graphInfo);
                     toggleNode(this.thisNode, ToggleType.ON);
                     for (Node otherNode : graph.getEachNode()) {
                         if(otherNode != thisNode) {

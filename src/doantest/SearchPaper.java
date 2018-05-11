@@ -29,8 +29,8 @@ public class SearchPaper extends javax.swing.JFrame {
         //Tạo Graph từ GraphStream
     protected Graph graph = new SingleGraph("Citation");
     protected JSONArray shownNodes = new JSONArray();
+    protected JSONObject graphInfo = new JSONObject();
     private JFrame thisFrame = this;
-        
     
     /**
      * Creates new form SearchPaper
@@ -51,7 +51,7 @@ public class SearchPaper extends javax.swing.JFrame {
         
         button1.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                if(GraphUtils.reset(thisFrame, graph, shownNodes))
+                if(GraphUtils.reset(thisFrame, graph, graphInfo))
                     loading();
             }
         });
@@ -215,12 +215,12 @@ public class SearchPaper extends javax.swing.JFrame {
    
     private void display() {
         
-        GraphUtils.setGraph((int)startYear.getValue(), (int)endYear.getValue(), (String)topicSelection.getSelectedItem(), (String)displaySeletion.getSelectedItem(), graph, shownNodes, (int)limit.getValue());
-        showGraphOnPanel(graph, shownNodes, displayPanel, glassPane);
+        GraphUtils.setGraph((int)startYear.getValue(), (int)endYear.getValue(), (String)topicSelection.getSelectedItem(), (String)displaySeletion.getSelectedItem(), graph, graphInfo, (int)limit.getValue());
+        showGraphOnPanel(graph, graphInfo, displayPanel, glassPane);
         
     }
     
-    public static void showGraphOnPanel(Graph graph, JSONArray shownNodes, JPanel panel, InfiniteProgressPanel glassPane) {
+    public static void showGraphOnPanel(Graph graph, JSONObject graphInfo, JPanel panel, InfiniteProgressPanel glassPane) {
         //Tạo View Panel để chứa Graph
         Viewer viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
         viewer.enableAutoLayout(); // cho graph chuyển động 
@@ -236,7 +236,7 @@ public class SearchPaper extends javax.swing.JFrame {
         // Xử lí sự kiện về Mouse của View Panel
         ViewerPipe fromViewer = viewer.newViewerPipe();
         fromViewer.addSink(graph);
-        fromViewer.addViewerListener(new MouseHandler(graph, viewPanel, fromViewer, shownNodes, panel, glassPane));
+        fromViewer.addViewerListener(new MouseHandler(graph, viewPanel, fromViewer, graphInfo, panel, glassPane));
     }
     
     /**

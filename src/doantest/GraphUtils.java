@@ -16,6 +16,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import static doantest.style.StyleImporter.getStyle;
 import java.util.Iterator;
+import java.util.Vector;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import org.graphstream.ui.spriteManager.*;
@@ -37,12 +38,12 @@ public class GraphUtils {
      * @param graph
      * @param nodeObj 
      */
-    public static void showMoreNodeInfo(Graph graph, String NodeId, JSONArray shownNodes) {
-        if(shownNodes != null) {
+    public static void showMoreNodeInfo(Graph graph, String NodeId, JSONObject graphInfo) {
+        if(!graphInfo.isNull("nodes")) {
             String label = "[Node's Information]: ";
-            int length = shownNodes.length();
+            int length = graphInfo.getJSONArray("nodes").length();
             for(int i = 0; i < length; i ++) {
-                JSONObject obj = (JSONObject) shownNodes.get(i);
+                JSONObject obj = (JSONObject) graphInfo.getJSONArray("nodes").get(i);
                 if(obj.get("id").toString().equals(NodeId)) {
                     Iterator<String> itr = obj.keys();
 
@@ -144,7 +145,7 @@ public class GraphUtils {
      * @param graph
      * @param shownNodes 
      */
-    private static void runQuery(String query, Graph graph, JSONArray shownNodes) {
+    private static void runQuery(String query, Graph graph, JSONObject graphInfo/*JSONArray shownNodes*/) {
         /** TODO: Kiểm tra nếu Topic có màu rồi thì lấy màu có sẳn */
         Random random;
         String colorCode;
@@ -155,6 +156,12 @@ public class GraphUtils {
          *  và các relationship giữa các node 
          */
         JSONObject jsonObj = new JSONObject(); 
+//                graphInfo = new JSONObject(jsonObj, JSONObject.getNames(jsonObj));
+        if(!graphInfo.isNull("topic_colors")) {
+            jsonObj.put("topic_colors", graphInfo.getJSONObject("topic_colors"));
+        }
+        else
+        System.out.println("graphInfo: " + graphInfo);
         ResultSet rs;
         PreparedStatement stmt = null;
         
@@ -196,7 +203,6 @@ public class GraphUtils {
                  *  nếu đã có rồi thì kiểm tra đã có p1 trong "papers" chưa,
                  *  nếu chưa có thì thêm p1 vào "papers".
                  */
-                addNodeToGraph(graph, p1, "");
                 if(jsonObj.isNull("papers")) {
                     jsonObj.put("papers", new JSONArray().put(p1));
                     
@@ -205,6 +211,8 @@ public class GraphUtils {
                         jsonObj.getJSONArray("papers").put(p1);
                     }
                 }
+                addNodeToGraph(graph, p1, "");
+                
                 if(jsonObj.isNull("nodes")) {
                     jsonObj.put("nodes", new JSONArray().put(p1));
                     
@@ -213,8 +221,6 @@ public class GraphUtils {
                         jsonObj.getJSONArray("nodes").put(p1);
                     }
                 }
-                
-                addNodeToGraph(graph, p2, "");
                 if(jsonObj.isNull("nodes")) {
                     jsonObj.put("nodes", new JSONArray().put(p2));
                     
@@ -223,18 +229,26 @@ public class GraphUtils {
                         jsonObj.getJSONArray("nodes").put(p2);
                     }
                 }
+                addNodeToGraph(graph, p2, "");
                 addEdgeToGraph(graph, p1.get("id").toString(), p2.get("id").toString(), TypeOfRelationship.CITES, "black");
                 
-                addNodeToGraph(graph, t, colorCode);
                 if(jsonObj.isNull("topics")) {
                     jsonObj.put("topics", new JSONArray().put(t));
-                    jsonObj.put("topic_colors", new JSONArray().put(colorCode));
+                    /** Tạo một cặp key-value lưu giá trị của từng node Topic ứng với từng màu */
+                    jsonObj.put("topic_colors", new JSONObject().put(t.get("id").toString(), colorCode));
+                    addNodeToGraph(graph, t, colorCode);
                 } else {
                     if(!arrayContainsObject(jsonObj.getJSONArray("topics"), t)) {
                         jsonObj.getJSONArray("topics").put(t);
-                        jsonObj.getJSONArray("topic_colors").put(colorCode);
+                        jsonObj.getJSONObject("topic_colors").put(t.get("id").toString(), colorCode);
+                        addNodeToGraph(graph, t, colorCode);
+                    }
+                    else {
+                        colorCode = jsonObj.getJSONObject("topic_colors").get(t.get("id").toString()).toString();
                     }
                 }
+//                System.out.println("Topic color: " + jsonObj.getJSONObject("topic_colors"));
+
                 if(jsonObj.isNull("nodes")) {
                     jsonObj.put("nodes", new JSONArray().put(t));
                     
@@ -246,15 +260,14 @@ public class GraphUtils {
                 /**  
                  *
                  */
-                addEdgeToGraph(graph, p1.get("id").toString(), t.get("id").toString(), TypeOfRelationship.RELATED_TO, colorCode);
                 if(jsonObj.isNull("related_to")) {
                     jsonObj.put("related_to", new JSONArray().put(related_to));
                 } else {
                     if(!arrayContainsObject(jsonObj.getJSONArray("related_to"), related_to)) {
                         jsonObj.getJSONArray("related_to").put(related_to);
-
                     }
                 }
+                addEdgeToGraph(graph, p1.get("id").toString(), t.get("id").toString(), TypeOfRelationship.RELATED_TO, "black");
                 
 
             }
@@ -268,59 +281,116 @@ public class GraphUtils {
          *  thêm mảng bao gồm các proportion vào attribute "ui.pie-values".
          */
         ArrayList<String> papers = new ArrayList<>();
-        jsonObj.getJSONArray("papers").forEach((Object p) -> {
-            String paperId = ((JSONObject) p).get("id").toString();
-            if(!papers.contains(paperId)) {
-                papers.add(paperId);
-                
+        JSONArray jArray = (JSONArray)jsonObj.getJSONArray("papers"); 
+        if (jArray != null) { 
+           for (int i = 0; i < jArray.length(); i++){ 
+                papers.add(((JSONObject) jArray.getJSONObject(i)).get("id").toString());
+           } 
+        } 
+        if(!papers.isEmpty()) {
+            Iterator<String> iterator = papers.iterator();
+            while (iterator.hasNext()) {
                 ArrayList<String> proportion = new ArrayList<>();
                 ArrayList<String> colors = new ArrayList<>();
-                for(int i = 0; i < jsonObj.getJSONArray("related_to").length(); i ++) {
-                    jsonObj.getJSONArray("related_to").getJSONObject(i).put("color", jsonObj.getJSONArray("topic_colors").get(i));
-                    JSONObject rls = (JSONObject) jsonObj.getJSONArray("related_to").getJSONObject(i);
-                    if(((JSONObject) rls).getString("paper").equals(paperId)) {
-                        proportion.add(((JSONObject) rls).getString("proportion"));
-                        colors.add(((JSONObject) rls).getString("color"));
+                
+                String paperId = iterator.next();
+                for(Object rls: jsonObj.getJSONArray("related_to")) {
+//                    JSONObject rls = (JSONObject) jsonObj.getJSONArray("related_to").getJSONObject(i);
+                    JSONObject jsonRls = (JSONObject)rls;
+                    jsonRls.put("color", jsonObj.getJSONObject("topic_colors").get(jsonRls.getString("topic")));
+
+                    if(jsonRls.getString("paper").equals(paperId)) {
+                        proportion.add(jsonRls.getString("proportion"));
+                        colors.add(jsonRls.getString("color"));
                     }
                 }
+                System.out.println("Colors: " + colors.toString());
                 /** Màu trắng là dành cho % còn lại trong biểu đồ tròn. */
                 colors.add("#fff"); 
-                
-                /** Lưu danh sách thông tin các node hiển thị trên màn hình */
-                for(int j = 0; j < jsonObj.getJSONArray("nodes").length(); j ++) {
-                    JSONObject obj = (JSONObject) jsonObj.getJSONArray("nodes").get(j);
-                    shownNodes.put(obj);
-                }
-                
-                /** Kiểm tra thông tin JSON đã lưu lại */
-                System.out.println("[papers]: " + jsonObj.getJSONArray("papers"));
-                System.out.println("[nodes]: " + jsonObj.getJSONArray("nodes"));
-                System.out.println("[related_to]: " + jsonObj.getJSONArray("related_to"));
-                System.out.println("[proportion]: " + proportion);
-                System.out.println("[colors]: " + colors);
-                System.out.println("[topic_colors]: " + jsonObj.getJSONArray("topic_colors"));
 
+                /** Lưu danh sách thông tin các node hiển thị trên màn hình */
+//                for(int j = 0; j < jsonObj.getJSONArray("nodes").length(); j ++) {
+//                    shownNodes.put(jsonObj.getJSONArray("nodes").get(j));
+//                }
+                graphInfo = new JSONObject(jsonObj, JSONObject.getNames(jsonObj));
+                /** Kiểm tra thông tin JSON đã lưu lại */
+                System.out.println("[graphInfo]: " + graphInfo);
 
                 graph.getNode(paperId).addAttribute("ui.style", "fill-color: " + GraphUtils.printString(colors.toArray(new String[colors.size()]), ",") + "; shape: pie-chart;");
                 graph.getNode(paperId).addAttribute("ui.pie-values", GraphUtils.printStringForDouble(proportion.toArray(new String[proportion.size()]), ","));
+//                colors.clear();
+//                proportion.clear();
             }
-        });
+        }
+        
+//        if(!jsonObj.isNull("papers"))
+//        {
+//            //jsonObj.getJSONArray("papers").forEach((Object p) -> 
+//            for(int i = 0; i < jsonObj.getJSONArray("papers").length(); i++)
+//            {
+////                Object p = jsonObj.getJSONArray("papers").getJSONObject(i);
+//            String paperId = ((JSONObject) jsonObj.getJSONArray("papers").getJSONObject(i)).get("id").toString();
+//            if(!papers.contains(paperId)) {
+//                papers.add(paperId);
+//                
+//                ArrayList<String> proportion = new ArrayList<>();
+//                ArrayList<String> colors = new ArrayList<>();
+//                                
+//                for(Object rls: jsonObj.getJSONArray("related_to")) {
+////                    JSONObject rls = (JSONObject) jsonObj.getJSONArray("related_to").getJSONObject(i);
+//                    JSONObject jsonRls = (JSONObject)rls;
+//                    jsonRls.put("color", jsonObj.getJSONObject("topic_colors").get(jsonRls.getString("topic")));
+//                    
+//                    if(jsonRls.getString("paper").equals(paperId)) {
+//                        proportion.add(jsonRls.getString("proportion"));
+//                        colors.add(jsonRls.getString("color"));
+//                    }
+//                }
+//                /** Màu trắng là dành cho % còn lại trong biểu đồ tròn. */
+//                colors.add("#fff"); 
+//                
+//                /** Lưu danh sách thông tin các node hiển thị trên màn hình */
+//                for(int j = 0; j < jsonObj.getJSONArray("nodes").length(); j ++) {
+////                    JSONObject obj = (JSONObject) jsonObj.getJSONArray("nodes").get(j);
+//                    shownNodes.put(jsonObj.getJSONArray("nodes").get(j));
+//                }
+//                
+//                /** Kiểm tra thông tin JSON đã lưu lại */
+//                System.out.println("[shownNodes]: " + jsonObj);
+////                System.out.println("[papers]: " + jsonObj.getJSONArray("papers"));
+////                System.out.println("[nodes]: " + jsonObj.getJSONArray("nodes"));
+////                System.out.println("[related_to]: " + jsonObj.getJSONArray("related_to"));
+////                System.out.println("[proportion]: " + proportion);
+////                System.out.println("[colors]: " + colors);
+////                System.out.println("[topic_colors]: " + jsonObj.getJSONObject("topic_colors"));
+//
+//
+//                graph.getNode(paperId).addAttribute("ui.style", "fill-color: " + GraphUtils.printString(colors.toArray(new String[colors.size()]), ",") + "; shape: pie-chart;");
+//                graph.getNode(paperId).addAttribute("ui.pie-values", GraphUtils.printStringForDouble(proportion.toArray(new String[proportion.size()]), ","));
+//            }
+//        };
+          //  );
+        
     }
     
-    public static boolean reset(JFrame frame, Graph graph, JSONArray shownNodes) {
-        if(shownNodes.length() > 0) {
-        int output = JOptionPane.showConfirmDialog(frame
-               , "Reset Graph"
-               ,"Reset Graph"
-               ,JOptionPane.YES_NO_OPTION,
-               JOptionPane.INFORMATION_MESSAGE);
+    public static boolean reset(JFrame frame, Graph graph, JSONObject graphInfo/*JSONArray shownNodes*/) {
+        if(!graphInfo.isNull("nodes"))
+        {
+            if(graphInfo.getJSONArray("nodes").length() > 0) {
+            int output = JOptionPane.showConfirmDialog(frame
+                   , "Reset Graph"
+                   ,"Reset Graph"
+                   ,JOptionPane.YES_NO_OPTION,
+                   JOptionPane.INFORMATION_MESSAGE);
 
-            if(output == JOptionPane.YES_OPTION){
-                graph.clear();
-                shownNodes = new JSONArray();
-                return true;
-            }else if(output == JOptionPane.NO_OPTION){
-                return false;
+                if(output == JOptionPane.YES_OPTION){
+                    graph.clear();
+                    graphInfo = new JSONObject();
+                    //shownNodes = new JSONArray();
+                    return true;
+                }else if(output == JOptionPane.NO_OPTION){
+                    return false;
+                }
             }
         }
         return true;
@@ -333,11 +403,11 @@ public class GraphUtils {
      * @param endYear
      * @param topic
      * @param graph
-     * @param shownNodes 
+     * @param graphInfo //shownNodes 
      */
-    public static void setGraph(int startYear, int endYear, String topic, String display, Graph graph, JSONArray shownNodes, int limit) {
+    public static void setGraph(int startYear, int endYear, String topic, String display, Graph graph, JSONObject graphInfo, /*JSONArray shownNodes,*/ int limit) {
         String query = "MATCH (p1:Paper)-[r:RELATED_TO]->(t:Topic), (p1)-[:CITES]->(p2:Paper) WHERE p1.Year >= " + startYear + " AND p1.Year <= " + endYear + " RETURN p1, p2, t, r.Proportion AS prop LIMIT " + limit;
-        runQuery(query, graph, shownNodes);
+        runQuery(query, graph, graphInfo);
     }
     
     /**
@@ -380,11 +450,12 @@ public class GraphUtils {
      * Thêm node vào graph đã có sau khi double click một node
      * @param graph
      * @param nodeId
-     * @param shownNodes 
+     * @param graphInfo//shownNodes 
      */
-    public static void getMoreNodes(Graph graph, String nodeId, JSONArray shownNodes, int limit){
+    public static void getMoreNodes(Graph graph, String nodeId, JSONObject graphInfo /*JSONArray shownNodes*/, int limit){
         String query = "MATCH (p1:Paper)-[r:RELATED_TO]->(t:Topic), (p1)-[:CITES]->(p2:Paper) WHERE ID(p1) = " + nodeId + " RETURN p1, p2, t, r.Proportion AS prop LIMIT " + limit;
-        runQuery(query, graph, shownNodes);
+        runQuery(query, graph, graphInfo/*shownNodes*/);
+        System.out.println("After getting more nodes: " + graphInfo);
 
     }
     
