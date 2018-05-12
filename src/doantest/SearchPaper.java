@@ -5,13 +5,19 @@
  */
 package doantest;
 
+import static doantest.GraphUtils.*;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JButton;
+import javax.swing.JScrollPane;
+import javax.swing.SwingConstants;
+import javax.swing.JSeparator;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.graphstream.ui.swingViewer.ViewPanel;
@@ -28,8 +34,8 @@ public class SearchPaper extends javax.swing.JFrame {
     protected InfiniteProgressPanel glassPane;
         //Tạo Graph từ GraphStream
     protected Graph graph = new SingleGraph("Citation");
+    protected StorageObject graphInfo = new StorageObject();
     protected JSONArray shownNodes = new JSONArray();
-    protected JSONObject graphInfo = new JSONObject();
     private JFrame thisFrame = this;
     
     /**
@@ -104,9 +110,9 @@ public class SearchPaper extends javax.swing.JFrame {
 
         endYear.setMinimumSize(new java.awt.Dimension(30, 20));
 
-        topicSelection.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "All", "43", "44" }));
+        topicSelection.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "All", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45" }));
 
-        displaySeletion.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Graph", "Time Column" }));
+        displaySeletion.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Graph", "Timeline" }));
 
         button1.setLabel("Search");
         button1.setName("searchBtn"); // NOI18N
@@ -131,14 +137,13 @@ public class SearchPaper extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(controlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(limit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, controlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(startYear, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE)
-                        .addComponent(jLabel1)
-                        .addComponent(endYear, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE)
-                        .addComponent(jLabel2)
-                        .addComponent(displaySeletion, 0, 140, Short.MAX_VALUE)
-                        .addComponent(jLabel4)
-                        .addComponent(button1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(startYear, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(endYear, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(displaySeletion, javax.swing.GroupLayout.Alignment.LEADING, 0, 140, Short.MAX_VALUE)
+                    .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(button1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(topicSelection, 0, 140, Short.MAX_VALUE)
                     .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING))
@@ -215,29 +220,31 @@ public class SearchPaper extends javax.swing.JFrame {
    
     private void display() {
         
-        GraphUtils.setGraph((int)startYear.getValue(), (int)endYear.getValue(), (String)topicSelection.getSelectedItem(), (String)displaySeletion.getSelectedItem(), graph, graphInfo, (int)limit.getValue());
-        showGraphOnPanel(graph, graphInfo, displayPanel, glassPane);
-        
+        switch(displaySeletion.getSelectedItem().toString()) {
+            case "Graph":
+                GraphUtils.setGraph((int)startYear.getValue(), (int)endYear.getValue(), (String)topicSelection.getSelectedItem(), graph, graphInfo, (int)limit.getValue());
+                showGraphOnPanel(graph, graphInfo, displayPanel, glassPane);
+                break;
+            case "Timeline":
+                showTimeLineOnPanel(graph, graphInfo, displayPanel, glassPane);   
+                break;
+            default:
+                break;
+        }
+
     }
     
-    public static void showGraphOnPanel(Graph graph, JSONObject graphInfo, JPanel panel, InfiniteProgressPanel glassPane) {
-        //Tạo View Panel để chứa Graph
-        Viewer viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
-        viewer.enableAutoLayout(); // cho graph chuyển động 
-        
-        ViewPanel viewPanel = viewer.addDefaultView(false);
-        
-        panel.removeAll();
-        panel.setLayout(new GridLayout());
-        //Panel chứa graph
-        panel.add(viewPanel);
-        panel.revalidate();
-        
-        // Xử lí sự kiện về Mouse của View Panel
-        ViewerPipe fromViewer = viewer.newViewerPipe();
-        fromViewer.addSink(graph);
-        fromViewer.addViewerListener(new MouseHandler(graph, viewPanel, fromViewer, graphInfo, panel, glassPane));
-    }
+//    private static JComponent createVerticalSeparator() {
+//        JSeparator x = new JSeparator(SwingConstants.VERTICAL);
+//        x.setPreferredSize(new Dimension(3,50));
+//        return x;
+//    }
+//  
+//    private static JComponent createHorizontalSeparator() {
+//        JSeparator x = new JSeparator(SwingConstants.HORIZONTAL);
+//        x.setPreferredSize(new Dimension(50,3));
+//        return x;
+//    }
     
     /**
      * @param args the command line arguments

@@ -33,7 +33,7 @@ public class MouseHandler implements ViewerListener, MouseInputListener{
     private View view;
     private String selectedId = "";
     private Node thisNode = null;
-    private JSONObject graphInfo;
+    private StorageObject graphInfo;
     private InfiniteProgressPanel glassPane;
     
     public enum ToggleType {
@@ -41,7 +41,7 @@ public class MouseHandler implements ViewerListener, MouseInputListener{
         OFF
     }
     
-    public MouseHandler(Graph graph, View view, ViewerPipe pipe, JSONObject array, JPanel pnl, InfiniteProgressPanel glassPane) {
+    public MouseHandler(Graph graph, View view, ViewerPipe pipe, StorageObject array, JPanel pnl, InfiniteProgressPanel glassPane) {
         this.loop = true;
         this.graph = graph;
         this.panel = pnl;
@@ -74,7 +74,7 @@ public class MouseHandler implements ViewerListener, MouseInputListener{
                     new Thread(new Runnable() {
                         public void run() {
                                 GraphUtils.getMoreNodes(graph, selectedId, graphInfo, 25);
-                                SearchPaper.showGraphOnPanel(graph, graphInfo, panel, glassPane);
+                                GraphUtils.showGraphOnPanel(graph, graphInfo, panel, glassPane);
 
                                 glassPane.stop();
                             }

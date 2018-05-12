@@ -38,5 +38,7 @@ edge.clicked {
 }
 
 sprite {
+    fill-mode: none; text-size:12;
     text-alignment: along;
+    text-padding: 3px, 2px; 
 }
