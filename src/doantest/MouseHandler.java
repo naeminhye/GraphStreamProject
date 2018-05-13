@@ -10,15 +10,12 @@ import static doantest.GraphUtils.showMoreNodeInfo;
 import java.awt.event.MouseEvent;
 import javax.swing.JPanel;
 import javax.swing.event.MouseInputListener;
-import org.graphstream.algorithm.Toolkit;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.ui.view.View;
 import org.graphstream.ui.view.ViewerListener;
 import org.graphstream.ui.view.ViewerPipe;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 /**
  *
@@ -75,6 +72,7 @@ public class MouseHandler implements ViewerListener, MouseInputListener{
                         public void run() {
                                 GraphUtils.getMoreNodes(graph, selectedId, graphInfo, 25);
                                 GraphUtils.showGraphOnPanel(graph, graphInfo, panel, glassPane);
+//                                GraphUtils.showTimeLineOnPanel(graph, graphInfo, panel, glassPane);
 
                                 glassPane.stop();
                             }
@@ -94,10 +92,10 @@ public class MouseHandler implements ViewerListener, MouseInputListener{
                     }
                     for (Edge edge : graph.getEachEdge()) {
                         for (Edge _e : thisNode.getEachEdge()){
-                            _e.addAttribute("ui.style", "shadow-mode: plain; shadow-width: 3px; shadow-color: #ffff66; shadow-offset: 0px;");
+                            _e.addAttribute("ui.style", "size: 3px; fill-color: #ffff66; text-mode: normal; text-padding: 3px, 2px; text-background-mode: rounded-box; text-background-color: #e6e6e6e6;"); /*shadow-mode: plain; shadow-width: 3px; shadow-color: #ffff66; shadow-offset: 0px;*/
     
                             if(edge != _e)
-                            edge.addAttribute("ui.style", "shadow-mode: none;");
+                            edge.addAttribute("ui.style", "shadow-mode: none; size: 1px; fill-color: #000000; text-mode: hidden; ");
                         }
                     }
                 }

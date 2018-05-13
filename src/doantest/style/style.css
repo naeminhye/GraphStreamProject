@@ -21,13 +21,19 @@ node {
     shadow-width: 2px; 
     shadow-color: #999, white; 
     shadow-offset: 3px, -3px;
+    fill-color: #cccccc;
+    /*stroke-width: 3px;*/
 }
 
 edge { 
     /*shape: line;*/ 
     /*fill-mode: dyn-plain;*/ 
-    arrow-shape: arrow; arrow-size: 5px, 3px;
+    arrow-shape: arrow; 
+    arrow-size: 5px, 3px;
+    size: 1px; fill-color: #000000; text-mode: hidden;
+    /*shape: freeplane;*/
     /*shadow-mode: none;*/
+     
 }
 
 edge.clicked {
@@ -38,7 +44,8 @@ edge.clicked {
 }
 
 sprite {
-    fill-mode: none; text-size:12;
+    /*fill-mode: none;*/ 
+    text-size:12;
     text-alignment: along;
     text-padding: 3px, 2px; 
 }

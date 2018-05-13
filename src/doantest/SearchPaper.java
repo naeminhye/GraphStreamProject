@@ -7,24 +7,13 @@ package doantest;
 
 import static doantest.GraphUtils.*;
 import java.awt.Dimension;
-import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JButton;
-import javax.swing.JScrollPane;
-import javax.swing.SwingConstants;
-import javax.swing.JSeparator;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.SingleGraph;
-import org.graphstream.ui.swingViewer.ViewPanel;
-import org.graphstream.ui.view.Viewer;
-import org.graphstream.ui.view.ViewerPipe;
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 /**
  *
@@ -226,25 +215,14 @@ public class SearchPaper extends javax.swing.JFrame {
                 showGraphOnPanel(graph, graphInfo, displayPanel, glassPane);
                 break;
             case "Timeline":
-                showTimeLineOnPanel(graph, graphInfo, displayPanel, glassPane);   
+                GraphUtils.setTimeline((int)startYear.getValue(), (int)endYear.getValue(), (String)topicSelection.getSelectedItem(), graph, graphInfo, (int)limit.getValue());
+                showGraphOnPanel(graph, graphInfo, displayPanel, glassPane);   
                 break;
             default:
                 break;
         }
 
     }
-    
-//    private static JComponent createVerticalSeparator() {
-//        JSeparator x = new JSeparator(SwingConstants.VERTICAL);
-//        x.setPreferredSize(new Dimension(3,50));
-//        return x;
-//    }
-//  
-//    private static JComponent createHorizontalSeparator() {
-//        JSeparator x = new JSeparator(SwingConstants.HORIZONTAL);
-//        x.setPreferredSize(new Dimension(50,3));
-//        return x;
-//    }
     
     /**
      * @param args the command line arguments
