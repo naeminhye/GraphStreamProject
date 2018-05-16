@@ -216,7 +216,7 @@ public class SearchPaper extends javax.swing.JFrame {
                 break;
             case "Timeline":
                 GraphUtils.setTimeline((int)startYear.getValue(), (int)endYear.getValue(), (String)topicSelection.getSelectedItem(), graph, graphInfo, (int)limit.getValue());
-                showGraphOnPanel(graph, graphInfo, displayPanel, glassPane);   
+                showTimeLineOnPanel(graph, graphInfo, displayPanel, glassPane);   
                 break;
             default:
                 break;

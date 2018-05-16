@@ -13,21 +13,27 @@ import org.graphstream.graph.Graph;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import static doantest.style.StyleImporter.getStyle;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.geom.Line2D;
 import java.util.Iterator;
+import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.JSeparator;
+import org.graphstream.ui.graphicGraph.GraphicGraph;
+import org.graphstream.ui.swingViewer.DefaultView;
+import org.graphstream.ui.swingViewer.LayerRenderer;
 import org.graphstream.ui.swingViewer.ViewPanel;
 import org.graphstream.ui.view.Viewer;
 import org.graphstream.ui.view.ViewerPipe;
+import static org.json.JSONObject.NULL;
 
 public class GraphUtils {
     
@@ -49,22 +55,29 @@ public class GraphUtils {
     public static void showMoreNodeInfo(Graph graph, String NodeId, StorageObject graphInfo) {
         if(!graphInfo.getObject().isNull("nodes")) {
             String label = "[Node's Information]: ";
-            for(Object object: graphInfo.getObject().getJSONArray("nodes")) {
-                JSONObject obj = (JSONObject) object;
-                if(obj.get("id").toString().equals(NodeId)) {
-                    Iterator<String> itr = obj.keys();
-
-                    while(itr.hasNext()){
-                        String key = itr.next();
-                        String value = obj.get(key).toString();
-                        label += key.toUpperCase() + ":" + value + "; ";
+            int _length = graphInfo.getObject().getJSONArray("nodes").length();
+            for(int i = 0; i < _length; i ++) {
+                JSONObject obj = (JSONObject) graphInfo.getObject().getJSONArray("nodes").getJSONObject(i);
+                if(obj.length() > 0) {
+                    if(obj.get("id").toString().equals(NodeId)) {
+//                        Iterator<String> itr = obj.keys();
+                        Object[] keys = obj.keySet().toArray();
+                        for(Object key: keys) {
+                            String value = obj.get(key.toString()).toString();
+                            label += key.toString().toUpperCase() + ":" + value + "; ";
+                        }
+    //                for(Iterator<String> itr = obj.keys(); itr.hasNext();) {
+//                        while(itr.hasNext()){
+//                            String key = itr.next();
+//                            String value = obj.get(key).toString();
+//                            label += key.toUpperCase() + ":" + value + "; ";
+//                        }
                     }
                 }
             }
             
             if(graph.getNode(NodeId) != null) { 
-//                if(graph.getNode(NodeId).getAttribute("ui.label").toString())
-                    System.out.println("[LABEL]: " + graph.getNode(NodeId).getAttribute("ui.label").toString());
+                System.out.println("[LABEL]: " + graph.getNode(NodeId).getAttribute("ui.label").toString());
                 graph.getNode(NodeId).addAttribute("ui.label", label);
             }
             
@@ -78,7 +91,7 @@ public class GraphUtils {
      */
     public static void showLessNodeInfo(Graph graph, String NodeId) { 
         if(graph.getNode(NodeId) != null) { 
-            graph.getNode(NodeId).addAttribute("ui.label", "ID: " + NodeId);
+            graph.getNode(NodeId).addAttribute("ui.label", "Node ID: " + NodeId);
         }
     }
     
@@ -321,14 +334,18 @@ public class GraphUtils {
                } 
             } 
             if(!papers.isEmpty()) {
+                
                 Iterator<String> iterator = papers.iterator();
-                while (iterator.hasNext()) {
+//                for(Iterator<String> iterator = papers.iterator(); iterator.hasNext();) {
+               while (iterator.hasNext()) {
                     ArrayList<String> proportion = new ArrayList<>();
                     ArrayList<String> colors = new ArrayList<>();
 
                     String paperId = iterator.next();
-                    for(Object rls: jsonObj.getJSONArray("related_to")) {
-                        JSONObject jsonRls = (JSONObject)rls;
+                    int _length = jsonObj.getJSONArray("related_to").length();
+                    for(int i = 0; i < _length; i++) {
+//                    for(Object rls: jsonObj.getJSONArray("related_to")) {
+                        JSONObject jsonRls = (JSONObject)jsonObj.getJSONArray("related_to").getJSONObject(i);
                         jsonRls.put("color", jsonObj.getJSONObject("topic_colors").get(jsonRls.getString("topic")));
 
                         if(jsonRls.getString("paper").equals(paperId)) {
@@ -342,6 +359,7 @@ public class GraphUtils {
 
                     graph.getNode(paperId).addAttribute("ui.style", "fill-color: " + GraphUtils.printString(colors.toArray(new String[colors.size()]), ",") + "; shape: pie-chart;");
                     graph.getNode(paperId).addAttribute("ui.pie-values", GraphUtils.printStringForDouble(proportion.toArray(new String[proportion.size()]), ","));
+                    
                 }
             }
         }
@@ -439,24 +457,46 @@ public class GraphUtils {
         if(!jsonObj.isNull("years")) {  
             Random random;
             String colorCode;          
-            Iterator<String> years = jsonObj.getJSONObject("years").keys();
+//            Iterator<String> years = jsonObj.getJSONObject("years").keys();
+            Object[] yearKeys = jsonObj.getJSONObject("years").keySet().toArray();
             int index = 0;
-            while (years.hasNext()) {
-                String year = years.next();
+            for(Object yearKey: yearKeys) {
+                String year = yearKey.toString();
                 /** In node với màu ngẫu nhiên */
                 random = new Random();
                 colorCode = String.format("#%06x", random.nextInt(256*256*256));
-                for(Object node: jsonObj.getJSONObject("years").getJSONArray(year)) {
-                    String nodeId = (String) node;
+                int _length = jsonObj.getJSONObject("years").getJSONArray(year).length();
+                for(int i = 0; i < _length; i++) {
+//                for(Object node: jsonObj.getJSONObject("years").getJSONArray(year)) {
+                    String nodeId = (String) jsonObj.getJSONObject("years").getJSONArray(year).getString(i);
                     float x = (float)Math.random() * ((200f * (index + 1)) - (200f * index)) + 200f * index;
                     float y = (float)Math.random() * (1000f - 0.0f) + 0.0f;
-//                    graph.getNode(nodeId).addAttribute("ui.frozen");
-//                    graph.getNode(nodeId).addAttribute("x", x);
-//                    graph.getNode(nodeId).addAttribute("y", y);
+                    graph.getNode(nodeId).addAttribute("ui.frozen");
+                    graph.getNode(nodeId).addAttribute("x", x);
+                    graph.getNode(nodeId).addAttribute("y", y);
                     graph.getNode(nodeId).setAttribute("ui.style", "fill-color: " + colorCode + ";");
                 }
                 index ++;
             }
+//            while (years.hasNext()) {
+////            for(Iterator<String> years = jsonObj.getJSONObject("years").keys(); years.hasNext();) {
+//                String year = years.next();
+//                /** In node với màu ngẫu nhiên */
+//                random = new Random();
+//                colorCode = String.format("#%06x", random.nextInt(256*256*256));
+//                int _length = jsonObj.getJSONObject("years").getJSONArray(year).length();
+//                for(int i = 0; i < _length; i++) {
+////                for(Object node: jsonObj.getJSONObject("years").getJSONArray(year)) {
+//                    String nodeId = (String) jsonObj.getJSONObject("years").getJSONArray(year).getString(i);
+//                    float x = (float)Math.random() * ((200f * (index + 1)) - (200f * index)) + 200f * index;
+//                    float y = (float)Math.random() * (1000f - 0.0f) + 0.0f;
+//                    graph.getNode(nodeId).addAttribute("ui.frozen");
+//                    graph.getNode(nodeId).addAttribute("x", x);
+//                    graph.getNode(nodeId).addAttribute("y", y);
+//                    graph.getNode(nodeId).setAttribute("ui.style", "fill-color: " + colorCode + ";");
+//                }
+//                index ++;
+//            }
         }
         
         /** Lưu danh sách thông tin các node hiển thị trên màn hình */
@@ -549,22 +589,61 @@ public class GraphUtils {
         //Tạo View Panel để chứa Graph
         Viewer viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
         
-        ViewPanel viewPanel = viewer.addDefaultView(false);
+        DefaultView view = (DefaultView) viewer.addDefaultView(false);
+        view.resizeFrame(panel.getWidth(), panel.getHeight());
+//        view.getCamera().setViewPercent(1);
+        view.getCamera().getViewCenter();
+        view.setBackLayerRenderer(new LayerRenderer() {
+            @Override
+            public void render(Graphics2D graphics2D, GraphicGraph graphicGraph, double v, int i, int i1, double v1, double v2, double v3, double v4) {
+                graphics2D.setColor(Color.BLACK);
+//                graphics2D.drawString("1990", 10, 30);
+                if(!graphInfo.getObject().isNull("years")) {
+                    Object[] years = invertUsingFor(graphInfo.getObject().getJSONObject("years").keySet().toArray());
+                    int numOfYears = graphInfo.getObject().getJSONObject("years").length();
+                    float width_of_column = view.getWidth() / numOfYears;
+                    if(width_of_column < 200) {
+                        width_of_column = 200;
+                        view.resizeFrame(numOfYears * 200, view.getHeight());
+                    }
+                    int index = 0;
+                    for(Object year : years) {
+                        float startX = width_of_column * (index + 1);
+                        float startY = 0;
+                        float endX = startX;
+                        float endY = view.getHeight();
+                        graphics2D.drawString(year.toString(), (width_of_column * index) + (width_of_column / 2), 30);
+                        graphics2D.draw(new Line2D.Double(startX, startY, endX, endY));
+                        
+                        index++;
+                    }
+                    
+                }
+//                graphics2D.draw(new Line2D.Double(0, 0, view.getWidth(), view.getHeight()));
+            }
+        });
+        
         
         panel.removeAll();
         panel.setLayout(new GridLayout());
         //Panel chứa graph
-        panel.add(viewPanel);
+        panel.add(view);
         panel.revalidate();
         
         // Xử lí sự kiện về Mouse của View Panel
         ViewerPipe fromViewer = viewer.newViewerPipe();
         fromViewer.addSink(graph);
-        fromViewer.addViewerListener(new MouseHandler(graph, viewPanel, fromViewer, graphInfo, panel, glassPane));
+        fromViewer.addViewerListener(new MouseHandler(graph, view, fromViewer, graphInfo, panel, glassPane));
         
-        for(int i = 0; i < 3; i ++) {
-               
+    }
+    
+    private static Object[] invertUsingFor(Object[] array) {
+        for (int i = 0; i < array.length / 2; i++) {
+            Object temp = array[i];
+            array[i] = array[array.length - 1 - i];
+            array[array.length - 1 - i] = temp;
         }
+        return array;
     }
     
     private static JComponent createVerticalSeparator() {
