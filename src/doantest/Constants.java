@@ -17,7 +17,7 @@ public class Constants {
 
     public static final String USERNAME = "neo4j";
     public static final String PASSWORD = "123";
-    public static final String CONNECTION_URL = "jdbc:neo4j:bolt://localhost:11005";
+    public static final String CONNECTION_URL = "jdbc:neo4j:bolt://localhost:11002";
      
     
 }

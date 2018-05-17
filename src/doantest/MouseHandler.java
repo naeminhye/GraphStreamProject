@@ -82,11 +82,11 @@ public class MouseHandler implements ViewerListener, MouseInputListener{
             else {
                 if(this.graph.getNode(this.selectedId) != this.thisNode || (this.selectedId.equals("") &&  this.thisNode == null)) {
                     this.thisNode = this.graph.getNode(this.selectedId);
-                    showMoreNodeInfo(graph, this.selectedId, graphInfo);
+                    showMoreNodeInfo(graph, this.selectedId, graphInfo, view);
                     toggleNode(this.thisNode, ToggleType.ON);
                     for (Node otherNode : graph.getEachNode()) {
                         if(otherNode != thisNode) {
-                            showLessNodeInfo(graph, otherNode.getId());
+                            showLessNodeInfo(graph, otherNode.getId(), graphInfo);
                             toggleNode(otherNode, ToggleType.OFF);
                         }
                     }
@@ -100,7 +100,7 @@ public class MouseHandler implements ViewerListener, MouseInputListener{
                     }
                 }
                 else {
-                    showLessNodeInfo(graph, this.selectedId);
+                    showLessNodeInfo(graph, this.selectedId, graphInfo);
                     toggleNode(this.thisNode, ToggleType.OFF);
                     this.thisNode = null;
                 }
