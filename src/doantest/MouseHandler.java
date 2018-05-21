@@ -39,6 +39,7 @@ public class MouseHandler implements ViewerListener {
     private boolean isClicked = false;
     private StorageObject graphInfo;
     private InfiniteProgressPanel glassPane;
+    private String displayType;
     
     private DefaultMouseManager mouseManager = new DefaultMouseManager() {
         
@@ -94,7 +95,7 @@ public class MouseHandler implements ViewerListener {
                     oldSelectedId = selectedId;
                     selectedId = thisNode.getId();
                     /** Nhấp đôi vào một node bất kì để hiện thêm node */
-                    if (e.getClickCount() == 2 && !e.isConsumed()) {
+                    if (e.getClickCount() >= 2 && !e.isConsumed()) {
                         e.consume();
                         doubleClickOnNode();
                     }
@@ -115,12 +116,12 @@ public class MouseHandler implements ViewerListener {
                     /** CTRL + "+" */
                     case KeyEvent.VK_EQUALS:
                     case KeyEvent.VK_ADD:
-                        view.getCamera().setViewPercent(view.getCamera().getViewPercent() - 0.5);
+                        view.getCamera().setViewPercent(view.getCamera().getViewPercent() - 0.1);
                         break;
                     /** CTRL + "-" */
                     case KeyEvent.VK_MINUS:
                     case KeyEvent.VK_SUBTRACT:
-                        view.getCamera().setViewPercent(view.getCamera().getViewPercent() + 0.5);
+                        view.getCamera().setViewPercent(view.getCamera().getViewPercent() + 0.1);
                         break;
                 }
             }
@@ -158,7 +159,7 @@ public class MouseHandler implements ViewerListener {
       	}
     };
     
-    public MouseHandler(Graph graph, View view, ViewerPipe pipe, StorageObject array, JPanel pnl, InfiniteProgressPanel glassPane) {
+    public MouseHandler(Graph graph, View view, ViewerPipe pipe, StorageObject array, JPanel pnl, InfiniteProgressPanel glassPane, String displayType) {
         this.loop = true;
         this.graph = graph;
         this.panel = pnl;
@@ -166,6 +167,7 @@ public class MouseHandler implements ViewerListener {
         this.pipe = pipe;
         this.graphInfo = array;
         this.glassPane = glassPane;
+        this.displayType = displayType;
         this.view.setMouseManager(mouseManager);
         this.view.setShortcutManager(shortcutManager);
     }
@@ -200,8 +202,16 @@ public class MouseHandler implements ViewerListener {
                 public void run() {
 //                        graph.getNode(selectedId).setAttribute("ui.frozen");
                         GraphUtils.getMoreNodes(graph, selectedId, graphInfo, 25);
-                        GraphUtils.showGraphOnPanel(graph, graphInfo, panel, glassPane);
-//                        GraphUtils.showTimeLineOnPanel(graph, graphInfo, panel, glassPane);
+                        switch(displayType) {
+                            case "Graph":
+                                GraphUtils.showGraphOnPanel(graph, graphInfo, panel, glassPane);
+                                break;
+                            case "Timeline":
+                                GraphUtils.showTimeLineOnPanel(graph, graphInfo, panel, glassPane);
+                                break;
+                            default:
+                                break;
+                        }
 
                         glassPane.stop();
                     }
@@ -231,9 +241,8 @@ public class MouseHandler implements ViewerListener {
                 for (Edge edgeOfThisNode : thisNode.getEachEdge()){
                     edgeOfThisNode.setAttribute("ui.style", "size: 3px; fill-color: #ffff66; text-mode: normal; text-padding: 3px, 2px; text-background-mode: rounded-box; text-background-color: #e6e6e6e6;"); /*shadow-mode: plain; shadow-width: 3px; shadow-color: #ffff66; shadow-offset: 0px;*/
 
-                    if(edge != edgeOfThisNode) {
+                    if(!edge.getId().equals(edgeOfThisNode.getId())) {
                         edge.setAttribute("ui.style", "shadow-mode: none; size: 1px; fill-color: #000000; text-mode: hidden; ");
-
                     }
                 }
             }

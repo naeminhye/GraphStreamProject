@@ -235,7 +235,7 @@ public class GraphUtils {
     }
     
     public static void addEdgeToGraph(Graph graph, String SourceNodeId, String TargetNodeId, TypeOfRelationship type, String color, String sprite, boolean isHidden) {
-        String edgeName = SourceNodeId + "-" + TargetNodeId;
+        String edgeName = SourceNodeId + "_" + TargetNodeId;
         if(graph.getEdge(edgeName) == null) {
             graph.addEdge(edgeName, SourceNodeId, TargetNodeId, true);
             switch(type) {
@@ -354,53 +354,6 @@ public class GraphUtils {
             Logger.getLogger(MainMenu.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        if(!graphInfo.getObject().isNull("papers_having_topics")) {
-
-            /** 
-             *  Với mỗi node Paper trong graph,
-             *  thêm mảng bao gồm các proportion vào attribute "ui.pie-values".
-             */
-            for(Object _paper: graphInfo.getObject().getJSONArray("papers_having_topics")) {
-                JSONObject paper = (JSONObject) _paper;
-                ArrayList<String> proportion = new ArrayList<>();
-                ArrayList<String> colors = new ArrayList<>();
-                String paperId = paper.get("id").toString();
-                for(Object _rls: graphInfo.getObject().getJSONArray("related_to")) {
-                    JSONObject rls = (JSONObject) _rls;
-                    rls.put("color", graphInfo.getObject().getJSONObject("topic_colors").get(rls.getString("topic")));
-
-                    if(rls.getString("paper").equals(paperId)) {
-                        proportion.add(rls.getString("proportion"));
-                        colors.add(rls.getString("color"));
-                    }
-                }
-
-                /** Màu trắng là dành cho % còn lại trong biểu đồ tròn. */
-                colors.add("#cccccc"); 
-
-                graph.getNode(paperId).addAttribute("ui.style", "fill-color: " + GraphUtils.printString(colors.toArray(new String[colors.size()]), ",") + "; shape: pie-chart;");
-                graph.getNode(paperId).addAttribute("ui.pie-values", GraphUtils.printStringForDouble(proportion.toArray(new String[proportion.size()]), ","));
-                    
-            }
-            
-            if(!graphInfo.getObject().isNull("topics")) {
-                for(Object _topic: graphInfo.getObject().getJSONArray("topics")) {
-                    JSONObject topic = (JSONObject) _topic;
-                    String color = graphInfo.getObject().getJSONObject("topic_colors").get(topic.get("id").toString()).toString();
-                    addNodeToGraph(graph, topic, color, false);
-                }
-            }
-//            
-//            if(!graphInfo.getObject().isNull("topics")) {
-//                for(Object _topic: graphInfo.getObject().getJSONArray("topics")) {
-//                    JSONObject topic = (JSONObject) _topic;
-//                    String color = graphInfo.getObject().getJSONObject("topic_colors").get(topic.get("id").toString()).toString();
-//                    addNodeToGraph(graph, topic, color, false);
-//                }
-//            }
-        }
-        /** Lưu danh sách thông tin các node hiển thị trên màn hình */
-//        graphInfo.setObject(jsonObj);
         System.out.println("graphInfo: " + graphInfo.getObject());
     }
     
@@ -457,35 +410,7 @@ public class GraphUtils {
             Logger.getLogger(MainMenu.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        if(!graphInfo.getObject().isNull("years")) {  
-            Random random;
-            String colorCode;          
-            Object[] yearKeys = invertUsingFor(graphInfo.getObject().getJSONObject("years").keySet().toArray());
-            int index = 0;
-//Object[] years = invertUsingFor(graphInfo.getObject().getJSONObject("years").keySet().toArray());
-//                    int index = 0;
-//                    for(Object _year : years) {
-            for(Object yearKey: yearKeys) {
-                String year = yearKey.toString();
-                /** In node với màu ngẫu nhiên */
-                random = new Random();
-                colorCode = String.format("#%06x", random.nextInt(256*256*256));
-                int _length = graphInfo.getObject().getJSONObject("years").getJSONArray(year).length();
-                for(int i = _length - 1; i >= 0; i--) {
-//                for(Object node: jsonObj.getJSONObject("years").getJSONArray(year)) {
-//                    String year = _year.toString();
-                    String nodeId = (String) graphInfo.getObject().getJSONObject("years").getJSONArray(year).getString(i);
-                    float x = (float)Math.random() * ((20f * (index + 1)) - (20f * index)) + 20f * index;
-                    float y = (float)Math.random() * (50f - 0.0f) + 0.0f;
-                    graph.getNode(nodeId).addAttribute("layout.frozen");
-                    graph.getNode(nodeId).setAttribute("xyz", x, y, 0);
-//                    graph.getNode(nodeId).addAttribute("x", x);
-//                    graph.getNode(nodeId).addAttribute("y", y);
-                    graph.getNode(nodeId).setAttribute("ui.style", "fill-color: " + colorCode + ";");
-                }
-                index ++;
-            }
-        }
+        
         
     }
     
@@ -560,6 +485,45 @@ public class GraphUtils {
     }
     
     public static void showGraphOnPanel(Graph graph, StorageObject graphInfo, JPanel panel, InfiniteProgressPanel glassPane) {
+        
+        if(!graphInfo.getObject().isNull("papers_having_topics")) {
+
+            /** 
+             *  Với mỗi node Paper trong graph,
+             *  thêm mảng bao gồm các proportion vào attribute "ui.pie-values".
+             */
+            for(Object _paper: graphInfo.getObject().getJSONArray("papers_having_topics")) {
+                JSONObject paper = (JSONObject) _paper;
+                ArrayList<String> proportion = new ArrayList<>();
+                ArrayList<String> colors = new ArrayList<>();
+                String paperId = paper.get("id").toString();
+                for(Object _rls: graphInfo.getObject().getJSONArray("related_to")) {
+                    JSONObject rls = (JSONObject) _rls;
+                    rls.put("color", graphInfo.getObject().getJSONObject("topic_colors").get(rls.getString("topic")));
+
+                    if(rls.getString("paper").equals(paperId)) {
+                        proportion.add(rls.getString("proportion"));
+                        colors.add(rls.getString("color"));
+                    }
+                }
+
+                /** Màu trắng là dành cho % còn lại trong biểu đồ tròn. */
+                colors.add("#cccccc"); 
+
+                graph.getNode(paperId).addAttribute("ui.style", "fill-color: " + GraphUtils.printString(colors.toArray(new String[colors.size()]), ",") + "; shape: pie-chart;");
+                graph.getNode(paperId).addAttribute("ui.pie-values", GraphUtils.printStringForDouble(proportion.toArray(new String[proportion.size()]), ","));
+                    
+            }
+            
+            if(!graphInfo.getObject().isNull("topics")) {
+                for(Object _topic: graphInfo.getObject().getJSONArray("topics")) {
+                    JSONObject topic = (JSONObject) _topic;
+                    String color = graphInfo.getObject().getJSONObject("topic_colors").get(topic.get("id").toString()).toString();
+                    addNodeToGraph(graph, topic, color, false);
+                }
+            }
+        }
+        
         //Tạo View Panel để chứa Graph
         Viewer viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
         viewer.enableAutoLayout(); // cho graph chuyển động       
@@ -583,19 +547,49 @@ public class GraphUtils {
         // Xử lí sự kiện về Mouse của View Panel
         ViewerPipe fromViewer = viewer.newViewerPipe();
         fromViewer.addSink(graph);
-        fromViewer.addViewerListener(new MouseHandler(graph, viewPanel, fromViewer, graphInfo, panel, glassPane));
+        fromViewer.addViewerListener(new MouseHandler(graph, viewPanel, fromViewer, graphInfo, panel, glassPane, "Graph"));
     }
     
     public static void showTimeLineOnPanel(Graph graph, StorageObject graphInfo, JPanel panel, InfiniteProgressPanel glassPane) {
+        
+        if(!graphInfo.getObject().isNull("years")) {  
+            Random random;
+            String colorCode;          
+            Object[] yearKeys = invertUsingFor(graphInfo.getObject().getJSONObject("years").keySet().toArray());
+            int index = 0;
+            int numOfYears = graphInfo.getObject().getJSONObject("years").length();
+            float width = panel.getWidth() / numOfYears;
+            for(Object yearKey: yearKeys) {
+                String year = yearKey.toString();
+                /** In node với màu ngẫu nhiên */
+                random = new Random();
+                colorCode = String.format("#%06x", random.nextInt(256*256*256));
+                int _length = graphInfo.getObject().getJSONObject("years").getJSONArray(year).length();
+                for(int i = _length - 1; i >= 0; i--) {
+//                for(Object node: jsonObj.getJSONObject("years").getJSONArray(year)) {
+//                    String year = _year.toString();
+                    String nodeId = (String) graphInfo.getObject().getJSONObject("years").getJSONArray(year).getString(i);
+                    float x = (float)Math.random() * ((width * (index + 1)) - (width * index)) + width * index;
+                    float y = (float)Math.random() * (panel.getHeight() - 0.0f) + 0.0f;
+                    graph.getNode(nodeId).addAttribute("layout.frozen");
+                    graph.getNode(nodeId).setAttribute("xyz", x, y, 0);
+//                    graph.getNode(nodeId).addAttribute("x", x);
+//                    graph.getNode(nodeId).addAttribute("y", y);
+                    graph.getNode(nodeId).setAttribute("ui.style", "fill-color: " + colorCode + ";");
+                }
+                index ++;
+            }
+        }
+        
         //Tạo View Panel để chứa Graph
         Viewer viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
 //        Viewer viewer = graph.display();
         viewer.disableAutoLayout();
         
         DefaultView view = (DefaultView) viewer.addDefaultView(false);
-//        view.resizeFrame(panel.getWidth(), panel.getHeight());
-        view.getCamera().getViewCenter();  
-        view.getCamera().setViewPercent(1.0);
+        view.resizeFrame(panel.getWidth(), panel.getHeight());
+//        view.getCamera().getViewCenter();  
+//        view.getCamera().setViewPercent(1.0);
 //        double zoom = view.getCamera().getViewPercent();
 //        System.out.println("zoomzoomzoom: " + zoom);
         
@@ -610,11 +604,12 @@ public class GraphUtils {
         // Xử lí sự kiện về Mouse của View Panel
         ViewerPipe fromViewer = viewer.newViewerPipe();
         fromViewer.addSink(graph);
-        fromViewer.addViewerListener(new MouseHandler(graph, view, fromViewer, graphInfo, panel, glassPane));
+        fromViewer.addViewerListener(new MouseHandler(graph, view, fromViewer, graphInfo, panel, glassPane, "Timeline"));
 
     }
     
     public static void columnBackgroundRender(Graph graph, StorageObject graphInfo, DefaultView view) {
+        
         view.setBackLayerRenderer(new LayerRenderer() {
             @Override
             public void render(Graphics2D graphics2D, GraphicGraph graphicGraph, double v, int i, int i1, double v1, double v2, double v3, double v4) {
@@ -624,14 +619,9 @@ public class GraphUtils {
                     Object[] years = invertUsingFor(graphInfo.getObject().getJSONObject("years").keySet().toArray());
                     int numOfYears = graphInfo.getObject().getJSONObject("years").length();
                     float width_of_column = view.getWidth() / numOfYears;
-                    if(width_of_column < 200) {
-                        width_of_column = 200;
-                        view.resizeFrame(numOfYears * 200, view.getHeight());
-                    }
                     int index = 0;
                     for(Object _year : years) {
-                    String year = _year.toString();
-                    int _length = graphInfo.getObject().getJSONObject("years").getJSONArray(year).length();
+                        String year = _year.toString();
                         float startX = width_of_column * (index + 1);
                         float startY = 0;
                         float endX = startX;
@@ -724,7 +714,7 @@ public class GraphUtils {
                 JSONArray temp = graphInfo.getObject().getJSONArray("hidden_nodes");
                 for(int i = 0; i < temp.length(); i ++) {
                     Node thisNode = graph.getNode(((JSONObject) temp.getJSONObject(i)).get("id").toString());
-                    if(graph.getEdge(nodeId + "-" + thisNode.getId()) != null || graph.getEdge(thisNode.getId() + "-" + nodeId) != null) {
+                    if(graph.getEdge(nodeId + "_" + thisNode.getId()) != null || graph.getEdge(thisNode.getId() + "_" + nodeId) != null) {
                         makeNodeVisible(graph, (JSONObject) temp.getJSONObject(i), graphInfo);
                         i --;
                     }
@@ -750,7 +740,7 @@ public class GraphUtils {
                 for(Object hiddenObject: graphInfo.getObject().getJSONArray("hidden_nodes")) {
                     Node hiddenNode = graph.getNode(((JSONObject) hiddenObject).get("id").toString());
                     
-                    if(graph.getEdge(nodeId + "-" + hiddenNode.getId()) != null) {
+                    if(graph.getEdge(nodeId + "_" + hiddenNode.getId()) != null) {
                         hiddenNode.removeAttribute("ui.hide");
                         for (Edge edgeOfHiddenNode: hiddenNode.getEachEdge()) {
                             if (edgeOfHiddenNode.hasAttribute("ui.hide")) {
@@ -774,7 +764,7 @@ public class GraphUtils {
                 for(Object hiddenObject: graphInfo.getObject().getJSONArray("hidden_nodes")) {
                     Node hiddenNode = (Node) graph.getNode(((JSONObject) hiddenObject).get("id").toString());
                     
-                    if(graph.getEdge(nodeId + "-" + hiddenNode.getId()) != null) {
+                    if(graph.getEdge(nodeId + "_" + hiddenNode.getId()) != null) {
                         hiddenNode.setAttribute("ui.hide");
                         for (Edge edgeOfHiddenNode: hiddenNode.getEachEdge()) {
                             if (!edgeOfHiddenNode.hasAttribute("ui.hide")) {

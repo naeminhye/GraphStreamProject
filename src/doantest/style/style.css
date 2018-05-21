@@ -6,9 +6,9 @@ node:clicked {
     text-background-color: #e6e6e6e6; 
     text-color: #222;
     text-offset: 5px, 0px;
-    stroke-mode: plain;
-    stroke-width: 1px;
-    stroke-color: #555;
+    /*stroke-mode: plain;*/
+    /*stroke-width: 1px;*/
+    /*stroke-color: #555;*/
 } 
 node {
     size: 10px; 
