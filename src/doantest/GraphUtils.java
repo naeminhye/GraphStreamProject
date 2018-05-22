@@ -199,10 +199,10 @@ public class GraphUtils {
         if(graph.getNode(NodeId) == null) {
             graph.addNode(NodeId);        
 
+            graph.getNode(NodeId).addAttribute("ui.label", "Node ID: " + NodeId);
             graph.getNode(NodeId).setAttribute("xyz", random.nextInt(5), random.nextInt(5), 0);
             switch(NodeLabel) {
                 case "Paper":
-                    //graph.getNode(NodeId).addAttribute("ui.style", " fill-mode: image-scaled; shadow-mode: none; shape: box; fill-image: url('" + workingDir + "/src/images/icon-news-32.png');");
                     graph.getNode(NodeId).addAttribute("ui.style", "shape: circle; fill-color: #cccccc; text-mode: hidden;");
                     break;
                 case "Topic":
@@ -211,22 +211,22 @@ public class GraphUtils {
                 default:
                     break;
             }
-//            graph.getNode(NodeId).addAttribute("ui.label", "ID: " + NodeId);
-//            graph.getNode(NodeId).addAttribute("ui.label", "Label: " + NodeLabel + ", ID: " + NodeId);
             if(isHidden) {
 //                graph.getNode(NodeId).setAttribute("layout.frozen");
-                graph.getNode(NodeId).setAttribute("ui.hide");
+                graph.getNode(NodeId).addAttribute("ui.hide");
             }
         }
         /** Nếu node đã có trong graph */
         else {
-            graph.getNode(NodeId).addAttribute("ui.label", "Node ID: " + NodeId);
+            if(!graph.getNode(NodeId).hasAttribute("ui.label")) {
+                graph.getNode(NodeId).addAttribute("ui.label", "Node ID: " + NodeId);
+            }
             switch(NodeLabel) {
                 case "Paper":
-                    graph.getNode(NodeId).addAttribute("ui.style", "shape: circle; fill-color: #cccccc; text-mode: hidden;");
+                    graph.getNode(NodeId).setAttribute("ui.style", "shape: circle; fill-color: #cccccc; text-mode: hidden;");
                     break;
                 case "Topic":
-                    graph.getNode(NodeId).addAttribute("ui.style", "fill-color: " + color + "; shape: box; text-mode: hidden;");
+                    graph.getNode(NodeId).setAttribute("ui.style", "fill-color: " + color + "; shape: box; text-mode: hidden;");
                     break;
                 default:
                     break;
@@ -240,14 +240,14 @@ public class GraphUtils {
             graph.addEdge(edgeName, SourceNodeId, TargetNodeId, true);
             switch(type) {
                 case RELATED_TO:
-                    graph.getEdge(edgeName).addAttribute("ui.style", "fill-color: " + color + ";");
+                    graph.getEdge(edgeName).setAttribute("ui.style", "fill-color: " + color + ";");
                     graph.getEdge(edgeName).setAttribute("ui.label", "Proportion: " + String.format("%.2f", (Float.parseFloat(sprite) * 100)) + "%");
                     break;
                 case CITES:
-                    graph.getEdge(edgeName).addAttribute("ui.style", "fill-color: " + color + " ;");
+                    graph.getEdge(edgeName).setAttribute("ui.style", "fill-color: " + color + " ;");
                     break;
                 default:
-                    graph.getEdge(edgeName).addAttribute("ui.style", "fill-color: " + color + ";");
+                    graph.getEdge(edgeName).setAttribute("ui.style", "fill-color: " + color + ";");
                     break;
             }
             if(isHidden) {
@@ -296,10 +296,12 @@ public class GraphUtils {
             while (rs.next()) {                
                 /** In node với màu ngẫu nhiên */
                 random = new Random();
-                // Import style từ file css thông qua lớp StyleImporter
-                String style = getStyle("style.css");
-                // Add style vào graph
-                graph.addAttribute("ui.stylesheet", style);
+                if(graph.getNodeCount() == 0) {
+                    // Import style từ file css thông qua lớp StyleImporter
+                    String style = getStyle("style.css");
+                    // Add style vào graph
+                    graph.addAttribute("ui.stylesheet", style);
+                }
                 
                 JSONObject p1 = new JSONObject(rs.getString("p1"));
                 JSONObject p2 = new JSONObject(rs.getString("p2"));
@@ -364,6 +366,9 @@ public class GraphUtils {
      * @param graphInfo 
      */
     private static void runTimelineQuery(String query, Graph graph, StorageObject graphInfo) {
+        /** TODO: Kiểm tra nếu Topic có màu rồi thì lấy màu có sẳn */
+        Random random;
+        String colorCode;
            
         ResultSet rs;
         PreparedStatement stmt = null;
@@ -374,15 +379,23 @@ public class GraphUtils {
             stmt = con.prepareStatement(query);
             rs = stmt.executeQuery();
             
-            while (rs.next()) {                
+            while (rs.next()) {             
+                /** In node với màu ngẫu nhiên */
+                random = new Random();     
                 // Import style từ file css thông qua lớp StyleImporter
                 String style = getStyle("style.css");
                 // Add style vào graph
                 graph.addAttribute("ui.stylesheet", style);
                 
                 JSONObject p = new JSONObject(rs.getString("p"));  
+                JSONObject t = new JSONObject(rs.getString("t"));
+                String prop = String.valueOf(rs.getDouble("prop"));
 //                JSONObject p1 = new JSONObject(rs.getString("p1"));
                 String year = String.valueOf(rs.getInt("year"));
+                JSONObject related_to = new JSONObject()
+                                            .put("paper", p.get("id").toString())
+                                            .put("topic", t.get("id").toString())
+                                            .put("proportion", prop);
 //                JSONObject cites = new JSONObject()
 //                                            .put("sourcePaper", p.get("id").toString())
 //                                            .put("targetPaper", p1.get("id").toString());
@@ -404,17 +417,35 @@ public class GraphUtils {
                 
                 graphInfo.putKeyValueToArray("years", year, p.get("id").toString(), false);
                 
+                if(graphInfo.hasPutObjectToArray("topics", t)) {
+                    colorCode = graphInfo.getObject().getJSONObject("topic_colors").get(t.get("id").toString()).toString();
+                }
+                else {
+                    colorCode = String.format("#%06x", random.nextInt(256*256*256));
+                }
+                
+                graphInfo.putObjectToArray("topics", t, false);
+                addNodeToGraph(graph, t, colorCode, true);
+                graphInfo.putKeyValueToObject("topic_colors", t.get("id").toString(), colorCode, false);
+
+                if(!graphInfo.hasPutObjectToArray("shown_nodes", t)) {
+                    graphInfo.putObjectToArray("hidden_nodes", t, false);
+                }
+                
+                related_to.put("color", colorCode);
+                graphInfo.putObjectToArray("related_to", related_to, false);
+                addEdgeToGraph(graph, p.get("id").toString(), t.get("id").toString(), TypeOfRelationship.RELATED_TO, "black", prop, true);
+                
+                
             }
         } 
         catch (SQLException ex) {
             Logger.getLogger(MainMenu.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        
-        
     }
     
-    public static boolean reset(JFrame frame, Graph graph, StorageObject graphInfo/*JSONArray shownNodes*/) {
+    public static boolean reset(JFrame frame, Graph graph, StorageObject graphInfo) {
         if(!graphInfo.getObject().isNull("shown_nodes"))
         {
             if(graphInfo.getObject().getJSONArray("shown_nodes").length() > 0) {
@@ -469,9 +500,9 @@ public class GraphUtils {
     public static void setTimeline(int startYear, int endYear, String topic, Graph graph, StorageObject graphInfo, int limit) {
         String query;
         if(topic == "All") {
-            query = "MATCH (p: Paper) WHERE p.Year = " + startYear + " RETURN p, p.Year AS year LIMIT " + limit;
+            query = "MATCH (p: Paper)-[r:RELATED_TO]->(t: Topic) WHERE p.Year = " + startYear + " RETURN t, p, p.Year AS year, r.Proportion AS prop LIMIT " + limit;
             for(int year = startYear + 1; year <= endYear; year ++) {
-                query += " UNION MATCH (p: Paper) WHERE p.Year = " + year + " RETURN p, p.Year AS year LIMIT " + limit;
+                query += " UNION MATCH (p: Paper)-[r:RELATED_TO]->(t: Topic) WHERE p.Year = " + year + " RETURN t, p, p.Year AS year, r.Proportion AS prop LIMIT " + limit;
             }
         }
         else {
@@ -524,7 +555,7 @@ public class GraphUtils {
             }
         }
         
-        //Tạo View Panel để chứa Graph
+        /** Tạo View Panel để chứa Graph    */
         Viewer viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
         viewer.enableAutoLayout(); // cho graph chuyển động       
         ViewPanel viewPanel = viewer.addDefaultView(false);    
@@ -566,8 +597,7 @@ public class GraphUtils {
                 colorCode = String.format("#%06x", random.nextInt(256*256*256));
                 int _length = graphInfo.getObject().getJSONObject("years").getJSONArray(year).length();
                 for(int i = _length - 1; i >= 0; i--) {
-//                for(Object node: jsonObj.getJSONObject("years").getJSONArray(year)) {
-//                    String year = _year.toString();
+                    System.out.println("panel.getHeight(): " + panel.getHeight());
                     String nodeId = (String) graphInfo.getObject().getJSONObject("years").getJSONArray(year).getString(i);
                     float x = (float)Math.random() * ((width * (index + 1)) - (width * index)) + width * index;
                     float y = (float)Math.random() * (panel.getHeight() - 0.0f) + 0.0f;
@@ -581,27 +611,23 @@ public class GraphUtils {
             }
         }
         
-        //Tạo View Panel để chứa Graph
+        /** Tạo View Panel để chứa Graph */
         Viewer viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
-//        Viewer viewer = graph.display();
-        viewer.disableAutoLayout();
+//        viewer.enableAutoLayout(); // cho graph chuyển động       
+//        viewer.disableAutoLayout();
         
         DefaultView view = (DefaultView) viewer.addDefaultView(false);
         view.resizeFrame(panel.getWidth(), panel.getHeight());
-//        view.getCamera().getViewCenter();  
-//        view.getCamera().setViewPercent(1.0);
-//        double zoom = view.getCamera().getViewPercent();
-//        System.out.println("zoomzoomzoom: " + zoom);
         
         columnBackgroundRender(graph, graphInfo, view);
         
         panel.removeAll();
         panel.setLayout(new GridLayout());
-        //Panel chứa graph
+        /** Panel chứa graph */
         panel.add(view);
         panel.revalidate();
         
-        // Xử lí sự kiện về Mouse của View Panel
+        /** Xử lí sự kiện về Mouse của View Panel */
         ViewerPipe fromViewer = viewer.newViewerPipe();
         fromViewer.addSink(graph);
         fromViewer.addViewerListener(new MouseHandler(graph, view, fromViewer, graphInfo, panel, glassPane, "Timeline"));
@@ -616,6 +642,7 @@ public class GraphUtils {
                 graphics2D.setColor(Color.BLACK);
                 if(!graphInfo.getObject().isNull("years")) {
                     
+                    System.out.println("view.getHeight(): " + view.getHeight());
                     Object[] years = invertUsingFor(graphInfo.getObject().getJSONObject("years").keySet().toArray());
                     int numOfYears = graphInfo.getObject().getJSONObject("years").length();
                     float width_of_column = view.getWidth() / numOfYears;
