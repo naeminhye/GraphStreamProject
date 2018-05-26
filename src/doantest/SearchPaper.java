@@ -23,6 +23,7 @@ import org.graphstream.stream.SinkAdapter;
 import org.graphstream.ui.view.Viewer;
 
 import java.util.Iterator;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -55,8 +56,23 @@ public class SearchPaper extends javax.swing.JFrame {
         
         button1.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                if(GraphUtils.reset(thisFrame, graph, graphInfo))
-                    loading();
+                
+                if((int)endYear.getValue() - (int)startYear.getValue() <= 4) {
+                    if(GraphUtils.reset(thisFrame, graph, graphInfo))
+                        loading();
+                }
+                else {
+                    
+                    Object[] options = {"OK"};
+                    int n = JOptionPane.showOptionDialog(thisFrame,
+                        "You just can search within 5 years.","Note",
+                        JOptionPane.PLAIN_MESSAGE,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        options,
+                        options[0]);
+                }
+                
             }
         });
     }
@@ -217,7 +233,6 @@ public class SearchPaper extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
    
     private void display() {
-        
         switch(displaySeletion.getSelectedItem().toString()) {
             case "Graph":
                 GraphUtils.setGraph((int)startYear.getValue(), (int)endYear.getValue(), (String)topicSelection.getSelectedItem(), graph, graphInfo, (int)limit.getValue());
@@ -230,7 +245,6 @@ public class SearchPaper extends javax.swing.JFrame {
             default:
                 break;
         }
-
     }
     
     /**
@@ -266,110 +280,7 @@ public class SearchPaper extends javax.swing.JFrame {
                 new SearchPaper().setVisible(true);
             }
         });
-        
     }
-    
-//    public static void main(String[] args) {
-//        System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
-//        String stylesheet = "" +
-//                "node {" +
-//                "   text-background-mode: rounded-box;" +
-//                "   text-background-color: gray; " +
-//                "   text-color: #222;" +
-//                "}" +
-//                "node.plus {" +
-//                "   text-background-color: #F33; " +
-//                "   text-color: #DDD;" +
-//                "}";
-//        Graph g = new SingleGraph("collapse");
-//        g.setAttribute("stylesheet", stylesheet);
-//
-//        Viewer viewer = g.display();
-//
-//        //Layout l = Layouts.newLayoutAlgorithm();
-//        //l.setStabilizationLimit(0);
-//        //viewer.enableAutoLayout(l);
-//
-//        BaseGenerator gen  = new LobsterGenerator();
-//        gen.setDirectedEdges(true, false);
-//        gen.addNodeLabels(true);
-//        gen.addSink(g);
-//
-//        gen.begin();
-//        for (int i = 0; i < 50; i++) {
-//            gen.nextEvents();
-//        }
-//        gen.end();
-//
-//        ProxyPipe fromViewer = viewer.newViewerPipe();
-//        fromViewer.addSink(g);
-//
-//        fromViewer.addSink(new SinkAdapter(){
-//            @Override
-//            public void nodeAttributeAdded(String sourceId, long timeId, String nodeId, String attribute, Object value) {
-//                if(attribute.equals("ui.clicked")){
-//                    toggleNode(nodeId);
-//                }
-//            }
-//
-//            @Override
-//            public void nodeAttributeChanged(String sourceId, long timeId, String nodeId, String attribute, Object oldValue, Object newValue) {
-//                if(attribute.equals("ui.clicked")){
-//                    toggleNode(nodeId);
-//                }
-//            }
-//            void toggleNode(String id){
-//                Node n  = g.getNode(id);
-//                Object[] pos = n.getAttribute("xyz");
-//                Iterator<Node> it = n.getBreadthFirstIterator(true);
-//                if(n.hasAttribute("collapsed")){
-//                    n.removeAttribute("collapsed");
-//                    while(it.hasNext()){
-//                        Node m  =  it.next();
-//
-//                        for(Edge e : m.getLeavingEdgeSet()) {
-//                            e.removeAttribute("ui.hide");
-//                        }
-//                        m.removeAttribute("layout.frozen");
-//                        m.setAttribute("x",((double)pos[0])+Math.random()*0.0001);
-//                        m.setAttribute("y",((double)pos[1])+Math.random()*0.0001);
-//
-//                        m.removeAttribute("ui.hide");
-//
-//                    }
-//                    n.removeAttribute("ui.class");
-//
-//                } else {
-//                    n.setAttribute("ui.class", "plus");
-//                    n.setAttribute("collapsed");
-//
-//                    while(it.hasNext()){
-//                        Node m  =  it.next();
-//
-//                        for(Edge e : m.getLeavingEdgeSet()) {
-//                            e.setAttribute("ui.hide");
-//                        }
-//                        if(n != m) {
-//                            m.setAttribute("layout.frozen");
-//                            m.setAttribute("x", ((double) pos[0]) + Math.random() * 0.0001);
-//                            m.setAttribute("y", ((double) pos[1]) + Math.random() * 0.0001);
-//
-//                            m.setAttribute("ui.hide");
-//                        }
-//
-//                    }
-//                }
-//            }
-//        });
-//
-//        while(true){
-//            try {
-//                fromViewer.blockingPump();
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private java.awt.Button button1;
     private javax.swing.JPanel controlPanel;

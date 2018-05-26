@@ -26,6 +26,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.JSeparator;
+import org.graphstream.algorithm.Toolkit;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Node;
 import org.graphstream.ui.graphicGraph.GraphicGraph;
@@ -390,30 +391,39 @@ public class GraphUtils {
                 JSONObject p = new JSONObject(rs.getString("p"));  
                 JSONObject t = new JSONObject(rs.getString("t"));
                 String prop = String.valueOf(rs.getDouble("prop"));
-//                JSONObject p1 = new JSONObject(rs.getString("p1"));
+                JSONObject p1 = new JSONObject(rs.getString("p1"));
                 String year = String.valueOf(rs.getInt("year"));
                 JSONObject related_to = new JSONObject()
                                             .put("paper", p.get("id").toString())
                                             .put("topic", t.get("id").toString())
                                             .put("proportion", prop);
-//                JSONObject cites = new JSONObject()
-//                                            .put("sourcePaper", p.get("id").toString())
-//                                            .put("targetPaper", p1.get("id").toString());
+                JSONObject cites = new JSONObject()
+                                            .put("sourcePaper", p.get("id").toString())
+                                            .put("targetPaper", p1.get("id").toString());
                 
-//                graphInfo.putObjectToArray("papers_having_topics", p, false);
-//                if(graphInfo.hasPutObjectToArray("hidden_nodes", p)) {
-//                    makeNodeVisible(graph, p, graphInfo);
-//                }
+                graphInfo.putObjectToArray("papers_having_topics", p, false);
+                if(graphInfo.hasPutObjectToArray("hidden_nodes", p)) {
+                    makeNodeVisible(graph, p, graphInfo);
+                }
                 graphInfo.putObjectToArray("shown_nodes", p, false);
                 addNodeToGraph(graph, p, "", false);
+                if(p1.get("Year").toString().equals(year)) {
+                    graphInfo.putObjectToArray("shown_nodes", p1, false);
+                    addNodeToGraph(graph, p1, "", false);
+                    graphInfo.putObjectToArray("cites", cites, false);
+                    addEdgeToGraph(graph, p.get("id").toString(), p1.get("id").toString(), TypeOfRelationship.CITES, "black", "", false);
                 
-//                if(!graphInfo.hasPutObjectToArray("shown_nodes", p1)) {
-//                    graphInfo.putObjectToArray("hidden_nodes", p1, false);
-//                }
-//                addNodeToGraph(graph, p1, "", true);
-//                graphInfo.putObjectToArray("cites", cites, false);
-//                
-//                addEdgeToGraph(graph, p.get("id").toString(), p1.get("id").toString(), TypeOfRelationship.CITES, "black", "", true);
+                }
+                else {
+                    if(!graphInfo.hasPutObjectToArray("shown_nodes", p1)) {
+                        graphInfo.putObjectToArray("hidden_nodes", p1, false);
+                        addNodeToGraph(graph, p1, "", true);
+                        graphInfo.putObjectToArray("cites", cites, false);
+                        addEdgeToGraph(graph, p.get("id").toString(), p1.get("id").toString(), TypeOfRelationship.CITES, "black", "", true);
+
+                    }
+                    
+                }
                 
                 graphInfo.putKeyValueToArray("years", year, p.get("id").toString(), false);
                 
@@ -500,15 +510,15 @@ public class GraphUtils {
     public static void setTimeline(int startYear, int endYear, String topic, Graph graph, StorageObject graphInfo, int limit) {
         String query;
         if(topic == "All") {
-            query = "MATCH (p: Paper)-[r:RELATED_TO]->(t: Topic) WHERE p.Year = " + startYear + " RETURN t, p, p.Year AS year, r.Proportion AS prop LIMIT " + limit;
+            query = "MATCH (p: Paper)-[r:RELATED_TO]->(t: Topic), (p)-[:CITES]->(p1:Paper) WHERE p.Year = " + startYear + " RETURN t, p, p1, p.Year AS year, r.Proportion AS prop ORDER BY p LIMIT " + limit;
             for(int year = startYear + 1; year <= endYear; year ++) {
-                query += " UNION MATCH (p: Paper)-[r:RELATED_TO]->(t: Topic) WHERE p.Year = " + year + " RETURN t, p, p.Year AS year, r.Proportion AS prop LIMIT " + limit;
+                query += " UNION MATCH (p: Paper)-[r:RELATED_TO]->(t: Topic), (p)-[:CITES]->(p1:Paper) WHERE p.Year = " + year + " RETURN t, p, p1, p.Year AS year, r.Proportion AS prop ORDER BY p LIMIT " + limit;
             }
         }
         else {
-            query = "MATCH (p: Paper)-[:RELATED_TO]->(t: Topic), (p)-[:CITES]->(p1: Paper) WHERE p.Year = " + startYear + " AND t.TopicId = " + topic + " RETURN p, p.Year AS year, p1 LIMIT " + limit;
+            query = "MATCH (p: Paper)-[:RELATED_TO]->(t: Topic), (p)-[:CITES]->(p1: Paper) WHERE p.Year = " + startYear + " AND t.TopicId = " + topic + " RETURN t, p, p.Year AS year, p1 ORDER BY p LIMIT " + limit;
             for(int year = startYear + 1; year <= endYear; year ++) {
-                query += " UNION MATCH (p: Paper)-[:RELATED_TO]->(t: Topic), (p)-[:CITES]->(p1: Paper) WHERE p.Year = " + year + " AND t.TopicId = " + topic + " RETURN p, p.Year AS year, p1 LIMIT " + limit;
+                query += " UNION MATCH (p: Paper)-[:RELATED_TO]->(t: Topic), (p)-[:CITES]->(p1: Paper) WHERE p.Year = " + year + " AND t.TopicId = " + topic + " RETURN t, p, p.Year AS year, p1 ORDER BY p LIMIT " + limit;
             }
         }
         runTimelineQuery(query, graph, graphInfo);
@@ -597,17 +607,64 @@ public class GraphUtils {
                 colorCode = String.format("#%06x", random.nextInt(256*256*256));
                 int _length = graphInfo.getObject().getJSONObject("years").getJSONArray(year).length();
                 for(int i = _length - 1; i >= 0; i--) {
-                    System.out.println("panel.getHeight(): " + panel.getHeight());
+//                    System.out.println("panel.getHeight(): " + panel.getHeight());
                     String nodeId = (String) graphInfo.getObject().getJSONObject("years").getJSONArray(year).getString(i);
                     float x = (float)Math.random() * ((width * (index + 1)) - (width * index)) + width * index;
                     float y = (float)Math.random() * (panel.getHeight() - 0.0f) + 0.0f;
-                    graph.getNode(nodeId).addAttribute("layout.frozen");
                     graph.getNode(nodeId).setAttribute("xyz", x, y, 0);
-//                    graph.getNode(nodeId).addAttribute("x", x);
-//                    graph.getNode(nodeId).addAttribute("y", y);
-                    graph.getNode(nodeId).setAttribute("ui.style", "fill-color: " + colorCode + ";");
+                    graph.getNode(nodeId).addAttribute("layout.frozen");
+//                    graph.getNode(nodeId).setAttribute("ui.style", "stroke-color: " + colorCode + "; stroke-width: 2");
                 }
                 index ++;
+            }
+        }
+        if(!graphInfo.getObject().isNull("papers_having_topics")) {
+
+            /** 
+             *  Với mỗi node Paper trong graph,
+             *  thêm mảng bao gồm các proportion vào attribute "ui.pie-values".
+             */
+            for(Object _paper: graphInfo.getObject().getJSONArray("papers_having_topics")) {
+                JSONObject paper = (JSONObject) _paper;
+                ArrayList<String> proportion = new ArrayList<>();
+                ArrayList<String> colors = new ArrayList<>();
+                String paperId = paper.get("id").toString();
+                for(Object _rls: graphInfo.getObject().getJSONArray("related_to")) {
+                    JSONObject rls = (JSONObject) _rls;
+                    rls.put("color", graphInfo.getObject().getJSONObject("topic_colors").get(rls.getString("topic")));
+
+                    if(rls.getString("paper").equals(paperId)) {
+                        proportion.add(rls.getString("proportion"));
+                        colors.add(rls.getString("color"));
+                    }
+                }
+
+                /** Màu trắng là dành cho % còn lại trong biểu đồ tròn. */
+                colors.add("#cccccc"); 
+
+                graph.getNode(paperId).setAttribute("ui.style", "fill-color: " + GraphUtils.printString(colors.toArray(new String[colors.size()]), ",") + "; shape: pie-chart;");
+                graph.getNode(paperId).setAttribute("ui.pie-values", GraphUtils.printStringForDouble(proportion.toArray(new String[proportion.size()]), ","));
+                    
+            }
+        }
+        
+        if(!graphInfo.getObject().isNull("hidden_nodes")) {  
+//            Random random;
+            for(Object _node: graphInfo.getObject().getJSONArray("hidden_nodes")) {
+                JSONObject node = (JSONObject) _node;
+                setPositionToNode(graph.getNode(node.get("id").toString()));
+//                float x = (float)Math.random() * (panel.getWidth() - 0.0f) + 0.0f;
+//                float y = (float)Math.random() * (panel.getHeight() - 0.0f) + 0.0f;
+//                graph.getNode(node.get("id").toString()).setAttribute("xyz", x, y, 0);
+//                graph.getNode(node.get("id").toString()).addAttribute("layout.frozen");
+            }
+        }
+            
+        if(!graphInfo.getObject().isNull("topics")) {
+            for(Object _topic: graphInfo.getObject().getJSONArray("topics")) {
+                JSONObject topic = (JSONObject) _topic;
+                String color = graphInfo.getObject().getJSONObject("topic_colors").get(topic.get("id").toString()).toString();
+                addNodeToGraph(graph, topic, color, false);
             }
         }
         
@@ -642,7 +699,7 @@ public class GraphUtils {
                 graphics2D.setColor(Color.BLACK);
                 if(!graphInfo.getObject().isNull("years")) {
                     
-                    System.out.println("view.getHeight(): " + view.getHeight());
+//                    System.out.println("view.getHeight(): " + view.getHeight());
                     Object[] years = invertUsingFor(graphInfo.getObject().getJSONObject("years").keySet().toArray());
                     int numOfYears = graphInfo.getObject().getJSONObject("years").length();
                     float width_of_column = view.getWidth() / numOfYears;
@@ -815,5 +872,61 @@ public class GraphUtils {
             graphInfo.putObjectToArray("shown_nodes", nodeInfo, false); 
             graphInfo.removeObjectFromArray("hidden_nodes", nodeInfo);
         }
+    }
+    
+    /**
+     * Assign the coordinates to the node in the graph.
+     * @param node
+     */
+    public static void setPositionToNode(Node node) {
+        double max = 100.0;
+        double min = -100.0;
+        double randomDoubleX = 0.0; 
+        double randomDoubleY = 0.0; 
+        do {
+            randomDoubleX = (Math.random() * ((max - min) + 1)) + min;
+            randomDoubleY = (Math.random() * ((max - min) + 1)) + min;
+        }
+        while(Math.hypot(randomDoubleX, randomDoubleY) < 50.0);
+        double spacingX = randomDoubleX;
+        double spacingY = randomDoubleY;
+        
+        Node parent = findParentWithHighestLevel(node);
+        if(parent == null)
+            return;
+
+        double[] positionOfParent = Toolkit.nodePosition(parent);
+        double x = positionOfParent[0] + spacingX;
+        double y = positionOfParent[1] + spacingY;
+        node.setAttribute("xyz", x, y, 0.0);
+    }
+
+    /**
+     * Determine the parent of a node that has the highest level set.
+     * @param node
+     * @return parent node that has the highest level assigned
+     */
+    static Node findParentWithHighestLevel(Node node) {
+        int inDegreeOfNode = node.getInDegree();
+        Node parent = null;
+
+        Iterator<Edge> nodeIterator = node.getEachEnteringEdge().iterator();
+        if(inDegreeOfNode == 1)
+            parent = nodeIterator.next().getOpposite(node);
+        else if (inDegreeOfNode > 1) {
+            parent = nodeIterator.next().getOpposite(node);
+            while (nodeIterator.hasNext()) {
+                Node temp = nodeIterator.next().getOpposite(node);
+                if (temp.hasAttribute("layoutLayer") && (int) temp.getAttribute("layoutLayer") > (int) parent.getAttribute("layoutLayer")) {
+                        parent = temp;
+                }
+            }
+        }
+
+        if(parent != null && !parent.hasAttribute("layouted")) {
+            parent.setAttribute("layouted", "true");
+            setPositionToNode(parent);
+        }
+        return parent;
     }
 }
