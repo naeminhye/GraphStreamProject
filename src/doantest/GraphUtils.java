@@ -525,6 +525,27 @@ public class GraphUtils {
         System.out.println("[QUERY]: " + query);
     }
     
+    public static void setPaperFlow(String paperId, String topicId, int count, int limit, Graph graph, StorageObject graphInfo) {
+        String query = "MATCH (p0:Paper)-[:RELATED_TO]->(t:Topic), ";
+        for(int i = 1; i < count; i++) {
+                query += "(p" + i + ":Paper)-[:RELATED_TO]->(t), (p" + (i - 1) + ")-[:CITES]->(p" + i + ")";
+                if(i != (count - 1)){
+                        query += ", ";
+                }
+        }
+        query += "WHERE p0.PaperId = " + paperId + " AND t.TopicId = " + topicId + " RETURN ";
+        for(int j = 0; j < count; j++) {
+                query += "p" + j + ", ";
+                if(j != (count - 1)){
+                        query += ", ";
+                }
+        }
+        query += "LIMIT limit";
+        //runPaperFlowQuery(query, graph, graphInfo);
+
+        System.out.println("[QUERY]: " + query);
+    }
+    
     public static void showGraphOnPanel(Graph graph, StorageObject graphInfo, JPanel panel, InfiniteProgressPanel glassPane) {
         
         if(!graphInfo.getObject().isNull("papers_having_topics")) {
