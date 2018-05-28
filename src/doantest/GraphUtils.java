@@ -242,7 +242,9 @@ public class GraphUtils {
             switch(type) {
                 case RELATED_TO:
                     graph.getEdge(edgeName).setAttribute("ui.style", "fill-color: " + color + ";");
-                    graph.getEdge(edgeName).setAttribute("ui.label", "Proportion: " + String.format("%.2f", (Float.parseFloat(sprite) * 100)) + "%");
+                    if(!sprite.equals("")) {
+                        graph.getEdge(edgeName).setAttribute("ui.label", "Proportion: " + String.format("%.2f", (Float.parseFloat(sprite) * 100)) + "%");
+                    }
                     break;
                 case CITES:
                     graph.getEdge(edgeName).setAttribute("ui.style", "fill-color: " + color + " ;");
@@ -367,7 +369,6 @@ public class GraphUtils {
      * @param graphInfo 
      */
     private static void runTimelineQuery(String query, Graph graph, StorageObject graphInfo) {
-        /** TODO: Kiểm tra nếu Topic có màu rồi thì lấy màu có sẳn */
         Random random;
         String colorCode;
            
@@ -446,13 +447,66 @@ public class GraphUtils {
                 graphInfo.putObjectToArray("related_to", related_to, false);
                 addEdgeToGraph(graph, p.get("id").toString(), t.get("id").toString(), TypeOfRelationship.RELATED_TO, "black", prop, true);
                 
-                
             }
         } 
         catch (SQLException ex) {
             Logger.getLogger(MainMenu.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+        System.out.println("graphInfo: " + graphInfo.getObject());
+    }
+    
+    /** 
+     * 
+     * @param query
+     * @param graph
+     * @param graphInfo 
+     */
+    private static void runPaperFlowQuery(String query, Graph graph, StorageObject graphInfo) {
+//        int colCount= rs.getMetaData().getColumnCount();
+        Random random;  
+        String colorCode;
+           
+        ResultSet rs;
+        PreparedStatement stmt = null;
+        // Kết nối
+        Connection con;
+        try {
+            con = DriverManager.getConnection(Constants.CONNECTION_URL, Constants.USERNAME, Constants.PASSWORD);
+            stmt = con.prepareStatement(query);
+            rs = stmt.executeQuery();
+            int colCount = rs.getMetaData().getColumnCount();
+            System.out.println("colCount: " + colCount);
+            while (rs.next()) {   
+                JSONObject t = new JSONObject(rs.getString("t"));
+                graphInfo.putObjectToArray("shown_nodes", t, false);
+                graphInfo.putObjectToArray("topics", t, false);
+                addNodeToGraph(graph, t, "purple", false);
+                for(int i = 0; i < colCount / 5; i++) {
+                    JSONObject p = new JSONObject(rs.getString("p" + i));
+                    graphInfo.putObjectToArray("shown_nodes", p, false);
+                    addNodeToGraph(graph, p, "", false);
+                    addEdgeToGraph(graph, p.get("id").toString(), t.get("id").toString(), TypeOfRelationship.RELATED_TO, "black", "", false);
+                
+                    if(i != colCount / 5 - 1) {
+                        String temp = "p" + (i + 1);
+                        JSONObject pNext = new JSONObject(rs.getString(temp));
+                        graphInfo.putObjectToArray("shown_nodes", pNext, false);
+                        addNodeToGraph(graph, pNext, "", false);
+                        JSONObject cites = new JSONObject()
+                                                .put("sourcePaper", p.get("id").toString())
+                                                .put("targetPaper", pNext.get("id").toString());
+                        graphInfo.putObjectToArray("cites", cites, false);
+                        addEdgeToGraph(graph, p.get("id").toString(), pNext.get("id").toString(), TypeOfRelationship.CITES, "black", "", false);
+                        addEdgeToGraph(graph, pNext.get("id").toString(), t.get("id").toString(), TypeOfRelationship.RELATED_TO, "black", "", false);
+
+                    }
+                }           
+            }
+        }
+        catch (SQLException ex) {
+            Logger.getLogger(MainMenu.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        System.out.println("graphInfo: " + graphInfo.getObject());
     }
     
     public static boolean reset(JFrame frame, Graph graph, StorageObject graphInfo) {
@@ -528,20 +582,20 @@ public class GraphUtils {
     public static void setPaperFlow(String paperId, String topicId, int count, int limit, Graph graph, StorageObject graphInfo) {
         String query = "MATCH (p0:Paper)-[:RELATED_TO]->(t:Topic), ";
         for(int i = 1; i < count; i++) {
-                query += "(p" + i + ":Paper)-[:RELATED_TO]->(t), (p" + (i - 1) + ")-[:CITES]->(p" + i + ")";
+                query += "(p" + i + ":Paper)-[:RELATED_TO]->(t), (p" + (i - 1) + ")-[:CITES]->(p" + i + ") ";
                 if(i != (count - 1)){
                         query += ", ";
                 }
         }
         query += "WHERE p0.PaperId = " + paperId + " AND t.TopicId = " + topicId + " RETURN ";
         for(int j = 0; j < count; j++) {
-                query += "p" + j + ", ";
+                query += "p" + j + " ";
                 if(j != (count - 1)){
                         query += ", ";
                 }
         }
-        query += "LIMIT limit";
-        //runPaperFlowQuery(query, graph, graphInfo);
+        query += ", t LIMIT " + limit;
+        runPaperFlowQuery(query, graph, graphInfo);
 
         System.out.println("[QUERY]: " + query);
     }
@@ -710,6 +764,23 @@ public class GraphUtils {
         fromViewer.addSink(graph);
         fromViewer.addViewerListener(new MouseHandler(graph, view, fromViewer, graphInfo, panel, glassPane, "Timeline"));
 
+    }
+    
+    public static void showPaperFlowOnPanel(Graph graph, StorageObject graphInfo, JPanel panel, InfiniteProgressPanel glassPane) {
+        /** Tạo View Panel để chứa Graph    */
+        Viewer viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
+        viewer.enableAutoLayout(); // cho graph chuyển động       
+        ViewPanel viewPanel = viewer.addDefaultView(false);    
+        panel.removeAll();
+        panel.setLayout(new GridLayout());
+        //Panel chứa graph
+        panel.add(viewPanel);
+        panel.revalidate();
+        
+        // Xử lí sự kiện về Mouse của View Panel
+        ViewerPipe fromViewer = viewer.newViewerPipe();
+        fromViewer.addSink(graph);
+        fromViewer.addViewerListener(new MouseHandler(graph, viewPanel, fromViewer, graphInfo, panel, glassPane, "Flow"));
     }
     
     public static void columnBackgroundRender(Graph graph, StorageObject graphInfo, DefaultView view) {

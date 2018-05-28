@@ -209,6 +209,9 @@ public class MouseHandler implements ViewerListener {
                             case "Timeline":
                                 GraphUtils.showTimeLineOnPanel(graph, graphInfo, panel, glassPane);
                                 break;
+                            case "Flow":
+                                GraphUtils.showPaperFlowOnPanel(graph, graphInfo, panel, glassPane);
+                                break;
                             default:
                                 break;
                         }
