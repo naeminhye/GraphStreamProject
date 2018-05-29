@@ -480,12 +480,12 @@ public class GraphUtils {
                 JSONObject t = new JSONObject(rs.getString("t"));
                 graphInfo.putObjectToArray("shown_nodes", t, false);
                 graphInfo.putObjectToArray("topics", t, false);
-                addNodeToGraph(graph, t, "purple", false);
+                addNodeToGraph(graph, t, "purple", true);
                 for(int i = 0; i < colCount / 5; i++) {
                     JSONObject p = new JSONObject(rs.getString("p" + i));
                     graphInfo.putObjectToArray("shown_nodes", p, false);
                     addNodeToGraph(graph, p, "", false);
-                    addEdgeToGraph(graph, p.get("id").toString(), t.get("id").toString(), TypeOfRelationship.RELATED_TO, "black", "", false);
+                    addEdgeToGraph(graph, p.get("id").toString(), t.get("id").toString(), TypeOfRelationship.RELATED_TO, "black", "", true);
                 
                     if(i != colCount / 5 - 1) {
                         String temp = "p" + (i + 1);
@@ -497,7 +497,7 @@ public class GraphUtils {
                                                 .put("targetPaper", pNext.get("id").toString());
                         graphInfo.putObjectToArray("cites", cites, false);
                         addEdgeToGraph(graph, p.get("id").toString(), pNext.get("id").toString(), TypeOfRelationship.CITES, "black", "", false);
-                        addEdgeToGraph(graph, pNext.get("id").toString(), t.get("id").toString(), TypeOfRelationship.RELATED_TO, "black", "", false);
+                        addEdgeToGraph(graph, pNext.get("id").toString(), t.get("id").toString(), TypeOfRelationship.RELATED_TO, "black", "", true);
 
                     }
                 }           
