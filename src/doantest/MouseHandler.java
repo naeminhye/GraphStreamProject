@@ -9,6 +9,7 @@ import static doantest.GraphUtils.*;
 import java.awt.event.KeyEvent;
 import static java.awt.event.KeyEvent.VK_MINUS;
 import java.awt.event.MouseEvent;
+import java.util.Iterator;
 import javax.swing.JPanel;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
@@ -54,6 +55,7 @@ public class MouseHandler implements ViewerListener {
             view.moveElementAtPx(element, event.getX(), event.getY());
         }
         
+        /** Xử lý sự kiện hover chuột */
         public void mouseMoved(MouseEvent event) {
             /** Lấy Node hoặc Sprite tại vị trí chuột trỏ đến */
             curElement = view.findNodeOrSpriteAt(event.getX(), event.getY());
@@ -70,10 +72,10 @@ public class MouseHandler implements ViewerListener {
 
                     for (Node otherNode : graph.getEachNode()) {
                         if(otherNode != thisNode && otherNode != this.graph.getNode(selectedId)) {
-                            if(otherNode.hasAttribute("ui.clicked")) {
+//                            if(otherNode.hasAttribute("ui.clicked")) {
                                 otherNode.removeAttribute("layout.frozen");
                                 otherNode.removeAttribute("ui.clicked");
-                            }
+//                            }
                             showLessNodeInfo(graph, otherNode.getId(), graphInfo);
                         }
                     }
@@ -84,15 +86,16 @@ public class MouseHandler implements ViewerListener {
                 for (Node node : graph.getEachNode()) {
                     if(!node.getId().equals(selectedId)){
                         showLessNodeInfo(graph, node.getId(), graphInfo);
-                        if(node.hasAttribute("ui.clicked")) {
+//                        if(node.hasAttribute("ui.clicked")) {
                             node.removeAttribute("layout.frozen");
                             node.removeAttribute("ui.clicked");
-                        }
+//                        }
                     }
                 }
             }
         }
 
+        /** Xử lý sự kiện click chuột */
         public void mouseButtonPressOnElement(GraphicElement element, MouseEvent e) {
             view.freezeElement(element, true);
             curElement = view.findNodeOrSpriteAt(e.getX(), e.getY());
@@ -113,9 +116,46 @@ public class MouseHandler implements ViewerListener {
                 }
                 /** Nếu click vào Sprite ... */
                 else if(curElement.getSelectorType() == Selector.Type.SPRITE) {
-                    singleClickOnSprite();
+                    String thisSprite = curElement.getId();
+                    if(thisSprite.equals(selectedId)) {
+                        Sprite sprite = sman.getSprite(selectedId);
+                        TypeOfNode thisType = GraphUtils.typeOfNode(graph, graphInfo, selectedId);
+                        switch(thisType) {
+                            case PAPER: 
+                                if(!selectedId.equals(selectedPaper)) {
+                                    if(!selectedPaper.equals("")) {
+                                        ToggleNodeOff(graph.getNode(selectedPaper), sman);
+                                    }
+                                    selectedPaper = selectedId;
+                                    sprite.setAttribute("ui.style", "fill-image: url('src/images/icon-ok.png');");
+                                    
+                                }
+                                else {
+                                    selectedPaper = "";
+                                    sprite.setAttribute("ui.style", "fill-image: url('src/images/icon-plus.png');");
+                                }
+                                break;
+                            case TOPIC: 
+                                if(!selectedId.equals(selectedTopic)) {
+                                    if(!selectedTopic.equals("")) {
+                                        ToggleNodeOff(graph.getNode(selectedTopic), sman);
+                                    }
+                                    selectedTopic = selectedId;
+                                    sprite.setAttribute("ui.style", "fill-image: url('src/images/icon-ok.png');");
+                                }
+                                else {
+                                    selectedTopic = "";
+                                    sprite.setAttribute("ui.style", "fill-image: url('src/images/icon-plus.png');");
+                                }
+                                break;
+                            default: 
+                                break;
+                        }
+                    }
                 }
             }
+//            System.out.println("SELECTED PAPER: " + selectedPaper);
+//            System.out.println("SELECTED TOPIC: " + selectedTopic);
         }
     };
     
@@ -242,30 +282,13 @@ public class MouseHandler implements ViewerListener {
         /** Nếu node hiện tại không được click trước đó */
         if(!oldSelectedId.equals(selectedId) || oldSelectedId.equals("")) {
             isClicked = true;
+            ToggleNodeOn(thisNode, sman);
             showHiddenNodes(graph, selectedId, graphInfo);
-            thisNode.setAttribute("ui.clicked");
-            
-            if(!sman.hasSprite(selectedId)) {
-                Sprite s = sman.addSprite(selectedId);
-                s.attachToNode(selectedId);
-                s.setPosition(StyleConstants.Units.PX, 30, 100, 0);
-                System.out.println("New Sprite: " + selectedId);
-            }
-            
+                       
             for (Node otherNode : graph.getEachNode()) {
                 if(!otherNode.getId().equals(thisNode.getId()) && !otherNode.getId().equals(selectedPaper) && !otherNode.getId().equals(selectedTopic)) {
-                    if(sman.hasSprite(otherNode.getId())) {
-                        sman.getSprite(otherNode.getId()).detach();
-                        sman.removeSprite(otherNode.getId());
-                        System.out.println("Remove Sprite: " + otherNode.getId());
-                    }
                     showLessNodeInfo(graph, otherNode.getId(), graphInfo);
-                    if(otherNode.hasAttribute("ui.clicked")) {
-                        otherNode.removeAttribute("ui.clicked");
-                        if(sman.hasSprite(otherNode.getId())) {
-                            sman.removeSprite(otherNode.getId());
-                        }
-                    }
+                    ToggleNodeOff(otherNode, sman);
                 }
             }
             for (Edge edge : graph.getEachEdge()) {
@@ -286,43 +309,46 @@ public class MouseHandler implements ViewerListener {
                 showHiddenNodes(graph, selectedId, graphInfo);
             }
             else {
-                if(thisNode.hasAttribute("ui.clicked")) {
-                    thisNode.removeAttribute("ui.clicked");
-                }
+                thisNode.removeAttribute("ui.clicked");
                 hideHiddenNodes(graph, selectedId, graphInfo);
             }
         }
     }
     
-    private void singleClickOnSprite() {
-        Sprite spr = sman.getSprite(selectedId);
-//                    Node node = (Node) spr.getAttachment();
-        TypeOfNode thisType = GraphUtils.typeOfNode(graph, graphInfo, selectedId);
-        switch(thisType) {
-            case PAPER: 
-                if(!selectedId.equals(selectedPaper)) {
-                    selectedPaper = selectedId;
-                    System.out.println("This sprite is attached to PAPER " + spr.getAttachment().getId());
-                    sman.getSprite(selectedId).setAttribute("ui.style", "fill-image: url('src/images/icon-ok.png');");
-                }
-                else {
-                    selectedPaper = "";
-                    sman.getSprite(selectedId).setAttribute("ui.style", "fill-image: url('src/images/icon-plus.png');");
-                }
-                break;
-            case TOPIC: 
-                if(!selectedId.equals(selectedTopic)) {
-                    selectedTopic = selectedId;
-                    System.out.println("This sprite is attached to TOPIC " + spr.getAttachment().getId());
-                    sman.getSprite(selectedId).setAttribute("ui.style", "fill-image: url('src/images/icon-ok.png');");
-                }
-                else {
-                    selectedTopic = "";
-                    sman.getSprite(selectedId).setAttribute("ui.style", "fill-image: url('src/images/icon-plus.png');");
-                }
-                break;
-            default: 
-                break;
+    private static void ToggleNodeOn (Node node, SpriteManager sman) {
+        node.setAttribute("ui.style", "size: 50px;");
+        node.setAttribute("ui.clicked");
+        if(!sman.hasSprite(node.getId())) {
+            Sprite spr = sman.addSprite(node.getId());
+            spr.attachToNode(node.getId());
+//            spr.setPosition(0.2);
+            spr.setPosition(StyleConstants.Units.PX, 30, -100, 0);
         }
+        else {
+            Sprite spr = sman.getSprite(node.getId());
+            spr.attachToNode(node.getId());
+//            spr.setPosition(0.2);
+            spr.setPosition(StyleConstants.Units.PX, 30, -100, 0);
+            spr.removeAttribute("ui.hide");
+        }
+    }
+    
+    private void ToggleNodeOff (Node node, SpriteManager sman) {
+        node.removeAttribute("ui.clicked");
+        node.setAttribute("ui.style", "size: 10px;");
+        if(sman.hasSprite(node.getId())) {
+            sman.getSprite(node.getId()).setAttribute("ui.style", "fill-image: url('src/images/icon-plus.png');");
+            sman.getSprite(node.getId()).setAttribute("ui.hide");
+            sman.getSprite(node.getId()).detach();
+            sman.removeSprite(node.getId());
+        }
+    }
+    
+    public String s() {
+        return selectedPaper;
+    }
+    
+    public String getSelectedTopic() {
+        return selectedTopic;
     }
 }

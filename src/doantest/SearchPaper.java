@@ -258,10 +258,10 @@ public class SearchPaper extends javax.swing.JFrame {
     private void display() {
         switch(displaySeletion.getSelectedItem().toString()) {
             case "Graph":
-                GraphUtils.setPaperFlow("2035542", "91", 5, 1, graph, graphInfo);
-                showPaperFlowOnPanel(graph, graphInfo, displayPanel, glassPane);
-//                GraphUtils.setGraph((int)startYear.getValue(), (int)endYear.getValue(), (String)topicSelection.getSelectedItem(), graph, graphInfo, (int)limit.getValue());
-//                showGraphOnPanel(graph, graphInfo, displayPanel, glassPane);
+//                GraphUtils.setPaperFlow("2035542", "91", 5, 1, graph, graphInfo);
+//                showPaperFlowOnPanel(graph, graphInfo, displayPanel, glassPane);
+                GraphUtils.setGraph((int)startYear.getValue(), (int)endYear.getValue(), (String)topicSelection.getSelectedItem(), graph, graphInfo, (int)limit.getValue());
+                showGraphOnPanel(graph, graphInfo, displayPanel, glassPane);
                 break;
             case "Timeline":
                 GraphUtils.setTimeline((int)startYear.getValue(), (int)endYear.getValue(), (String)topicSelection.getSelectedItem(), graph, graphInfo, (int)limit.getValue());

@@ -31,7 +31,9 @@ node {
 edge { 
     arrow-shape: arrow; 
     arrow-size: 5px, 3px;
-    size: 1px; fill-color: #000000; text-mode: hidden;
+    size: 1px; 
+    fill-color: #e6e6e6; 
+    text-mode: hidden;
 }
 
 edge:clicked {
