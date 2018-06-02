@@ -114,6 +114,17 @@ public class StorageObject extends JSONObject {
         }
     }
     
+    public boolean hasKeyValueToObject(String nameOfArray, String key, String value) {
+        int length = object.getJSONArray(nameOfArray).length();
+        for(int i = 0; i < length; i ++) {
+            JSONObject jsonObj = (JSONObject) object.getJSONArray(nameOfArray).get(i);
+            if (jsonObj.get(key).toString().equals(value)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     public void putKeyValueToArray(String nameOfArray, String key, String value, boolean repeat) {
         if(object.isNull(nameOfArray)) {
             object.put(nameOfArray, new JSONObject().put(key, new JSONArray().put(value)));
@@ -133,10 +144,8 @@ public class StorageObject extends JSONObject {
         }
     }
     
-    public void addArrayToArray(String source, String target) {
+    public void moveArrayToArray(String source, String target) {
         if(!object.isNull(source)) {
-//            System.out.println("SOURCE: " + object.getJSONArray(source));
-//            System.out.println("TARGET: " + object.getJSONArray(target));
             if(!object.isNull(target)) {
                 for(Object element: object.getJSONArray(source)) {
                     object.getJSONArray(target).put(element);
@@ -156,7 +165,5 @@ public class StorageObject extends JSONObject {
                 }
             }
         }
-//        System.out.println("SOURCE AFTER ADDING: " + object.getJSONArray(source));
-//        System.out.println("TARGET AFTER ADDING: " + object.getJSONArray(target));
     }
 }

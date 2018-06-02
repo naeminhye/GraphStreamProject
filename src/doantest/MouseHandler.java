@@ -15,6 +15,10 @@ import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.ui.graphicGraph.GraphicElement;
 import org.graphstream.ui.graphicGraph.stylesheet.Selector;
+import org.graphstream.ui.graphicGraph.stylesheet.StyleConstants;
+import org.graphstream.ui.graphicGraph.stylesheet.StyleConstants.Units;
+import org.graphstream.ui.spriteManager.Sprite;
+import org.graphstream.ui.spriteManager.SpriteManager;
 import org.graphstream.ui.swingViewer.DefaultView;
 import org.graphstream.ui.view.View;
 import org.graphstream.ui.view.ViewerListener;
@@ -35,11 +39,14 @@ public class MouseHandler implements ViewerListener {
     private View view;
     private String selectedId = ""; // ID của node đang được click
     private String oldSelectedId = "";
+    private String selectedPaper = "";
+    private String selectedTopic = "";
     private Node thisNode = null; // Node đang được trỏ đến
     private boolean isClicked = false;
     private StorageObject graphInfo;
     private InfiniteProgressPanel glassPane;
     private String displayType;
+    private SpriteManager sman;// = new SpriteManager(graph);
     
     private DefaultMouseManager mouseManager = new DefaultMouseManager() {
         
@@ -103,6 +110,10 @@ public class MouseHandler implements ViewerListener {
                     else {
                         singleClickOnNode();
                     }
+                }
+                /** Nếu click vào Sprite ... */
+                else if(curElement.getSelectorType() == Selector.Type.SPRITE) {
+                    singleClickOnSprite();
                 }
             }
         }
@@ -170,6 +181,7 @@ public class MouseHandler implements ViewerListener {
         this.displayType = displayType;
         this.view.setMouseManager(mouseManager);
         this.view.setShortcutManager(shortcutManager);
+        this.sman = new SpriteManager(graph);
     }
     
     @Override
@@ -232,17 +244,33 @@ public class MouseHandler implements ViewerListener {
             isClicked = true;
             showHiddenNodes(graph, selectedId, graphInfo);
             thisNode.setAttribute("ui.clicked");
+            
+            if(!sman.hasSprite(selectedId)) {
+                Sprite s = sman.addSprite(selectedId);
+                s.attachToNode(selectedId);
+                s.setPosition(StyleConstants.Units.PX, 30, 100, 0);
+                System.out.println("New Sprite: " + selectedId);
+            }
+            
             for (Node otherNode : graph.getEachNode()) {
-                if(otherNode != thisNode) {
+                if(!otherNode.getId().equals(thisNode.getId()) && !otherNode.getId().equals(selectedPaper) && !otherNode.getId().equals(selectedTopic)) {
+                    if(sman.hasSprite(otherNode.getId())) {
+                        sman.getSprite(otherNode.getId()).detach();
+                        sman.removeSprite(otherNode.getId());
+                        System.out.println("Remove Sprite: " + otherNode.getId());
+                    }
                     showLessNodeInfo(graph, otherNode.getId(), graphInfo);
                     if(otherNode.hasAttribute("ui.clicked")) {
                         otherNode.removeAttribute("ui.clicked");
+                        if(sman.hasSprite(otherNode.getId())) {
+                            sman.removeSprite(otherNode.getId());
+                        }
                     }
                 }
             }
             for (Edge edge : graph.getEachEdge()) {
                 for (Edge edgeOfThisNode : thisNode.getEachEdge()){
-                    edgeOfThisNode.setAttribute("ui.style", "size: 3px; fill-color: #ffff66; text-mode: normal; text-padding: 3px, 2px; text-background-mode: rounded-box; text-background-color: #e6e6e6e6;"); /*shadow-mode: plain; shadow-width: 3px; shadow-color: #ffff66; shadow-offset: 0px;*/
+                    edgeOfThisNode.setAttribute("ui.style", "size: 3px; fill-color: #ffff66; text-mode: normal; text-padding: 3px, 2px; text-background-mode: rounded-box; text-background-color: #e6e6e6e6;");
 
                     if(!edge.getId().equals(edgeOfThisNode.getId())) {
                         edge.setAttribute("ui.style", "shadow-mode: none; size: 1px; fill-color: #000000; text-mode: hidden; ");
@@ -263,6 +291,38 @@ public class MouseHandler implements ViewerListener {
                 }
                 hideHiddenNodes(graph, selectedId, graphInfo);
             }
+        }
+    }
+    
+    private void singleClickOnSprite() {
+        Sprite spr = sman.getSprite(selectedId);
+//                    Node node = (Node) spr.getAttachment();
+        TypeOfNode thisType = GraphUtils.typeOfNode(graph, graphInfo, selectedId);
+        switch(thisType) {
+            case PAPER: 
+                if(!selectedId.equals(selectedPaper)) {
+                    selectedPaper = selectedId;
+                    System.out.println("This sprite is attached to PAPER " + spr.getAttachment().getId());
+                    sman.getSprite(selectedId).setAttribute("ui.style", "fill-image: url('src/images/icon-ok.png');");
+                }
+                else {
+                    selectedPaper = "";
+                    sman.getSprite(selectedId).setAttribute("ui.style", "fill-image: url('src/images/icon-plus.png');");
+                }
+                break;
+            case TOPIC: 
+                if(!selectedId.equals(selectedTopic)) {
+                    selectedTopic = selectedId;
+                    System.out.println("This sprite is attached to TOPIC " + spr.getAttachment().getId());
+                    sman.getSprite(selectedId).setAttribute("ui.style", "fill-image: url('src/images/icon-ok.png');");
+                }
+                else {
+                    selectedTopic = "";
+                    sman.getSprite(selectedId).setAttribute("ui.style", "fill-image: url('src/images/icon-plus.png');");
+                }
+                break;
+            default: 
+                break;
         }
     }
 }

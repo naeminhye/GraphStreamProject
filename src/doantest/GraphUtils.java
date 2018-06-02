@@ -30,6 +30,9 @@ import org.graphstream.algorithm.Toolkit;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Node;
 import org.graphstream.ui.graphicGraph.GraphicGraph;
+import org.graphstream.ui.graphicGraph.stylesheet.StyleConstants;
+import org.graphstream.ui.spriteManager.Sprite;
+import org.graphstream.ui.spriteManager.SpriteManager;
 import org.graphstream.ui.swingViewer.DefaultView;
 import org.graphstream.ui.swingViewer.LayerRenderer;
 import org.graphstream.ui.swingViewer.ViewPanel;
@@ -41,7 +44,8 @@ public class GraphUtils {
     
     public enum TypeOfNode {
         PAPER,
-        TOPIC
+        TOPIC,
+        NONE
     }
     
     public enum TypeOfRelationship {
@@ -323,6 +327,7 @@ public class GraphUtils {
                                             .put("targetPaper", p2.get("id").toString());
                 
                 graphInfo.putObjectToArray("papers_having_topics", p1, false);
+                graphInfo.putObjectToArray("papers", p1, false);
                 
                 if(graphInfo.hasPutObjectToArray("hidden_nodes", p1)) {
                     makeNodeVisible(graph, p1, graphInfo);
@@ -333,6 +338,7 @@ public class GraphUtils {
                 if(!graphInfo.hasPutObjectToArray("shown_nodes", p2)) {
                     graphInfo.putObjectToArray("hidden_nodes", p2, false);
                 }
+                graphInfo.putObjectToArray("papers", p2, false);
                 addNodeToGraph(graph, p2, "", true);
                 graphInfo.putObjectToArray("cites", cites, false);
                 addEdgeToGraph(graph, p1.get("id").toString(), p2.get("id").toString(), TypeOfRelationship.CITES, "black", "", true);
@@ -407,9 +413,11 @@ public class GraphUtils {
                     makeNodeVisible(graph, p, graphInfo);
                 }
                 graphInfo.putObjectToArray("shown_nodes", p, false);
+                graphInfo.putObjectToArray("papers", p, false);
                 addNodeToGraph(graph, p, "", false);
                 if(p1.get("Year").toString().equals(year)) {
                     graphInfo.putObjectToArray("shown_nodes", p1, false);
+                    graphInfo.putObjectToArray("papers", p1, false);
                     addNodeToGraph(graph, p1, "", false);
                     graphInfo.putObjectToArray("cites", cites, false);
                     addEdgeToGraph(graph, p.get("id").toString(), p1.get("id").toString(), TypeOfRelationship.CITES, "black", "", false);
@@ -418,6 +426,7 @@ public class GraphUtils {
                 else {
                     if(!graphInfo.hasPutObjectToArray("shown_nodes", p1)) {
                         graphInfo.putObjectToArray("hidden_nodes", p1, false);
+                        graphInfo.putObjectToArray("papers", p1, false);
                         addNodeToGraph(graph, p1, "", true);
                         graphInfo.putObjectToArray("cites", cites, false);
                         addEdgeToGraph(graph, p.get("id").toString(), p1.get("id").toString(), TypeOfRelationship.CITES, "black", "", true);
@@ -480,24 +489,26 @@ public class GraphUtils {
                 JSONObject t = new JSONObject(rs.getString("t"));
                 graphInfo.putObjectToArray("shown_nodes", t, false);
                 graphInfo.putObjectToArray("topics", t, false);
-                addNodeToGraph(graph, t, "purple", true);
+//                addNodeToGraph(graph, t, "purple", true);
                 for(int i = 0; i < colCount / 5; i++) {
                     JSONObject p = new JSONObject(rs.getString("p" + i));
                     graphInfo.putObjectToArray("shown_nodes", p, false);
+                    graphInfo.putObjectToArray("papers", p, false);
                     addNodeToGraph(graph, p, "", false);
-                    addEdgeToGraph(graph, p.get("id").toString(), t.get("id").toString(), TypeOfRelationship.RELATED_TO, "black", "", true);
+//                    addEdgeToGraph(graph, p.get("id").toString(), t.get("id").toString(), TypeOfRelationship.RELATED_TO, "black", "", true);
                 
                     if(i != colCount / 5 - 1) {
                         String temp = "p" + (i + 1);
                         JSONObject pNext = new JSONObject(rs.getString(temp));
                         graphInfo.putObjectToArray("shown_nodes", pNext, false);
+                    graphInfo.putObjectToArray("papers", pNext, false);
                         addNodeToGraph(graph, pNext, "", false);
                         JSONObject cites = new JSONObject()
                                                 .put("sourcePaper", p.get("id").toString())
                                                 .put("targetPaper", pNext.get("id").toString());
                         graphInfo.putObjectToArray("cites", cites, false);
                         addEdgeToGraph(graph, p.get("id").toString(), pNext.get("id").toString(), TypeOfRelationship.CITES, "black", "", false);
-                        addEdgeToGraph(graph, pNext.get("id").toString(), t.get("id").toString(), TypeOfRelationship.RELATED_TO, "black", "", true);
+//                        addEdgeToGraph(graph, pNext.get("id").toString(), t.get("id").toString(), TypeOfRelationship.RELATED_TO, "black", "", true);
 
                     }
                 }           
@@ -1020,5 +1031,17 @@ public class GraphUtils {
             setPositionToNode(parent);
         }
         return parent;
+    }
+
+    public static TypeOfNode typeOfNode(Graph graph, StorageObject graphInfo, String nodeId) {
+        if(graph.getNode(nodeId) != null) {
+            if(graphInfo.hasKeyValueToObject("topics", "id", nodeId)) {
+                return TypeOfNode.TOPIC;
+            }
+            else if(graphInfo.hasKeyValueToObject("papers", "id", nodeId)) {
+                return TypeOfNode.PAPER;
+            }
+        }
+        return TypeOfNode.NONE;
     }
 }

@@ -50,7 +50,10 @@ edge:clicked {
 
 sprite {
     /*fill-mode: none;*/ 
-    text-size:12;
+    text-size: 15;
+    size: 20px;
     text-alignment: along;
     text-padding: 3px, 2px; 
+    fill-mode: image-scaled; 
+    fill-image: url('src/images/icon-plus.png');
 }
