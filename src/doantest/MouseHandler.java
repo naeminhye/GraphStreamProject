@@ -6,10 +6,11 @@
 package doantest;
 
 import static doantest.GraphUtils.*;
+import java.awt.Component;
 import java.awt.event.KeyEvent;
-import static java.awt.event.KeyEvent.VK_MINUS;
 import java.awt.event.MouseEvent;
-import java.util.Iterator;
+import java.util.Arrays;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
@@ -17,7 +18,6 @@ import org.graphstream.graph.Node;
 import org.graphstream.ui.graphicGraph.GraphicElement;
 import org.graphstream.ui.graphicGraph.stylesheet.Selector;
 import org.graphstream.ui.graphicGraph.stylesheet.StyleConstants;
-import org.graphstream.ui.graphicGraph.stylesheet.StyleConstants.Units;
 import org.graphstream.ui.spriteManager.Sprite;
 import org.graphstream.ui.spriteManager.SpriteManager;
 import org.graphstream.ui.swingViewer.DefaultView;
@@ -151,6 +151,7 @@ public class MouseHandler implements ViewerListener {
                             default: 
                                 break;
                         }
+                        setLabel();
                     }
                 }
             }
@@ -344,11 +345,25 @@ public class MouseHandler implements ViewerListener {
         }
     }
     
-    public String s() {
+    public String getSelectedPaper() {
         return selectedPaper;
     }
     
     public String getSelectedTopic() {
         return selectedTopic;
+    }
+    
+    private void setLabel() {
+//        System.out.println("Panel's child: " + getAllComponents(panel.getParent()));
+        for(Component comp : getAllComponents(panel.getParent())) {
+            if (comp instanceof JLabel && comp.getName()!= null) {
+                if(comp.getName().equals("selectedPaper")) {
+                    ((JLabel) comp).setText(selectedPaper);
+                }
+                else if(comp.getName().equals("selectedTopic")) {
+                    ((JLabel) comp).setText(selectedTopic);
+                }
+            }
+        }
     }
 }

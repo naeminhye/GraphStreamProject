@@ -19,6 +19,11 @@ import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.geom.Line2D;
 import java.util.Iterator;
+import java.awt.Component;
+import java.awt.Container;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -517,7 +522,7 @@ public class GraphUtils {
         if(!graphInfo.getObject().isNull("shown_nodes"))
         {
             if(graphInfo.getObject().getJSONArray("shown_nodes").length() > 0) {
-            int output = JOptionPane.showConfirmDialog(frame
+                int output = JOptionPane.showConfirmDialog(frame
                    , "Reset Graph"
                    ,"Reset Graph"
                    ,JOptionPane.YES_NO_OPTION,
@@ -525,10 +530,10 @@ public class GraphUtils {
 
                 if(output == JOptionPane.YES_OPTION){
                     graph.clear();
-                    graphInfo.reset();// = new JSONObject();
-                    //shownNodes = new JSONArray();
+                    graphInfo.reset();
                     return true;
-                }else if(output == JOptionPane.NO_OPTION){
+                }
+                else if(output == JOptionPane.NO_OPTION){
                     return false;
                 }
             }
@@ -591,7 +596,7 @@ public class GraphUtils {
                         query += ", ";
                 }
         }
-        query += "WHERE p0.PaperId = " + paperId + " AND t.TopicId = " + topicId + " RETURN ";
+        query += "WHERE ID(p0) = " + paperId + " AND ID(t) = " + topicId + " RETURN ";
         for(int j = 0; j < count; j++) {
                 query += "p" + j + " ";
                 if(j != (count - 1)){
@@ -605,7 +610,7 @@ public class GraphUtils {
     }
     
     public static void showGraphOnPanel(Graph graph, StorageObject graphInfo, JPanel panel, InfiniteProgressPanel glassPane) {
-        
+       
         if(!graphInfo.getObject().isNull("papers_having_topics")) {
 
             /** 
@@ -1037,4 +1042,16 @@ public class GraphUtils {
         }
         return TypeOfNode.NONE;
     }
+    
+    public static List<Component> getAllComponents(final Container c) {
+        Component[] comps = c.getComponents();
+        List<Component> compList = new ArrayList<Component>();
+        for (Component comp : comps) {
+          compList.add(comp);
+          if (comp instanceof Container) {
+            compList.addAll(getAllComponents((Container) comp));
+          }
+        }
+    return compList;
+  }
 }

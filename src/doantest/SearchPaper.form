@@ -29,8 +29,8 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="controlPanel" alignment="0" max="32767" attributes="0"/>
           <Component id="displayPanel" alignment="1" max="32767" attributes="0"/>
+          <Component id="controlPanel" alignment="0" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
@@ -39,7 +39,6 @@
               <Component id="controlPanel" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="displayPanel" max="32767" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -71,11 +70,11 @@
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
-                  <Component id="startYear" min="-2" pref="120" max="-2" attributes="0"/>
+                  <Component id="startYear" min="-2" pref="100" max="-2" attributes="0"/>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
-                  <Component id="endYear" min="-2" pref="120" max="-2" attributes="0"/>
+                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                  <Component id="endYear" min="-2" pref="100" max="-2" attributes="0"/>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
@@ -83,16 +82,29 @@
                   <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
-                  <Component id="displaySeletion" min="-2" pref="140" max="-2" attributes="0"/>
+                  <Component id="displaySeletion" min="-2" pref="120" max="-2" attributes="0"/>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
-                  <Component id="limit" min="-2" pref="120" max="-2" attributes="0"/>
+                  <Component id="limit" min="-2" pref="100" max="-2" attributes="0"/>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Component id="infoBtn" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace min="-2" pref="29" max="-2" attributes="0"/>
+                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" attributes="0">
+                          <Component id="jLabel6" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="selectedPaper" min="-2" pref="70" max="-2" attributes="0"/>
+                      </Group>
+                      <Group type="102" attributes="0">
+                          <Component id="jLabel7" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                          <Component id="selectedTopic" min="-2" pref="70" max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
+                  <EmptySpace pref="68" max="32767" attributes="0"/>
                   <Component id="searchBtn" min="-2" pref="120" max="-2" attributes="0"/>
-                  <EmptySpace max="32767" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -100,9 +112,19 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" attributes="0">
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="jLabel6" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="selectedPaper" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="jLabel7" alignment="3" min="-2" pref="14" max="-2" attributes="0"/>
+                              <Component id="selectedTopic" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
                       <Group type="103" alignment="1" groupAlignment="0" attributes="0">
-                          <Component id="displaySeletion" alignment="1" min="-2" pref="30" max="-2" attributes="0"/>
                           <Component id="infoBtn" alignment="0" min="-2" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="limit" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
@@ -114,11 +136,12 @@
                               <Component id="startYear" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                               <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="jLabel5" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="displaySeletion" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                           </Group>
                       </Group>
-                      <Component id="searchBtn" max="32767" attributes="0"/>
+                      <Component id="searchBtn" alignment="1" min="-2" pref="34" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace max="32767" attributes="0"/>
+                  <EmptySpace pref="16" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -141,7 +164,7 @@
         <Component class="javax.swing.JComboBox" name="topicSelection">
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-              <StringArray count="46">
+              <StringArray count="100">
                 <StringItem index="0" value="All"/>
                 <StringItem index="1" value="1"/>
                 <StringItem index="2" value="2"/>
@@ -188,6 +211,60 @@
                 <StringItem index="43" value="43"/>
                 <StringItem index="44" value="44"/>
                 <StringItem index="45" value="45"/>
+                <StringItem index="46" value="46"/>
+                <StringItem index="47" value="47"/>
+                <StringItem index="48" value="48"/>
+                <StringItem index="49" value="49"/>
+                <StringItem index="50" value="50"/>
+                <StringItem index="51" value="51"/>
+                <StringItem index="52" value="52"/>
+                <StringItem index="53" value="53"/>
+                <StringItem index="54" value="54"/>
+                <StringItem index="55" value="55"/>
+                <StringItem index="56" value="56"/>
+                <StringItem index="57" value="57"/>
+                <StringItem index="58" value="58"/>
+                <StringItem index="59" value="59"/>
+                <StringItem index="60" value="60"/>
+                <StringItem index="61" value="61"/>
+                <StringItem index="62" value="62"/>
+                <StringItem index="63" value="63"/>
+                <StringItem index="64" value="64"/>
+                <StringItem index="65" value="65"/>
+                <StringItem index="66" value="66"/>
+                <StringItem index="67" value="67"/>
+                <StringItem index="68" value="68"/>
+                <StringItem index="69" value="69"/>
+                <StringItem index="70" value="70"/>
+                <StringItem index="71" value="71"/>
+                <StringItem index="72" value="72"/>
+                <StringItem index="73" value="73"/>
+                <StringItem index="74" value="74"/>
+                <StringItem index="75" value="75"/>
+                <StringItem index="76" value="76"/>
+                <StringItem index="77" value="77"/>
+                <StringItem index="78" value="78"/>
+                <StringItem index="79" value="79"/>
+                <StringItem index="80" value="80"/>
+                <StringItem index="81" value="81"/>
+                <StringItem index="82" value="82"/>
+                <StringItem index="83" value="83"/>
+                <StringItem index="84" value="84"/>
+                <StringItem index="85" value="85"/>
+                <StringItem index="86" value="86"/>
+                <StringItem index="87" value="87"/>
+                <StringItem index="88" value="88"/>
+                <StringItem index="89" value="89"/>
+                <StringItem index="90" value="90"/>
+                <StringItem index="91" value="91"/>
+                <StringItem index="92" value="92"/>
+                <StringItem index="93" value="93"/>
+                <StringItem index="94" value="94"/>
+                <StringItem index="95" value="95"/>
+                <StringItem index="96" value="96"/>
+                <StringItem index="97" value="97"/>
+                <StringItem index="98" value="98"/>
+                <StringItem index="99" value="99"/>
               </StringArray>
             </Property>
           </Properties>
@@ -261,6 +338,30 @@
             </Property>
           </Properties>
         </Component>
+        <Component class="javax.swing.JLabel" name="jLabel6">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Selected Paper: "/>
+            <Property name="name" type="java.lang.String" value="" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jLabel7">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Selected Topic: "/>
+            <Property name="name" type="java.lang.String" value="" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="selectedPaper">
+          <Properties>
+            <Property name="horizontalAlignment" type="int" value="4"/>
+            <Property name="name" type="java.lang.String" value="selectedPaper" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="selectedTopic">
+          <Properties>
+            <Property name="horizontalAlignment" type="int" value="4"/>
+            <Property name="name" type="java.lang.String" value="selectedTopic" noResource="true"/>
+          </Properties>
+        </Component>
       </SubComponents>
     </Container>
     <Container class="javax.swing.JPanel" name="displayPanel">
@@ -283,7 +384,7 @@
         </DimensionLayout>
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
-              <EmptySpace min="0" pref="706" max="32767" attributes="0"/>
+              <EmptySpace min="0" pref="719" max="32767" attributes="0"/>
           </Group>
         </DimensionLayout>
       </Layout>
