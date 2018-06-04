@@ -64,45 +64,20 @@ public class SearchPaper extends javax.swing.JFrame {
         
         searchBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                if(!selectedPaper.getText().equals("") && !selectedTopic.getText().equals("")) {
-                    int output = JOptionPane.showConfirmDialog(
-                        thisFrame,
-                        "You have chosen Node " + selectedPaper.getText() + " and Node " + selectedTopic.getText(),
-                        "Do you want to find the related road?",
-                        JOptionPane.YES_NO_OPTION,
-                        JOptionPane.INFORMATION_MESSAGE);
-
-                    if(output == JOptionPane.YES_OPTION){
-                        graph.clear();
-                        graphInfo.reset();
-                        glassPane.start();
-                        new Thread(new Runnable() {
-                            public void run() {
-                                GraphUtils.setPaperFlow(selectedPaper.getText(), selectedTopic.getText(), 5, 1, graph, graphInfo);
-                                showPaperFlowOnPanel(graph, graphInfo, displayPanel, glassPane);
-
-                                glassPane.stop();
-                                }
-                        }, "Performer").start();
-                    }
-                    else if(output == JOptionPane.NO_OPTION){
-                    }
+                
+                if((int)endYear.getValue() - (int)startYear.getValue() <= 4) {
+                    if(GraphUtils.reset(thisFrame, graph, graphInfo))
+                        loading();
                 }
                 else {
-                    if((int)endYear.getValue() - (int)startYear.getValue() <= 4) {
-                        if(GraphUtils.reset(thisFrame, graph, graphInfo))
-                            loading();
-                    }
-                    else {
-                        Object[] options = {"OK"};
-                        int n = JOptionPane.showOptionDialog(thisFrame,
-                            "You just can search within 5 years.","Note",
-                            JOptionPane.PLAIN_MESSAGE,
-                            JOptionPane.QUESTION_MESSAGE,
-                            null,
-                            options,
-                            options[0]);
-                    }
+                    Object[] options = {"OK"};
+                    int n = JOptionPane.showOptionDialog(thisFrame,
+                        "You just can search within 5 years.","Note",
+                        JOptionPane.PLAIN_MESSAGE,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        options,
+                        options[0]);
                 }
             }
         });
@@ -154,6 +129,7 @@ public class SearchPaper extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
         selectedPaper = new javax.swing.JLabel();
         selectedTopic = new javax.swing.JLabel();
+        clearBtn = new javax.swing.JButton();
         displayPanel = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -205,6 +181,17 @@ public class SearchPaper extends javax.swing.JFrame {
         selectedTopic.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         selectedTopic.setName("selectedTopic"); // NOI18N
 
+        clearBtn.setBackground(new java.awt.Color(255, 255, 255));
+        clearBtn.setBorder(null);
+        clearBtn.setIconTextGap(0);
+        clearBtn.setName("clearBtn"); // NOI18N
+        clearBtn.setPreferredSize(new java.awt.Dimension(30, 30));
+        clearBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                clearBtnActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout controlPanelLayout = new javax.swing.GroupLayout(controlPanel);
         controlPanel.setLayout(controlPanelLayout);
         controlPanelLayout.setHorizontalGroup(
@@ -242,7 +229,9 @@ public class SearchPaper extends javax.swing.JFrame {
                         .addComponent(jLabel7)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(selectedTopic, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 68, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(clearBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
                 .addComponent(searchBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -252,9 +241,7 @@ public class SearchPaper extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(controlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(controlPanelLayout.createSequentialGroup()
-                        .addGroup(controlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel6)
-                            .addComponent(selectedPaper))
+                        .addComponent(jLabel6)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(controlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -272,7 +259,9 @@ public class SearchPaper extends javax.swing.JFrame {
                             .addComponent(jLabel1)
                             .addComponent(jLabel5)
                             .addComponent(displaySeletion, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(searchBtn, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(searchBtn, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(clearBtn, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(selectedPaper))
                 .addContainerGap(16, Short.MAX_VALUE))
         );
 
@@ -310,6 +299,33 @@ public class SearchPaper extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void clearBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearBtnActionPerformed
+        if(!selectedPaper.getText().equals("") && !selectedTopic.getText().equals("")) {
+            int output = JOptionPane.showConfirmDialog(
+                thisFrame,
+                "You have chosen Node " + selectedPaper.getText() + " and Node " + selectedTopic.getText(),
+                "Do you want to find the related road?",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.INFORMATION_MESSAGE);
+
+            if(output == JOptionPane.YES_OPTION){
+                graph.clear();
+                graphInfo.reset();
+                glassPane.start();
+                new Thread(new Runnable() {
+                    public void run() {
+                        GraphUtils.setPaperFlow(selectedPaper.getText(), selectedTopic.getText(), 5, 1, graph, graphInfo);
+                        showPaperFlowOnPanel(graph, graphInfo, displayPanel, glassPane);
+
+                        glassPane.stop();
+                        }
+                }, "Performer").start();
+            }
+            else if(output == JOptionPane.NO_OPTION){
+            }
+        }
+    }//GEN-LAST:event_clearBtnActionPerformed
    
     private void display() {
         switch(displaySeletion.getSelectedItem().toString()) {
@@ -361,6 +377,7 @@ public class SearchPaper extends javax.swing.JFrame {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton clearBtn;
     private javax.swing.JPanel controlPanel;
     private javax.swing.JPanel displayPanel;
     private javax.swing.JComboBox<String> displaySeletion;

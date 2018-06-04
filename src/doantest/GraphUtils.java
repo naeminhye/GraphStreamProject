@@ -778,7 +778,7 @@ public class GraphUtils {
     public static void showPaperFlowOnPanel(Graph graph, StorageObject graphInfo, JPanel panel, InfiniteProgressPanel glassPane) {
         /** Tạo View Panel để chứa Graph    */
         Viewer viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
-        viewer.enableAutoLayout(); // cho graph chuyển động       
+//        viewer.enableAutoLayout(); // cho graph chuyển động       
         ViewPanel viewPanel = viewer.addDefaultView(false);    
         panel.removeAll();
         panel.setLayout(new GridLayout());
