@@ -84,9 +84,6 @@ public class SearchPaper extends javax.swing.JFrame {
         
         infoBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                // Mở Màn hình tìm kiếm bài báo
-                Shortcuts shortcuts = new Shortcuts();
-                shortcuts.setVisible(true);
             }
         });
     }
@@ -168,6 +165,11 @@ public class SearchPaper extends javax.swing.JFrame {
         infoBtn.setIconTextGap(0);
         infoBtn.setName("infoBtn"); // NOI18N
         infoBtn.setPreferredSize(new java.awt.Dimension(30, 30));
+        infoBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                infoBtnActionPerformed(evt);
+            }
+        });
 
         jLabel6.setText("Selected Paper: ");
         jLabel6.setName(""); // NOI18N
@@ -310,8 +312,8 @@ public class SearchPaper extends javax.swing.JFrame {
                 JOptionPane.INFORMATION_MESSAGE);
 
             if(output == JOptionPane.YES_OPTION){
-                graph.clear();
-                graphInfo.reset();
+//                graph.clear();
+//                graphInfo.reset();
                 glassPane.start();
                 new Thread(new Runnable() {
                     public void run() {
@@ -326,6 +328,13 @@ public class SearchPaper extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_clearBtnActionPerformed
+
+    private void infoBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_infoBtnActionPerformed
+//        Shortcuts shortcuts = new Shortcuts();
+//        shortcuts.setVisible(true);
+        Configuration config = new Configuration();
+        config.setVisible(true);
+    }//GEN-LAST:event_infoBtnActionPerformed
    
     private void display() {
         switch(displaySeletion.getSelectedItem().toString()) {

@@ -288,11 +288,11 @@ public class GraphUtils {
         Random random;
         String colorCode;
         
-        ResultSet rs;
+        ResultSet rs = null;
         PreparedStatement stmt = null;
         
         // Kết nối
-        Connection con;
+        Connection con = null;
         try {
             con = DriverManager.getConnection(Constants.CONNECTION_URL, Constants.USERNAME, Constants.PASSWORD);
             stmt = con.prepareStatement(query);
@@ -360,8 +360,13 @@ public class GraphUtils {
             }
         } 
         catch (SQLException ex) {
-            Logger.getLogger(MainMenu.class.getName()).log(Level.SEVERE, null, ex);
-        }
+            Logger.getLogger(GraphUtils.class.getName()).log(Level.SEVERE, null, ex);
+        } 
+        finally {  
+            if (rs != null) try { rs.close(); } catch(Exception e) {}  
+            if (stmt != null) try { stmt.close(); } catch(Exception e) {}  
+            if (con != null) try { con.close(); } catch(Exception e) {}  
+        }  
         
         System.out.println("graphInfo: " + graphInfo.getObject());
     }
@@ -376,10 +381,10 @@ public class GraphUtils {
         Random random;
         String colorCode;
            
-        ResultSet rs;
+        ResultSet rs = null;
         PreparedStatement stmt = null;
         // Kết nối
-        Connection con;
+        Connection con = null;
         try {
             con = DriverManager.getConnection(Constants.CONNECTION_URL, Constants.USERNAME, Constants.PASSWORD);
             stmt = con.prepareStatement(query);
@@ -457,8 +462,13 @@ public class GraphUtils {
             }
         } 
         catch (SQLException ex) {
-            Logger.getLogger(MainMenu.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(GraphUtils.class.getName()).log(Level.SEVERE, null, ex);
         }
+        finally {  
+            if (rs != null) try { rs.close(); } catch(Exception e) {}  
+            if (stmt != null) try { stmt.close(); } catch(Exception e) {}  
+            if (con != null) try { con.close(); } catch(Exception e) {}  
+        }  
         System.out.println("graphInfo: " + graphInfo.getObject());
     }
     
@@ -473,10 +483,10 @@ public class GraphUtils {
         Random random;  
         String colorCode;
            
-        ResultSet rs;
+        ResultSet rs = null;
         PreparedStatement stmt = null;
         // Kết nối
-        Connection con;
+        Connection con = null;
         try {
             con = DriverManager.getConnection(Constants.CONNECTION_URL, Constants.USERNAME, Constants.PASSWORD);
             stmt = con.prepareStatement(query);
@@ -505,7 +515,7 @@ public class GraphUtils {
                                                 .put("sourcePaper", p.get("id").toString())
                                                 .put("targetPaper", pNext.get("id").toString());
                         graphInfo.putObjectToArray("cites", cites, false);
-                        addEdgeToGraph(graph, p.get("id").toString(), pNext.get("id").toString(), TypeOfRelationship.CITES, "black", "", false);
+                        addEdgeToGraph(graph, p.get("id").toString(), pNext.get("id").toString(), TypeOfRelationship.CITES, "red", "", true);
 //                        addEdgeToGraph(graph, pNext.get("id").toString(), t.get("id").toString(), TypeOfRelationship.RELATED_TO, "black", "", true);
 
                     }
@@ -513,8 +523,16 @@ public class GraphUtils {
             }
         }
         catch (SQLException ex) {
-            Logger.getLogger(MainMenu.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(GraphUtils.class.getName()).log(Level.SEVERE, null, ex);
         }
+        finally {  
+            if (rs != null) try { rs.close(); } catch(Exception e) {}  
+            if (stmt != null) try { stmt.close(); } catch(Exception e) {}  
+            if (con != null) try { 
+                con.close(); 
+                System.out.println("Connection closed.");
+            } catch(Exception e) {}  
+        }  
         System.out.println("graphInfo: " + graphInfo.getObject());
     }
     
