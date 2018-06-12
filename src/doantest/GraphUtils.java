@@ -515,7 +515,8 @@ public class GraphUtils {
                                                 .put("sourcePaper", p.get("id").toString())
                                                 .put("targetPaper", pNext.get("id").toString());
                         graphInfo.putObjectToArray("cites", cites, false);
-                        addEdgeToGraph(graph, p.get("id").toString(), pNext.get("id").toString(), TypeOfRelationship.CITES, "red", "", true);
+                        addEdgeToGraph(graph, p.get("id").toString(), pNext.get("id").toString(), TypeOfRelationship.CITES, "red", "", false);
+                        graph.getEdge(p.get("id").toString() + "_" + pNext.get("id").toString()).setAttribute("ui.style", "fill-color: red;");
 //                        addEdgeToGraph(graph, pNext.get("id").toString(), t.get("id").toString(), TypeOfRelationship.RELATED_TO, "black", "", true);
 
                     }
