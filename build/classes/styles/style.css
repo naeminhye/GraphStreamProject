@@ -1,0 +1,70 @@
+node:clicked { 
+    size: 50px;
+    text-alignment: at-right; 
+    text-padding: 3px, 2px; 
+    text-background-mode: rounded-box; 
+    text-background-color: #e6e6e6e6; 
+    text-color: #222;
+    text-offset: 5px, 0px;
+    /*stroke-mode: plain;*/
+    /*stroke-width: 1px;*/
+    /*stroke-color: #555;*/
+} 
+node {
+    size: 10px; 
+    text-alignment: at-right; 
+    text-padding: 3px, 2px; 
+    text-background-mode: rounded-box; 
+    text-background-color: #e6e6e6e6; 
+    text-color: #222;
+    text-offset: 5px, 0px;
+    shadow-mode: gradient-radial; 
+    shadow-width: 2px; 
+    shadow-color: #999, white; 
+    shadow-offset: 3px, -3px;
+    fill-color: #cccccc;
+    stroke-mode: plain;
+    stroke-width: 1px;
+    stroke-color: #555;
+}
+
+edge { 
+    arrow-shape: arrow; 
+    arrow-size: 5px, 3px;
+    size: 1px; 
+    fill-color: #e6e6e6; 
+    text-mode: hidden;
+}
+
+edge:clicked {
+/*    shadow-mode: plain; 
+    shadow-width: 3px; 
+    shadow-color: #ffff66; 
+    shadow-offset: 0px;*/
+    
+    size: 3px; 
+    fill-color: #ffff66;
+    text-mode: normal; 
+    text-padding: 3px, 2px; 
+    text-background-mode: rounded-box; 
+    text-background-color: #e6e6e6e6;
+}
+
+edge.highlight {
+    size: 3px; 
+    fill-color: #ffff66;
+    text-mode: normal; 
+    text-padding: 3px, 2px; 
+    text-background-mode: rounded-box; 
+    text-background-color: #e6e6e6e6;
+}
+
+sprite {
+    /*fill-mode: none;*/ 
+    text-size: 15;
+    size: 20px;
+    text-alignment: along;
+    text-padding: 3px, 2px; 
+    fill-mode: image-scaled; 
+    fill-image: url('src/images/icon-plus.png');
+}
