@@ -33,6 +33,21 @@ public class Configuration extends javax.swing.JFrame {
         
         Image settingIcon = new ImageIcon(Constants.WORKING_DIRECTORY + "/src/images/icon-setting.png").getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH);
         this.setIconImage(settingIcon);
+        
+        switch(Global.DRIVER) {
+            case "bolt":
+                portTypeComboBox.setSelectedIndex(0);
+                break;
+            case "http":
+                portTypeComboBox.setSelectedIndex(1);
+                break;
+            default:
+                break;
+        }
+        
+        portTxtBox.setText(Global.HOST);
+        userNameTxtBox.setText(Global.USERNAME);
+        passWordTxtBox.setText(Global.PASSWORD);
     }
     
     private void formValidation() {
@@ -51,13 +66,15 @@ public class Configuration extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         portTypeComboBox = new javax.swing.JComboBox<>();
         portLbl = new javax.swing.JLabel();
-        portTxtField = new javax.swing.JTextField();
+        portTxtBox = new javax.swing.JTextField();
         userNameTxtBox = new javax.swing.JTextField();
         userNameLbl = new javax.swing.JLabel();
         passWordTxtBox = new javax.swing.JPasswordField();
         passWordLbl = new javax.swing.JLabel();
         saveBtn = new javax.swing.JButton();
         cancelBtn = new javax.swing.JButton();
+        hostLbl = new javax.swing.JLabel();
+        hostTxtBox = new javax.swing.JTextField();
         background = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -68,17 +85,17 @@ public class Configuration extends javax.swing.JFrame {
         portTypeComboBox.setFont(new java.awt.Font("Arial Black", 0, 14)); // NOI18N
         portTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Bolt", "HTTP" }));
         jPanel1.add(portTypeComboBox);
-        portTypeComboBox.setBounds(250, 260, 270, 30);
+        portTypeComboBox.setBounds(250, 210, 270, 30);
 
         portLbl.setFont(new java.awt.Font("Arial Black", 0, 14)); // NOI18N
         portLbl.setText("Port:");
         jPanel1.add(portLbl);
         portLbl.setBounds(250, 310, 52, 30);
 
-        portTxtField.setText("7687");
-        portTxtField.setToolTipText("");
-        jPanel1.add(portTxtField);
-        portTxtField.setBounds(370, 310, 150, 30);
+        portTxtBox.setText("7687");
+        portTxtBox.setToolTipText("");
+        jPanel1.add(portTxtBox);
+        portTxtBox.setBounds(370, 310, 150, 30);
 
         userNameTxtBox.setText("reader");
         userNameTxtBox.setToolTipText("");
@@ -119,6 +136,16 @@ public class Configuration extends javax.swing.JFrame {
         jPanel1.add(cancelBtn);
         cancelBtn.setBounds(270, 460, 100, 30);
 
+        hostLbl.setFont(new java.awt.Font("Arial Black", 0, 14)); // NOI18N
+        hostLbl.setText("Host:");
+        jPanel1.add(hostLbl);
+        hostLbl.setBounds(250, 260, 52, 30);
+
+        hostTxtBox.setText("localhost");
+        hostTxtBox.setToolTipText("");
+        jPanel1.add(hostTxtBox);
+        hostTxtBox.setBounds(370, 260, 150, 30);
+
         background.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/background01.png"))); // NOI18N
         jPanel1.add(background);
         background.setBounds(0, 0, 560, 559);
@@ -142,10 +169,12 @@ public class Configuration extends javax.swing.JFrame {
         Connection con = null;
         String connection = "";
         String driver = portTypeComboBox.getSelectedItem().toString();
-        String port = portTxtField.getText();
+        String host = hostTxtBox.getText();
+        String port = portTxtBox.getText();
         String username = userNameTxtBox.getText();
-        String password = "1234";
-//        GlobalVariables.DRIVER = driver;
+        String password = passWordTxtBox.getPassword().toString();
+        Global.DRIVER = driver;
+        Global.HOST = host;
         Global.PORT = port;
         Global.USERNAME = username;
         Global.PASSWORD = password;
@@ -165,7 +194,7 @@ public class Configuration extends javax.swing.JFrame {
                 default: 
                     break;
             }
-            Global.CONNECTION_URL = "jdbc:neo4j:" + Global.DRIVER + "://localhost:" + Global.PORT;
+            Global.CONNECTION_URL = "jdbc:neo4j:" + Global.DRIVER + "://" + Global.HOST + ":" + Global.PORT;
             con = DriverManager.getConnection(connection, Global.USERNAME, Global.PASSWORD);
             if(con == null) {
                 System.out.println("null connection: " + connection);
@@ -224,11 +253,13 @@ public class Configuration extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel background;
     private javax.swing.JButton cancelBtn;
+    private javax.swing.JLabel hostLbl;
+    private javax.swing.JTextField hostTxtBox;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel passWordLbl;
     private javax.swing.JPasswordField passWordTxtBox;
     private javax.swing.JLabel portLbl;
-    private javax.swing.JTextField portTxtField;
+    private javax.swing.JTextField portTxtBox;
     private javax.swing.JComboBox<String> portTypeComboBox;
     private javax.swing.JButton saveBtn;
     private javax.swing.JLabel userNameLbl;

@@ -620,8 +620,8 @@ public class GraphUtils {
                 graphInfo.putObjectToArray("shown_nodes", t, false);
                 graphInfo.putObjectToArray("topics", t, false);
 //                addNodeToGraph(graph, t, "purple", true);
-            float posX = 0;
-            float posY = 0;
+            double posX = 0;
+            double posY = 0;
 
                 for(int i = 0; i < colCount / 5; i++) {
                     JSONObject p = new JSONObject(rs.getString("p" + i));
@@ -629,12 +629,20 @@ public class GraphUtils {
                     graphInfo.putObjectToArray("papers", p, false);
                     addNodeToGraph(graph, p, "", false);
                     if(i == 0) {
-                        posX = graph.getNode(p.get("id").toString()).getAttribute("x");
-                        posY = graph.getNode(p.get("id").toString()).getAttribute("y");
+                        Object[] xyz = graph.getNode(p.get("id").toString()).getAttribute("xyz");
+                        System.out.println("xyz): " + xyz);
+                        posX = Double.parseDouble(xyz[0].toString());
+                        posY = Double.parseDouble(xyz[1].toString());
+                        System.out.println("posX): " + posX);
+                        System.out.println("posY): " + posY);
+                        graph.getNode(p.get("id").toString()).setAttribute("x", posX);
+                        graph.getNode(p.get("id").toString()).setAttribute("y", posY);
                     }
                     else {
-                        posX -= 5;
+                        posX -= 200;
+                        System.out.println("posX): " + posX);
                         graph.getNode(p.get("id").toString()).setAttribute("x", posX);
+                        graph.getNode(p.get("id").toString()).setAttribute("y", posY);
                     }
 //                    addEdgeToGraph(graph, p.get("id").toString(), t.get("id").toString(), TypeOfRelationship.RELATED_TO, "black", "", true);
                 

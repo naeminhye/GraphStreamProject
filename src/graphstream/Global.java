@@ -15,6 +15,7 @@ public class Global {
             // restrict instantiation
     }
     public static String DRIVER = Constants.DRIVER;//"bolt";
+    public static String HOST = Constants.HOST;//"localhost";
     public static String PORT = Constants.PORT;//"7687";
     public static String USERNAME = Constants.USERNAME;//"neo4j";
     public static String PASSWORD = Constants.PASSWORD;//"1234";

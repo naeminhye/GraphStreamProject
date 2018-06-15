@@ -16,6 +16,7 @@ public class Constants {
     }
 
     public static String DRIVER = "bolt";
+    public static String HOST = "localhost";
     public static String PORT = "7687";
     public static final String USERNAME = "neo4j";//"reader";
     public static final String PASSWORD = "1234";
