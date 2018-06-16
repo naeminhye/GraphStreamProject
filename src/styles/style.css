@@ -51,8 +51,10 @@ edge:clicked {
 }
 
 edge.highlight {
-    size: 3px; 
-    fill-color: #ffff66;
+    size: 2px; 
+    fill-color: red;
+    arrow-shape: arrow; 
+    arrow-size: 6px, 4px;
     text-mode: normal; 
     text-padding: 3px, 2px; 
     text-background-mode: rounded-box; 

@@ -297,11 +297,14 @@ public class MouseHandler implements ViewerListener {
             }
             for (Edge edge : graph.getEachEdge()) {
                 for (Edge edgeOfThisNode : thisNode.getEachEdge()){
-//                    edgeOfThisNode.setAttribute("ui.style", "size: 3px; fill-color: #ffff66; text-mode: normal; text-padding: 3px, 2px; text-background-mode: rounded-box; text-background-color: #e6e6e6e6;");
-                    edgeOfThisNode.addAttribute("ui.class", "highlight");
+                    edgeOfThisNode.setAttribute("ui.style", "size: 2px; fill-color: #ffff66; text-mode: normal; text-padding: 3px, 2px; text-background-mode: rounded-box; text-background-color: #e6e6e6e6;");
+//                    edgeOfThisNode.addAttribute("ui.class", "highlight");
                     if(!edge.getId().equals(edgeOfThisNode.getId())) {
-//                        edge.setAttribute("ui.style", "shadow-mode: none; size: 1px; fill-color: #000000; text-mode: hidden; ");
-                    edgeOfThisNode.removeAttribute("ui.class");
+                        edge.setAttribute("ui.style", "shadow-mode: none; size: 1px; fill-color: #e6e6e6; text-mode: hidden; ");
+                        if(edge.hasAttribute("ui.class")) {
+                            edge.removeAttribute("ui.class");
+                            edge.addAttribute("ui.class", "highlight");
+                        }
                     }
                 }
             }

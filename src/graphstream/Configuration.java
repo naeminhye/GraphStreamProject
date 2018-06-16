@@ -45,7 +45,8 @@ public class Configuration extends javax.swing.JFrame {
                 break;
         }
         
-        portTxtBox.setText(Global.HOST);
+        hostTxtBox.setText(Global.HOST);
+        portTxtBox.setText(Global.PORT);
         userNameTxtBox.setText(Global.USERNAME);
         passWordTxtBox.setText(Global.PASSWORD);
     }

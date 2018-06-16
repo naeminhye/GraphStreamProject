@@ -5,7 +5,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,7 +20,10 @@ import java.awt.geom.Line2D;
 import java.util.Iterator;
 import java.awt.Component;
 import java.awt.Container;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.JFrame;
@@ -67,26 +69,6 @@ public class GraphUtils {
                     }
                 }
             }
-            
-//            if(graph.getNode(NodeId) != null) { 
-//                System.out.println("[LABEL]: " + graph.getNode(NodeId).getAttribute("ui.label").toString());
-//                graph.getNode(NodeId).addAttribute("ui.label", label);
-//            }
-            
-        
-//            if(!graphInfo.getObject().isNull("hidden_nodes")) {
-//                JSONArray hidden_nodes = (JSONArray) graphInfo.getObject().getJSONArray("hidden_nodes");
-//                for(Object _node: hidden_nodes) {
-//                    JSONObject node = (JSONObject) _node;
-//                    graph.getNode(node.get("id").toString()).removeAttribute("ui.hide");
-//                    graph.getNode(node.get("id").toString()).getEnteringEdgeSet().forEach(edge -> {
-//                        edge.removeAttribute("ui.hide");
-//                    });
-//                    graph.getNode(node.get("id").toString()).getLeavingEdgeSet().forEach(edge -> {
-//                        edge.removeAttribute("ui.hide");
-//                    });
-//                }
-//            }
         }
         return label;
     }
@@ -170,23 +152,8 @@ public class GraphUtils {
      */
     public static void showLessNodeInfo(Graph graph, String NodeId, StorageObject graphInfo) { 
         if(graph.getNode(NodeId) != null) { 
-//            graph.getNode(NodeId).addAttribute("ui.label", "Node ID: " + NodeId);
             graph.getNode(NodeId).setAttribute("ui.style", "text-mode: hidden;");
         }
-        
-//        if(!graphInfo.getObject().isNull("hidden_nodes")) {
-//            JSONArray hidden_nodes = (JSONArray) graphInfo.getObject().getJSONArray("hidden_nodes");
-//                for(Object _node: hidden_nodes) {
-//                    JSONObject node = (JSONObject) _node;
-//                    graph.getNode(node.get("id").toString()).addAttribute("ui.hide");
-//                    graph.getNode(node.get("id").toString()).getEnteringEdgeSet().forEach(edge -> {
-//                        edge.addAttribute("ui.hide");
-//                    });
-//                    graph.getNode(node.get("id").toString()).getLeavingEdgeSet().forEach(edge -> {
-//                        edge.addAttribute("ui.hide");
-//                    });
-//                }
-//        }
     }
     
     public static void addNodeToGraph(Graph graph, JSONObject nodeObj, String color, boolean isHidden) {
@@ -285,6 +252,7 @@ public class GraphUtils {
         /** TODO: Kiểm tra nếu Topic có màu rồi thì lấy màu có sẳn */
         Random random;
         String colorCode;
+        DateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm:ss a");
         
         ResultSet rs = null;
         PreparedStatement stmt = null;
@@ -293,72 +261,82 @@ public class GraphUtils {
         Connection con = null;
         try {
             con = DriverManager.getConnection(Global.CONNECTION_URL, Global.USERNAME, Global.PASSWORD);
+            System.out.println("[" + dateFormat.format(Calendar.getInstance().getTime()) + "] Connecting " + con +" ...");
+            /** Kiểm tra connection */
             if(con == null) {
-                System.out.println("null connection: " + con);
+                System.out.println("[" + dateFormat.format(Calendar.getInstance().getTime()) + "] No connection!");
             }
-            System.out.println("connection: " + con);
-            stmt = con.prepareStatement(query);
-            rs = stmt.executeQuery();
-            
-            while (rs.next()) {                
-                /** In node với màu ngẫu nhiên */
-                random = new Random();
-                if(graph.getNodeCount() == 0) {
-                    // Import style từ file css thông qua lớp StyleImporter
-                    String style = getStyle("style.css");
-                    // Add style vào graph
-                    graph.addAttribute("ui.stylesheet", style);
-                }
-                
-                JSONObject p1 = new JSONObject(rs.getString("p1"));
-                JSONObject p2 = new JSONObject(rs.getString("p2"));
-                JSONObject t = new JSONObject(rs.getString("t"));
-                String prop = String.valueOf(rs.getDouble("prop"));
-                /** 
-                 *  Tạo một JSONObject lưu các relationship loại related_to,
-                 *  mỗi Obj lưu giá trị node paper, topic, tỉ lệ topic và màu của topic
-                 */
-                JSONObject related_to = new JSONObject()
-                                            .put("paper", p1.get("id").toString())
-                                            .put("topic", t.get("id").toString())
-                                            .put("proportion", prop);
-                JSONObject cites = new JSONObject()
-                                            .put("sourcePaper", p1.get("id").toString())
-                                            .put("targetPaper", p2.get("id").toString());
-                
-                graphInfo.putObjectToArray("papers_having_topics", p1, false);
-                graphInfo.putObjectToArray("papers", p1, false);
-                
-                if(graphInfo.hasPutObjectToArray("hidden_nodes", p1)) {
-                    makeNodeVisible(graph, p1, graphInfo);
-                }
-                graphInfo.putObjectToArray("shown_nodes", p1, false);
-                addNodeToGraph(graph, p1, "", false);
+            else {
+                System.out.println("[" + dateFormat.format(Calendar.getInstance().getTime()) + "] Database connected.");
+                stmt = con.prepareStatement(query);
+                rs = stmt.executeQuery();
 
-                if(!graphInfo.hasPutObjectToArray("shown_nodes", p2)) {
-                    graphInfo.putObjectToArray("hidden_nodes", p2, false);
-                }
-                graphInfo.putObjectToArray("papers", p2, false);
-                addNodeToGraph(graph, p2, "", true);
-                graphInfo.putObjectToArray("cites", cites, false);
-                addEdgeToGraph(graph, p1.get("id").toString(), p2.get("id").toString(), TypeOfRelationship.CITES, "black", "", true);
-                graphInfo.putObjectToArray("cites", cites, false);
-                
-                if(graphInfo.hasPutObjectToArray("topics", t)) {
-                    colorCode = graphInfo.getObject().getJSONObject("topic_colors").get(t.get("id").toString()).toString();
+                if(rs != null && rs.next()) {
+                    do {             
+                        /** In node với màu ngẫu nhiên */
+                        random = new Random();
+                        if(graph.getNodeCount() == 0) {
+                            // Import style từ file css thông qua lớp StyleImporter
+                            String style = getStyle("style.css");
+                            // Add style vào graph
+                            graph.addAttribute("ui.stylesheet", style);
+                        }
+
+                        JSONObject p1 = new JSONObject(rs.getString("p1"));
+                        JSONObject p2 = new JSONObject(rs.getString("p2"));
+                        JSONObject t = new JSONObject(rs.getString("t"));
+                        String prop = String.valueOf(rs.getDouble("prop"));
+                        /** 
+                         *  Tạo một JSONObject lưu các relationship loại related_to,
+                         *  mỗi Obj lưu giá trị node paper, topic, tỉ lệ topic và màu của topic
+                         */
+                        JSONObject related_to = new JSONObject()
+                                                    .put("paper", p1.get("id").toString())
+                                                    .put("topic", t.get("id").toString())
+                                                    .put("proportion", prop);
+                        JSONObject cites = new JSONObject()
+                                                    .put("sourcePaper", p1.get("id").toString())
+                                                    .put("targetPaper", p2.get("id").toString());
+
+                        graphInfo.putObjectToArray("papers_having_topics", p1, false);
+                        graphInfo.putObjectToArray("papers", p1, false);
+
+                        if(graphInfo.hasPutObjectToArray("hidden_nodes", p1)) {
+                            makeNodeVisible(graph, p1, graphInfo);
+                        }
+                        graphInfo.putObjectToArray("shown_nodes", p1, false);
+                        addNodeToGraph(graph, p1, "", false);
+
+                        if(!graphInfo.hasPutObjectToArray("shown_nodes", p2)) {
+                            graphInfo.putObjectToArray("hidden_nodes", p2, false);
+                        }
+                        graphInfo.putObjectToArray("papers", p2, false);
+                        addNodeToGraph(graph, p2, "", true);
+                        graphInfo.putObjectToArray("cites", cites, false);
+                        addEdgeToGraph(graph, p1.get("id").toString(), p2.get("id").toString(), TypeOfRelationship.CITES, "black", "", true);
+                        graphInfo.putObjectToArray("cites", cites, false);
+
+                        if(graphInfo.hasPutObjectToArray("topics", t)) {
+                            colorCode = graphInfo.getObject().getJSONObject("topic_colors").get(t.get("id").toString()).toString();
+                        }
+                        else {
+                            colorCode = String.format("#%06x", random.nextInt(256*256*256));
+                        }
+                        graphInfo.putObjectToArray("topics", t, false);
+                        addNodeToGraph(graph, t, colorCode, false);
+                        graphInfo.putKeyValueToObject("topic_colors", t.get("id").toString(), colorCode, false);
+                        graphInfo.putObjectToArray("shown_nodes", t, false);
+
+                        related_to.put("color", colorCode);
+                        graphInfo.putObjectToArray("related_to", related_to, false);
+                        addEdgeToGraph(graph, p1.get("id").toString(), t.get("id").toString(), TypeOfRelationship.RELATED_TO, "black", prop, false);
+
+                    } while (rs.next());
                 }
                 else {
-                    colorCode = String.format("#%06x", random.nextInt(256*256*256));
+                    
+                    System.out.println("[" + dateFormat.format(Calendar.getInstance().getTime()) + "] No result.");
                 }
-                graphInfo.putObjectToArray("topics", t, false);
-                addNodeToGraph(graph, t, colorCode, false);
-                graphInfo.putKeyValueToObject("topic_colors", t.get("id").toString(), colorCode, false);
-                graphInfo.putObjectToArray("shown_nodes", t, false);
-                
-                related_to.put("color", colorCode);
-                graphInfo.putObjectToArray("related_to", related_to, false);
-                addEdgeToGraph(graph, p1.get("id").toString(), t.get("id").toString(), TypeOfRelationship.RELATED_TO, "black", prop, false);
-                
             }
         } 
         catch (SQLException ex) {
@@ -367,47 +345,13 @@ public class GraphUtils {
         finally {  
             if (rs != null) try { rs.close(); } catch(Exception e) {}  
             if (stmt != null) try { stmt.close(); } catch(Exception e) {}  
-            if (con != null) try { con.close(); } catch(Exception e) {}  
+            if (con != null) try { 
+                con.close(); 
+                System.out.println("[" + dateFormat.format(Calendar.getInstance().getTime()) + "] Connection closed.");
+            } catch(Exception e) {}  
         }  
         
-        System.out.println("graphInfo: " + graphInfo.getObject());
-//        if(!graphInfo.getObject().isNull("papers_having_topics")) {
-//
-//            /** 
-//             *  Với mỗi node Paper trong graph,
-//             *  thêm mảng bao gồm các proportion vào attribute "ui.pie-values".
-//             */
-//            for(Object _paper: graphInfo.getObject().getJSONArray("papers_having_topics")) {
-//                JSONObject paper = (JSONObject) _paper;
-//                ArrayList<String> proportion = new ArrayList<>();
-//                ArrayList<String> colors = new ArrayList<>();
-//                String paperId = paper.get("id").toString();
-//                for(Object _rls: graphInfo.getObject().getJSONArray("related_to")) {
-//                    JSONObject rls = (JSONObject) _rls;
-//                    rls.put("color", graphInfo.getObject().getJSONObject("topic_colors").get(rls.getString("topic")));
-//
-//                    if(rls.getString("paper").equals(paperId)) {
-//                        proportion.add(rls.getString("proportion"));
-//                        colors.add(rls.getString("color"));
-//                    }
-//                }
-//
-//                /** Màu trắng là dành cho % còn lại trong biểu đồ tròn. */
-//                colors.add("#cccccc"); 
-//
-//                graph.getNode(paperId).addAttribute("ui.style", "fill-color: " + GraphUtils.printString(colors.toArray(new String[colors.size()]), ",") + "; shape: pie-chart;");
-//                graph.getNode(paperId).addAttribute("ui.pie-values", GraphUtils.printStringForDouble(proportion.toArray(new String[proportion.size()]), ","));
-//                    
-//            }
-//            
-//            if(!graphInfo.getObject().isNull("topics")) {
-//                for(Object _topic: graphInfo.getObject().getJSONArray("topics")) {
-//                    JSONObject topic = (JSONObject) _topic;
-//                    String color = graphInfo.getObject().getJSONObject("topic_colors").get(topic.get("id").toString()).toString();
-//                    addNodeToGraph(graph, topic, color, false);
-//                }
-//            }
-//        }
+        System.out.println("[INFO] Graph's information: " + graphInfo.getObject());
     }
     
     /** 
@@ -419,6 +363,7 @@ public class GraphUtils {
     private static void runTimelineQuery(String query, Graph graph, StorageObject graphInfo) {
         Random random;
         String colorCode;
+        DateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm:ss a");
            
         ResultSet rs = null;
         PreparedStatement stmt = null;
@@ -426,82 +371,90 @@ public class GraphUtils {
         Connection con = null;
         try {
             con = DriverManager.getConnection(Global.CONNECTION_URL, Global.USERNAME, Global.PASSWORD);
+            System.out.println("[" + dateFormat.format(Calendar.getInstance().getTime()) + "] Connecting " + con +" ...");
             if(con == null) {
-                System.out.println("null connection: " + con);
+                System.out.println("[" + dateFormat.format(Calendar.getInstance().getTime()) + "] No connection!");
             }
-            System.out.println("connection: " + con);
-            stmt = con.prepareStatement(query);
-            rs = stmt.executeQuery();
-            
-            while (rs.next()) {             
-                /** In node với màu ngẫu nhiên */
-                random = new Random();     
-                // Import style từ file css thông qua lớp StyleImporter
-                String style = getStyle("style.css");
-                // Add style vào graph
-                graph.addAttribute("ui.stylesheet", style);
+            else {
+                System.out.println("[" + dateFormat.format(Calendar.getInstance().getTime()) + "] Database connected.");
+                stmt = con.prepareStatement(query);
+                rs = stmt.executeQuery();
                 
-                JSONObject p = new JSONObject(rs.getString("p"));  
-                JSONObject t = new JSONObject(rs.getString("t"));
-                String prop = String.valueOf(rs.getDouble("prop"));
-                JSONObject p1 = new JSONObject(rs.getString("p1"));
-                String year = String.valueOf(rs.getInt("year"));
-                JSONObject related_to = new JSONObject()
-                                            .put("paper", p.get("id").toString())
-                                            .put("topic", t.get("id").toString())
-                                            .put("proportion", prop);
-                JSONObject cites = new JSONObject()
-                                            .put("sourcePaper", p.get("id").toString())
-                                            .put("targetPaper", p1.get("id").toString());
-                
-                graphInfo.putObjectToArray("papers_having_topics", p, false);
-                if(graphInfo.hasPutObjectToArray("hidden_nodes", p)) {
-                    makeNodeVisible(graph, p, graphInfo);
-                }
-                graphInfo.putObjectToArray("shown_nodes", p, false);
-                graphInfo.putObjectToArray("papers", p, false);
-                addNodeToGraph(graph, p, "", false);
-                if(p1.get("Year").toString().equals(year)) {
-                    graphInfo.putObjectToArray("shown_nodes", p1, false);
-                    graphInfo.putObjectToArray("papers", p1, false);
-                    addNodeToGraph(graph, p1, "", false);
-                    graphInfo.putObjectToArray("cites", cites, false);
-                    addEdgeToGraph(graph, p.get("id").toString(), p1.get("id").toString(), TypeOfRelationship.CITES, "black", "", false);
-                
+                if(rs != null && rs.next()) {
+                    do {             
+                        /** In node với màu ngẫu nhiên */
+                        random = new Random();     
+                        // Import style từ file css thông qua lớp StyleImporter
+                        String style = getStyle("style.css");
+                        // Add style vào graph
+                        graph.addAttribute("ui.stylesheet", style);
+
+                        JSONObject p = new JSONObject(rs.getString("p"));  
+                        JSONObject t = new JSONObject(rs.getString("t"));
+                        String prop = String.valueOf(rs.getDouble("prop"));
+                        JSONObject p1 = new JSONObject(rs.getString("p1"));
+                        String year = String.valueOf(rs.getInt("year"));
+                        JSONObject related_to = new JSONObject()
+                                                    .put("paper", p.get("id").toString())
+                                                    .put("topic", t.get("id").toString())
+                                                    .put("proportion", prop);
+                        JSONObject cites = new JSONObject()
+                                                    .put("sourcePaper", p.get("id").toString())
+                                                    .put("targetPaper", p1.get("id").toString());
+
+                        graphInfo.putObjectToArray("papers_having_topics", p, false);
+                        if(graphInfo.hasPutObjectToArray("hidden_nodes", p)) {
+                            makeNodeVisible(graph, p, graphInfo);
+                        }
+                        graphInfo.putObjectToArray("shown_nodes", p, false);
+                        graphInfo.putObjectToArray("papers", p, false);
+                        addNodeToGraph(graph, p, "", false);
+                        if(p1.get("Year").toString().equals(year)) {
+                            graphInfo.putObjectToArray("shown_nodes", p1, false);
+                            graphInfo.putObjectToArray("papers", p1, false);
+                            addNodeToGraph(graph, p1, "", false);
+                            graphInfo.putObjectToArray("cites", cites, false);
+                            addEdgeToGraph(graph, p.get("id").toString(), p1.get("id").toString(), TypeOfRelationship.CITES, "black", "", false);
+
+                        }
+                        else {
+                            if(!graphInfo.hasPutObjectToArray("shown_nodes", p1)) {
+                                graphInfo.putObjectToArray("hidden_nodes", p1, false);
+                                graphInfo.putObjectToArray("papers", p1, false);
+                                addNodeToGraph(graph, p1, "", true);
+                                graphInfo.putObjectToArray("cites", cites, false);
+                                addEdgeToGraph(graph, p.get("id").toString(), p1.get("id").toString(), TypeOfRelationship.CITES, "black", "", true);
+
+                            }
+
+                        }
+
+                        graphInfo.putKeyValueToArray("years", year, p.get("id").toString(), false);
+
+                        if(graphInfo.hasPutObjectToArray("topics", t)) {
+                            colorCode = graphInfo.getObject().getJSONObject("topic_colors").get(t.get("id").toString()).toString();
+                        }
+                        else {
+                            colorCode = String.format("#%06x", random.nextInt(256*256*256));
+                        }
+
+                        graphInfo.putObjectToArray("topics", t, false);
+                        addNodeToGraph(graph, t, colorCode, true);
+                        graphInfo.putKeyValueToObject("topic_colors", t.get("id").toString(), colorCode, false);
+
+                        if(!graphInfo.hasPutObjectToArray("shown_nodes", t)) {
+                            graphInfo.putObjectToArray("hidden_nodes", t, false);
+                        }
+
+                        related_to.put("color", colorCode);
+                        graphInfo.putObjectToArray("related_to", related_to, false);
+                        addEdgeToGraph(graph, p.get("id").toString(), t.get("id").toString(), TypeOfRelationship.RELATED_TO, "black", prop, true);
+
+                    } while (rs.next());
                 }
                 else {
-                    if(!graphInfo.hasPutObjectToArray("shown_nodes", p1)) {
-                        graphInfo.putObjectToArray("hidden_nodes", p1, false);
-                        graphInfo.putObjectToArray("papers", p1, false);
-                        addNodeToGraph(graph, p1, "", true);
-                        graphInfo.putObjectToArray("cites", cites, false);
-                        addEdgeToGraph(graph, p.get("id").toString(), p1.get("id").toString(), TypeOfRelationship.CITES, "black", "", true);
-
-                    }
-                    
+                    System.out.println("[" + dateFormat.format(Calendar.getInstance().getTime()) + "] No result.");
                 }
-                
-                graphInfo.putKeyValueToArray("years", year, p.get("id").toString(), false);
-                
-                if(graphInfo.hasPutObjectToArray("topics", t)) {
-                    colorCode = graphInfo.getObject().getJSONObject("topic_colors").get(t.get("id").toString()).toString();
-                }
-                else {
-                    colorCode = String.format("#%06x", random.nextInt(256*256*256));
-                }
-                
-                graphInfo.putObjectToArray("topics", t, false);
-                addNodeToGraph(graph, t, colorCode, true);
-                graphInfo.putKeyValueToObject("topic_colors", t.get("id").toString(), colorCode, false);
-
-                if(!graphInfo.hasPutObjectToArray("shown_nodes", t)) {
-                    graphInfo.putObjectToArray("hidden_nodes", t, false);
-                }
-                
-                related_to.put("color", colorCode);
-                graphInfo.putObjectToArray("related_to", related_to, false);
-                addEdgeToGraph(graph, p.get("id").toString(), t.get("id").toString(), TypeOfRelationship.RELATED_TO, "black", prop, true);
-                
             }
         } 
         catch (SQLException ex) {
@@ -510,84 +463,12 @@ public class GraphUtils {
         finally {  
             if (rs != null) try { rs.close(); } catch(Exception e) {}  
             if (stmt != null) try { stmt.close(); } catch(Exception e) {}  
-            if (con != null) try { con.close(); } catch(Exception e) {}  
+            if (con != null) try { 
+                con.close(); 
+                System.out.println("[" + dateFormat.format(Calendar.getInstance().getTime()) + "] Connection closed.");
+            } catch(Exception e) {}  
         }  
-        System.out.println("graphInfo: " + graphInfo.getObject());
-        
-//        if(!graphInfo.getObject().isNull("years")) {  
-//            Random _random;
-//            String _colorCode;          
-//            Object[] yearKeys = invertUsingFor(graphInfo.getObject().getJSONObject("years").keySet().toArray());
-//            int index = 0;
-//            int numOfYears = graphInfo.getObject().getJSONObject("years").length();
-//            float width = 1000 / numOfYears;
-//            for(Object yearKey: yearKeys) {
-//                String year = yearKey.toString();
-//                /** In node với màu ngẫu nhiên */
-//                _random = new Random();
-//                _colorCode = String.format("#%06x", _random.nextInt(256*256*256));
-//                int _length = graphInfo.getObject().getJSONObject("years").getJSONArray(year).length();
-//                for(int i = _length - 1; i >= 0; i--) {
-////                    System.out.println("panel.getHeight(): " + panel.getHeight());
-//                    String nodeId = (String) graphInfo.getObject().getJSONObject("years").getJSONArray(year).getString(i);
-//                    float x = (float)Math.random() * ((width * (index + 1)) - (width * index)) + width * index;
-//                    float y = (float)Math.random() * (200 - 0.0f) + 0.0f;
-//                    graph.getNode(nodeId).setAttribute("xyz", x, y, 0);
-//                    graph.getNode(nodeId).addAttribute("layout.frozen");
-////                    graph.getNode(nodeId).setAttribute("ui.style", "stroke-color: " + colorCode + "; stroke-width: 2");
-//                }
-//                index ++;
-//            }
-//        }
-//        if(!graphInfo.getObject().isNull("papers_having_topics")) {
-//
-//            /** 
-//             *  Với mỗi node Paper trong graph,
-//             *  thêm mảng bao gồm các proportion vào attribute "ui.pie-values".
-//             */
-//            for(Object _paper: graphInfo.getObject().getJSONArray("papers_having_topics")) {
-//                JSONObject paper = (JSONObject) _paper;
-//                ArrayList<String> proportion = new ArrayList<>();
-//                ArrayList<String> colors = new ArrayList<>();
-//                String paperId = paper.get("id").toString();
-//                for(Object _rls: graphInfo.getObject().getJSONArray("related_to")) {
-//                    JSONObject rls = (JSONObject) _rls;
-//                    rls.put("color", graphInfo.getObject().getJSONObject("topic_colors").get(rls.getString("topic")));
-//
-//                    if(rls.getString("paper").equals(paperId)) {
-//                        proportion.add(rls.getString("proportion"));
-//                        colors.add(rls.getString("color"));
-//                    }
-//                }
-//
-//                /** Màu trắng là dành cho % còn lại trong biểu đồ tròn. */
-//                colors.add("#cccccc"); 
-//
-//                graph.getNode(paperId).setAttribute("ui.style", "fill-color: " + GraphUtils.printString(colors.toArray(new String[colors.size()]), ",") + "; shape: pie-chart;");
-//                graph.getNode(paperId).setAttribute("ui.pie-values", GraphUtils.printStringForDouble(proportion.toArray(new String[proportion.size()]), ","));
-//                    
-//            }
-//        }
-//        
-//        if(!graphInfo.getObject().isNull("hidden_nodes")) {  
-////            Random random;
-//            for(Object _node: graphInfo.getObject().getJSONArray("hidden_nodes")) {
-//                JSONObject node = (JSONObject) _node;
-//                setPositionToNode(graph.getNode(node.get("id").toString()));
-////                float x = (float)Math.random() * (panel.getWidth() - 0.0f) + 0.0f;
-////                float y = (float)Math.random() * (panel.getHeight() - 0.0f) + 0.0f;
-////                graph.getNode(node.get("id").toString()).setAttribute("xyz", x, y, 0);
-////                graph.getNode(node.get("id").toString()).addAttribute("layout.frozen");
-//            }
-//        }
-//            
-//        if(!graphInfo.getObject().isNull("topics")) {
-//            for(Object _topic: graphInfo.getObject().getJSONArray("topics")) {
-//                JSONObject topic = (JSONObject) _topic;
-//                String color = graphInfo.getObject().getJSONObject("topic_colors").get(topic.get("id").toString()).toString();
-//                addNodeToGraph(graph, topic, color, false);
-//            }
-//        }
+        System.out.println("[INFO] Graph's information: " + graphInfo.getObject());
     }
     
     /** 
@@ -600,6 +481,7 @@ public class GraphUtils {
 //        int colCount= rs.getMetaData().getColumnCount();
         Random random;  
         String colorCode;
+        DateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm:ss a");
            
         ResultSet rs = null;
         PreparedStatement stmt = null;
@@ -607,61 +489,66 @@ public class GraphUtils {
         Connection con = null;
         try {     
             con = DriverManager.getConnection(Global.CONNECTION_URL, Global.USERNAME, Global.PASSWORD);
+            System.out.println("[" + dateFormat.format(Calendar.getInstance().getTime()) + "] Connecting " + con +" ...");
             if(con == null) {
-                System.out.println("null connection: " + con);
+                System.out.println("[" + dateFormat.format(Calendar.getInstance().getTime()) + "] No connection!");
             }
-            System.out.println("connection: " + con);
-            stmt = con.prepareStatement(query);
-            rs = stmt.executeQuery();
-            int colCount = rs.getMetaData().getColumnCount();
-            System.out.println("colCount: " + colCount);
-            while (rs.next()) {   
-                JSONObject t = new JSONObject(rs.getString("t"));
-                graphInfo.putObjectToArray("shown_nodes", t, false);
-                graphInfo.putObjectToArray("topics", t, false);
-//                addNodeToGraph(graph, t, "purple", true);
-            double posX = 0;
-            double posY = 0;
-
-                for(int i = 0; i < colCount / 5; i++) {
-                    JSONObject p = new JSONObject(rs.getString("p" + i));
-                    graphInfo.putObjectToArray("shown_nodes", p, false);
-                    graphInfo.putObjectToArray("papers", p, false);
-                    addNodeToGraph(graph, p, "", false);
-                    if(i == 0) {
-                        Object[] xyz = graph.getNode(p.get("id").toString()).getAttribute("xyz");
-                        System.out.println("xyz): " + xyz);
-                        posX = Double.parseDouble(xyz[0].toString());
-                        posY = Double.parseDouble(xyz[1].toString());
-                        System.out.println("posX): " + posX);
-                        System.out.println("posY): " + posY);
-                        graph.getNode(p.get("id").toString()).setAttribute("x", posX);
-                        graph.getNode(p.get("id").toString()).setAttribute("y", posY);
-                    }
-                    else {
-                        posX -= 200;
-                        System.out.println("posX): " + posX);
-                        graph.getNode(p.get("id").toString()).setAttribute("x", posX);
-                        graph.getNode(p.get("id").toString()).setAttribute("y", posY);
-                    }
-//                    addEdgeToGraph(graph, p.get("id").toString(), t.get("id").toString(), TypeOfRelationship.RELATED_TO, "black", "", true);
+            else {
+                System.out.println("[" + dateFormat.format(Calendar.getInstance().getTime()) + "] Database connected.");
+                stmt = con.prepareStatement(query);
+                rs = stmt.executeQuery();
+                int colCount = rs.getMetaData().getColumnCount();
                 
-                    if(i != colCount / 5 - 1) {
-                        String temp = "p" + (i + 1);
-                        JSONObject pNext = new JSONObject(rs.getString(temp));
-                        graphInfo.putObjectToArray("shown_nodes", pNext, false);
-                    graphInfo.putObjectToArray("papers", pNext, false);
-                        addNodeToGraph(graph, pNext, "", false);
-                        JSONObject cites = new JSONObject()
-                                                .put("sourcePaper", p.get("id").toString())
-                                                .put("targetPaper", pNext.get("id").toString());
-                        graphInfo.putObjectToArray("cites", cites, false);
-                        addEdgeToGraph(graph, p.get("id").toString(), pNext.get("id").toString(), TypeOfRelationship.CITES, "red", "", false);
-                        graph.getEdge(p.get("id").toString() + "_" + pNext.get("id").toString()).setAttribute("ui.style", "fill-color: red;");
-//                        addEdgeToGraph(graph, pNext.get("id").toString(), t.get("id").toString(), TypeOfRelationship.RELATED_TO, "black", "", true);
+                if(rs != null && rs.next()) {
+                    do {  
+                        JSONObject t = new JSONObject(rs.getString("t"));
+                        graphInfo.putObjectToArray("shown_nodes", t, false);
+                        graphInfo.putObjectToArray("topics", t, false);
+                        // addNodeToGraph(graph, t, "purple", true);
+                        double posX = 0;
+                        double posY = 0;
 
-                    }
-                }           
+                        for(int i = 0; i < colCount / 5; i++) {
+                            JSONObject p = new JSONObject(rs.getString("p" + i));
+                            graphInfo.putObjectToArray("shown_nodes", p, false);
+                            graphInfo.putObjectToArray("papers", p, false);
+                            addNodeToGraph(graph, p, "", false);
+                            if(i == 0) {
+                                Object[] xyz = graph.getNode(p.get("id").toString()).getAttribute("xyz");
+                                posX = Double.parseDouble(xyz[0].toString());
+                                posY = Double.parseDouble(xyz[1].toString());
+                                graph.getNode(p.get("id").toString()).setAttribute("x", posX);
+                                graph.getNode(p.get("id").toString()).setAttribute("y", posY);
+                            }
+                            else {
+                                posX -= 200;
+                                graph.getNode(p.get("id").toString()).setAttribute("x", posX);
+                                graph.getNode(p.get("id").toString()).setAttribute("y", posY);
+                            }
+                            addEdgeToGraph(graph, p.get("id").toString(), t.get("id").toString(), TypeOfRelationship.RELATED_TO, "black", "", true);
+
+                            if(i != colCount / 5 - 1) {
+                                String temp = "p" + (i + 1);
+                                JSONObject pNext = new JSONObject(rs.getString(temp));
+                                graphInfo.putObjectToArray("shown_nodes", pNext, false);
+                                graphInfo.putObjectToArray("papers", pNext, false);
+                                addNodeToGraph(graph, pNext, "", false);
+                                JSONObject cites = new JSONObject()
+                                                        .put("sourcePaper", p.get("id").toString())
+                                                        .put("targetPaper", pNext.get("id").toString());
+                                graphInfo.putObjectToArray("cites", cites, false);
+                                addEdgeToGraph(graph, p.get("id").toString(), pNext.get("id").toString(), TypeOfRelationship.CITES, "black", "", false);
+                                graph.getEdge(p.get("id").toString() + "_" + pNext.get("id").toString()).addAttribute("ui.class", "highlight");
+        //                        graph.getEdge(p.get("id").toString() + "_" + pNext.get("id").toString()).setAttribute("ui.style", "fill-color: red;");
+                                addEdgeToGraph(graph, pNext.get("id").toString(), t.get("id").toString(), TypeOfRelationship.RELATED_TO, "black", "", true);
+
+                            }
+                        } 
+                    } while (rs.next());
+                }
+                else {
+                    System.out.println("[" + dateFormat.format(Calendar.getInstance().getTime()) + "] No result.");
+                }
             }
         }
         catch (SQLException ex) {
@@ -672,10 +559,10 @@ public class GraphUtils {
             if (stmt != null) try { stmt.close(); } catch(Exception e) {}  
             if (con != null) try { 
                 con.close(); 
-                System.out.println("Connection closed.");
+                System.out.println("[" + dateFormat.format(Calendar.getInstance().getTime()) + "] Connection closed.");
             } catch(Exception e) {}  
         }  
-        System.out.println("graphInfo: " + graphInfo.getObject());
+        System.out.println("[INFO] Graph's information: " + graphInfo.getObject());
     }
     
     public static boolean reset(JFrame frame, Graph graph, StorageObject graphInfo) {
@@ -727,25 +614,25 @@ public class GraphUtils {
             }
         }
         runGraphQuery(query, graph, graphInfo);
-        System.out.println("[QUERY]: " + query);
+        System.out.println("[INFO] Query: " + query);
     }
     
     public static void setTimeline(int startYear, int endYear, String topic, Graph graph, StorageObject graphInfo, int limit) {
         String query;
-        if(topic == "All") {
-            query = "MATCH (p: Paper)-[r:RELATED_TO]->(t: Topic), (p)-[:CITES]->(p1:Paper) WHERE p.Year = " + startYear + " RETURN t, p, p1, p.Year AS year, r.Proportion AS prop ORDER BY p LIMIT " + limit;
+        if(topic.equals("All")) {
+            query = "MATCH (p: Paper)-[r:RELATED_TO]->(t: Topic), (p)-[:CITES]->(p1: Paper) WHERE p.Year = " + startYear + " RETURN t, p, p1, p.Year AS year, r.Proportion AS prop ORDER BY p LIMIT " + limit;
             for(int year = startYear + 1; year <= endYear; year ++) {
                 query += " UNION MATCH (p: Paper)-[r:RELATED_TO]->(t: Topic), (p)-[:CITES]->(p1:Paper) WHERE p.Year = " + year + " RETURN t, p, p1, p.Year AS year, r.Proportion AS prop ORDER BY p LIMIT " + limit;
             }
         }
         else {
-            query = "MATCH (p: Paper)-[:RELATED_TO]->(t: Topic), (p)-[:CITES]->(p1: Paper) WHERE p.Year = " + startYear + " AND t.TopicId = " + topic + " RETURN t, p, p.Year AS year, p1 ORDER BY p LIMIT " + limit;
+            query = "MATCH (p: Paper)-[r:RELATED_TO]->(t: Topic), (p)-[:CITES]->(p1: Paper) WHERE p.Year = " + startYear + " AND t.TopicId = " + topic + " RETURN t, p, p1, p.Year AS year, r.Proportion AS prop ORDER BY p LIMIT " + limit;
             for(int year = startYear + 1; year <= endYear; year ++) {
-                query += " UNION MATCH (p: Paper)-[:RELATED_TO]->(t: Topic), (p)-[:CITES]->(p1: Paper) WHERE p.Year = " + year + " AND t.TopicId = " + topic + " RETURN t, p, p.Year AS year, p1 ORDER BY p LIMIT " + limit;
+                query += " UNION MATCH (p: Paper)-[r:RELATED_TO]->(t: Topic), (p)-[:CITES]->(p1: Paper) WHERE p.Year = " + year + " AND t.TopicId = " + topic + " RETURN t, p, p1, p.Year AS year, r.Proportion AS prop ORDER BY p LIMIT " + limit;
             }
         }
         runTimelineQuery(query, graph, graphInfo);
-        System.out.println("[QUERY]: " + query);
+        System.out.println("[INFO] Query: " + query);
     }
     
     public static void setPaperFlow(String paperId, String topicId, int count, int limit, Graph graph, StorageObject graphInfo) {
@@ -766,7 +653,7 @@ public class GraphUtils {
         query += ", t LIMIT " + limit;
         runPaperFlowQuery(query, graph, graphInfo);
 
-        System.out.println("[QUERY]: " + query);
+        System.out.println("[INFO] Query: " + query);
     }
     
     public static void showGraphOnPanel(Graph graph, StorageObject graphInfo, JPanel panel, InfiniteProgressPanel glassPane) {
@@ -867,11 +754,11 @@ public class GraphUtils {
     }
     
     public static void setUpGraphStyle(Graph graph, StorageObject graphInfo, JPanel panel) {
-        // Import style từ file css thông qua lớp StyleImporter
-        String style = getStyle("style.css");
-        // Add style vào graph
-        graph.addAttribute("ui.stylesheet", style);
-        
+//        // Import style từ file css thông qua lớp StyleImporter
+//        String style = getStyle("style.css");
+//        // Add style vào graph
+//        graph.addAttribute("ui.stylesheet", style);
+//        
         if(!graphInfo.getObject().isNull("years")) {  
             Random _random;
             String _colorCode;          
@@ -1045,7 +932,7 @@ public class GraphUtils {
                     flag = true;
                     String _query = "MATCH (p1:Paper)-[r:RELATED_TO]->(t:Topic), (p1)-[:CITES]->(p2:Paper) WHERE ID(t) = " + nodeId + " RETURN p1, p2, t, r.Proportion AS prop LIMIT " + limit;
                     runGraphQuery(_query, graph, graphInfo);
-                    System.out.println("[QUERY]: " + _query);
+                    System.out.println("[INFO] Query: " + _query);
                 }
             }
         }
@@ -1064,7 +951,7 @@ public class GraphUtils {
             
             String query = "MATCH (p1:Paper)-[r:RELATED_TO]->(t:Topic), (p1)-[:CITES]->(p2:Paper) WHERE ID(p1) = " + nodeId + " RETURN p1, p2, t, r.Proportion AS prop LIMIT " + limit;
             runGraphQuery(query, graph, graphInfo);
-            System.out.println("[QUERY]: " + query);
+            System.out.println("[INFO] Query: " + query);
         }
     }
     
