@@ -31,8 +31,8 @@ public class Configuration extends javax.swing.JFrame {
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
         
-        Image settingIcon = new ImageIcon(Constants.WORKING_DIRECTORY + "/src/images/icon-setting.png").getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH);
-        this.setIconImage(settingIcon);
+//        Image settingIcon = new javax.swing.ImageIcon(Constants.WORKING_DIRECTORY + "/src/main/resources/images/icon-setting.png").getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH);
+//        this.setIconImage(settingIcon);
         
         switch(Global.DRIVER) {
             case "bolt":
@@ -80,6 +80,7 @@ public class Configuration extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Configuration");
+        setIconImage(new javax.swing.ImageIcon(Constants.WORKING_DIRECTORY + "/src/main/resources/images/icon-setting.png").getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH));
         setResizable(false);
 
         jPanel1.setLayout(null);
@@ -148,7 +149,7 @@ public class Configuration extends javax.swing.JFrame {
         jPanel1.add(hostTxtBox);
         hostTxtBox.setBounds(370, 260, 150, 30);
 
-        background.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/background01.png"))); // NOI18N
+        background.setIcon(new javax.swing.ImageIcon(getClass().getResource("/main/resources/images/background01.png"))); // NOI18N
         jPanel1.add(background);
         background.setBounds(0, 0, 560, 559);
 

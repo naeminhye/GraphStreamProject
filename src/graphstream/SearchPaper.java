@@ -41,8 +41,8 @@ public class SearchPaper extends javax.swing.JFrame {
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
         
-        Image appIcon = new ImageIcon(Constants.WORKING_DIRECTORY + "/src/images/app-icon.png").getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH);
-        this.setIconImage(appIcon);
+//        Image appIcon = new ImageIcon(Constants.WORKING_DIRECTORY + "/src/main/resources/images/app-icon.png").getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH);
+//        this.setIconImage(appIcon);
         
         // Set giá trị mặc định cho 2 number box startYear và endYear
         endYear.setValue(1981);        
@@ -51,30 +51,30 @@ public class SearchPaper extends javax.swing.JFrame {
         count.setValue(5);
         showPnlBtn.setVisible(false);
 
-        Image iconInfo = new ImageIcon(Constants.WORKING_DIRECTORY + "/src/images/icon-info.png").getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH);
-        infoBtn.setIcon(new ImageIcon(iconInfo));
-        infoBtn.setContentAreaFilled(false);
+//        Image iconInfo = (Image)new ImageIcon(Constants.WORKING_DIRECTORY + "/src/main/resources/images/icon-info.png").getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH);
+//        infoBtn.setIcon(new ImageIcon((Image)new ImageIcon(Constants.WORKING_DIRECTORY + "/src/main/resources/images/icon-info.png").getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH)));
+//        infoBtn.setContentAreaFilled(false);
         
-        Image iconHelp = new ImageIcon(Constants.WORKING_DIRECTORY + "/src/images/icon-help.png").getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH);
-        shortCutBtn.setIcon(new ImageIcon(iconHelp));
-        shortCutBtn.setContentAreaFilled(false);
+//        Image iconHelp = (Image) new ImageIcon(Constants.WORKING_DIRECTORY + "/src/main/resources/images/icon-help.png").getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH);
+//        shortCutBtn.setIcon(new ImageIcon((Image) new ImageIcon(Constants.WORKING_DIRECTORY + "/src/main/resources/images/icon-help.png").getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH)));
+//        shortCutBtn.setContentAreaFilled(false);
         
-        Image iconSearchMore = new ImageIcon(Constants.WORKING_DIRECTORY + "/src/images/icon-search.png").getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH);
-        searchMoreBtn.setIcon(new ImageIcon(iconSearchMore));
-        searchMoreBtn.setContentAreaFilled(false);
-        searchPaperBtn.setIcon(new ImageIcon(iconSearchMore));
-        searchPaperBtn.setContentAreaFilled(false);
+//        Image iconSearchMore = (Image) new ImageIcon(Constants.WORKING_DIRECTORY + "/src/main/resources/images/icon-search.png").getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH);
+//        searchMoreBtn.setIcon(new ImageIcon((Image) new ImageIcon(Constants.WORKING_DIRECTORY + "/src/main/resources/images/icon-search.png").getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH)));
+//        searchMoreBtn.setContentAreaFilled(false);
+//        searchPaperBtn.setIcon(new ImageIcon(iconSearchMore));
+//        searchPaperBtn.setContentAreaFilled(false);
         
-        Image iconSetting = new ImageIcon(Constants.WORKING_DIRECTORY + "/src/images/icon-setting.png").getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH);
-        settingBtn.setIcon(new ImageIcon(iconSetting));
-        settingBtn.setContentAreaFilled(false);
+//        Image iconSetting = (Image) new ImageIcon(Constants.WORKING_DIRECTORY + "/src/main/resources/images/icon-setting.png").getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH);
+//        settingBtn.setIcon(new ImageIcon((Image) new ImageIcon(Constants.WORKING_DIRECTORY + "/src/main/resources/images/icon-setting.png").getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH)));
+//        settingBtn.setContentAreaFilled(false);
         
-        Image showPanel = new ImageIcon(Constants.WORKING_DIRECTORY + "/src/images/show-panel.png").getImage().getScaledInstance(23, 23, java.awt.Image.SCALE_SMOOTH);
-        Image hidePanel = new ImageIcon(Constants.WORKING_DIRECTORY + "/src/images/hide-panel.png").getImage().getScaledInstance(23, 23, java.awt.Image.SCALE_SMOOTH);
-        showPnlBtn.setIcon(new ImageIcon(showPanel));
-        showPnlBtn.setContentAreaFilled(false);
-        hidePnlBtn.setIcon(new ImageIcon(hidePanel));
-        hidePnlBtn.setContentAreaFilled(false);
+//        Image showPanel = (Image) new ImageIcon(Constants.WORKING_DIRECTORY + "/src/main/resources/images/show-panel.png").getImage().getScaledInstance(23, 23, java.awt.Image.SCALE_SMOOTH);
+//        Image hidePanel = (Image) new ImageIcon(Constants.WORKING_DIRECTORY + "/src/main/resources/images/hide-panel.png").getImage().getScaledInstance(23, 23, java.awt.Image.SCALE_SMOOTH);
+//        showPnlBtn.setIcon(new ImageIcon((Image) new ImageIcon(Constants.WORKING_DIRECTORY + "/src/main/resources/images/show-panel.png").getImage().getScaledInstance(23, 23, java.awt.Image.SCALE_SMOOTH)));
+//        showPnlBtn.setContentAreaFilled(false);
+//        hidePnlBtn.setIcon(new ImageIcon((Image) new ImageIcon(Constants.WORKING_DIRECTORY + "/src/main/resources/images/hide-panel.png").getImage().getScaledInstance(23, 23, java.awt.Image.SCALE_SMOOTH)));
+//        hidePnlBtn.setContentAreaFilled(false);
         
         glassPane = new InfiniteProgressPanel("Loading ...", 8);
         this.setGlassPane(glassPane);
@@ -136,13 +136,16 @@ public class SearchPaper extends javax.swing.JFrame {
         setTitle("Search Paper");
         setBackground(new java.awt.Color(255, 255, 255));
         setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        setIconImage(new ImageIcon(Constants.WORKING_DIRECTORY + "/src/main/resources/images/app-icon.png").getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH));
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
             }
         });
 
+        showPnlBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/main/resources/images/show-panel.png"))); // NOI18N
         showPnlBtn.setToolTipText("Show Control Panel");
+        showPnlBtn.setContentAreaFilled(false);
         showPnlBtn.setMaximumSize(new java.awt.Dimension(28, 23));
         showPnlBtn.setMinimumSize(new java.awt.Dimension(28, 23));
         showPnlBtn.setPreferredSize(new java.awt.Dimension(28, 23));
@@ -160,7 +163,7 @@ public class SearchPaper extends javax.swing.JFrame {
         jPanel1.setToolTipText("GraphStream");
         jPanel1.setLayout(null);
 
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/icon-gs.png"))); // NOI18N
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/main/resources/images/icon-gs.png"))); // NOI18N
         jLabel1.setMaximumSize(new java.awt.Dimension(80, 80));
         jLabel1.setMinimumSize(new java.awt.Dimension(80, 80));
         jLabel1.setPreferredSize(new java.awt.Dimension(80, 80));
@@ -195,8 +198,10 @@ public class SearchPaper extends javax.swing.JFrame {
         autoLayoutChkBox.setText("Enable Auto Layout");
 
         searchPaperBtn.setBackground(new java.awt.Color(255, 255, 255));
+        searchPaperBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/main/resources/images/icon-search.png"))); // NOI18N
         searchPaperBtn.setToolTipText("Search");
         searchPaperBtn.setBorder(null);
+        searchPaperBtn.setContentAreaFilled(false);
         searchPaperBtn.setIconTextGap(0);
         searchPaperBtn.setName("searchMoreBtn"); // NOI18N
         searchPaperBtn.setPreferredSize(new java.awt.Dimension(30, 30));
@@ -232,7 +237,7 @@ public class SearchPaper extends javax.swing.JFrame {
                         .addGap(44, 44, 44)
                         .addComponent(autoLayoutChkBox)
                         .addGap(18, 18, 18)
-                        .addComponent(searchPaperBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(searchPaperBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(controlPanel1Layout.createSequentialGroup()
                         .addComponent(topicSelection, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(23, 23, 23)
@@ -282,8 +287,10 @@ public class SearchPaper extends javax.swing.JFrame {
         selectedTopic.setName("selectedTopic"); // NOI18N
 
         searchMoreBtn.setBackground(new java.awt.Color(255, 255, 255));
+        searchMoreBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/main/resources/images/icon-search.png"))); // NOI18N
         searchMoreBtn.setToolTipText("Search");
         searchMoreBtn.setBorder(null);
+        searchMoreBtn.setContentAreaFilled(false);
         searchMoreBtn.setIconTextGap(0);
         searchMoreBtn.setName("searchMoreBtn"); // NOI18N
         searchMoreBtn.setPreferredSize(new java.awt.Dimension(30, 30));
@@ -346,7 +353,9 @@ public class SearchPaper extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
+        hidePnlBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/main/resources/images/hide-panel.png"))); // NOI18N
         hidePnlBtn.setToolTipText("Hide Control Panel");
+        hidePnlBtn.setContentAreaFilled(false);
         hidePnlBtn.setMaximumSize(new java.awt.Dimension(28, 23));
         hidePnlBtn.setMinimumSize(new java.awt.Dimension(28, 23));
         hidePnlBtn.setPreferredSize(new java.awt.Dimension(28, 23));
@@ -357,8 +366,10 @@ public class SearchPaper extends javax.swing.JFrame {
         });
 
         shortCutBtn.setBackground(new java.awt.Color(255, 255, 255));
+        shortCutBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/main/resources/images/icon-help.png"))); // NOI18N
         shortCutBtn.setToolTipText("Help");
         shortCutBtn.setBorder(null);
+        shortCutBtn.setContentAreaFilled(false);
         shortCutBtn.setIconTextGap(0);
         shortCutBtn.setName("infoBtn"); // NOI18N
         shortCutBtn.setPreferredSize(new java.awt.Dimension(30, 30));
@@ -369,8 +380,10 @@ public class SearchPaper extends javax.swing.JFrame {
         });
 
         settingBtn.setBackground(new java.awt.Color(255, 255, 255));
+        settingBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/main/resources/images/icon-setting.png"))); // NOI18N
         settingBtn.setToolTipText("Configuration");
         settingBtn.setBorder(null);
+        settingBtn.setContentAreaFilled(false);
         settingBtn.setIconTextGap(0);
         settingBtn.setName("infoBtn"); // NOI18N
         settingBtn.setPreferredSize(new java.awt.Dimension(30, 30));
@@ -381,8 +394,10 @@ public class SearchPaper extends javax.swing.JFrame {
         });
 
         infoBtn.setBackground(new java.awt.Color(255, 255, 255));
+        infoBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/main/resources/images/icon-info.png"))); // NOI18N
         infoBtn.setToolTipText("About");
         infoBtn.setBorder(null);
+        infoBtn.setContentAreaFilled(false);
         infoBtn.setIconTextGap(0);
         infoBtn.setName("infoBtn"); // NOI18N
         infoBtn.setPreferredSize(new java.awt.Dimension(30, 30));

@@ -128,12 +128,12 @@ public class MouseHandler implements ViewerListener {
                                         ToggleNodeOff(graph.getNode(selectedPaper), sman);
                                     }
                                     selectedPaper = selectedId;
-                                    sprite.setAttribute("ui.style", "fill-image: url('src/images/icon-ok.png');");
+                                    sprite.setAttribute("ui.style", "fill-image: url('src/main/resources/images/icon-ok.png');");
                                     
                                 }
                                 else {
                                     selectedPaper = "";
-                                    sprite.setAttribute("ui.style", "fill-image: url('src/images/icon-plus.png');");
+                                    sprite.setAttribute("ui.style", "fill-image: url('src/main/resources/images/icon-plus.png');");
                                 }
                                 break;
                             case TOPIC: 
@@ -142,11 +142,11 @@ public class MouseHandler implements ViewerListener {
                                         ToggleNodeOff(graph.getNode(selectedTopic), sman);
                                     }
                                     selectedTopic = selectedId;
-                                    sprite.setAttribute("ui.style", "fill-image: url('src/images/icon-ok.png');");
+                                    sprite.setAttribute("ui.style", "fill-image: url('src/main/resources/images/icon-ok.png');");
                                 }
                                 else {
                                     selectedTopic = "";
-                                    sprite.setAttribute("ui.style", "fill-image: url('src/images/icon-plus.png');");
+                                    sprite.setAttribute("ui.style", "fill-image: url('src/main/resources/images/icon-plus.png');");
                                 }
                                 break;
                             default: 
@@ -328,7 +328,7 @@ public class MouseHandler implements ViewerListener {
         node.removeAttribute("ui.clicked");
         node.setAttribute("ui.style", "size: 10px;");
         if(sman.hasSprite(node.getId())) {
-            sman.getSprite(node.getId()).setAttribute("ui.style", "fill-image: url('src/images/icon-plus.png');");
+            sman.getSprite(node.getId()).setAttribute("ui.style", "fill-image: url('src/main/resources/images/icon-plus.png');");
             sman.getSprite(node.getId()).setAttribute("ui.hide");
             sman.getSprite(node.getId()).detach();
             sman.removeSprite(node.getId());

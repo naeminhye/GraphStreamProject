@@ -17,8 +17,8 @@ public class About extends javax.swing.JFrame {
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
         
-        Image helpIcon = new ImageIcon(Constants.WORKING_DIRECTORY + "/src/images/icon-help.png").getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH);
-        this.setIconImage(helpIcon);
+//        Image helpIcon = new ImageIcon(Constants.WORKING_DIRECTORY + "/src/main/resources/images/icon-help.png").getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH);
+//        this.setIconImage(helpIcon);
     }
 
     /**
@@ -38,6 +38,7 @@ public class About extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("About");
+        setIconImage(new ImageIcon(Constants.WORKING_DIRECTORY + "/src/main/resources/images/icon-info.png").getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH));
         setResizable(false);
 
         panel.setLayout(null);
@@ -66,7 +67,7 @@ public class About extends javax.swing.JFrame {
         panel.add(tutorInfo);
         tutorInfo.setBounds(110, 230, 160, 90);
 
-        background.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/background02.png"))); // NOI18N
+        background.setIcon(new javax.swing.ImageIcon(getClass().getResource("/main/resources/images/background02.png"))); // NOI18N
         panel.add(background);
         background.setBounds(0, -20, 800, 560);
 

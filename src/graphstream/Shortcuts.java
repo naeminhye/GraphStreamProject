@@ -25,8 +25,8 @@ public class Shortcuts extends javax.swing.JFrame {
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
         
-        Image shortCutIcon = new ImageIcon(Constants.WORKING_DIRECTORY + "/src/images/icon-pin-pad.png").getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH);
-        this.setIconImage(shortCutIcon);
+//        Image shortCutIcon = new ImageIcon(Constants.WORKING_DIRECTORY + "/src/main/resources/images/icon-help.png").getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH);
+//        this.setIconImage(shortCutIcon);
     }
 
     /**
@@ -57,6 +57,7 @@ public class Shortcuts extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Shortcuts");
         setBackground(new java.awt.Color(255, 255, 255));
+        setIconImage(new ImageIcon(Constants.WORKING_DIRECTORY + "/src/main/resources/images/icon-help.png").getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH));
         setResizable(false);
         setType(java.awt.Window.Type.POPUP);
 
@@ -65,16 +66,16 @@ public class Shortcuts extends javax.swing.JFrame {
         label4.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         label4.setText("Move Right:");
 
-        Ctrl1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/icon-ctrl.png"))); // NOI18N
+        Ctrl1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/main/resources/images/icon-ctrl.png"))); // NOI18N
         Ctrl1.setContentAreaFilled(false);
 
-        Reduce.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/icon-reduce.png"))); // NOI18N
+        Reduce.setIcon(new javax.swing.ImageIcon(getClass().getResource("/main/resources/images/icon-reduce.png"))); // NOI18N
         Reduce.setContentAreaFilled(false);
 
-        Add.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/icon-add.png"))); // NOI18N
+        Add.setIcon(new javax.swing.ImageIcon(getClass().getResource("/main/resources/images/icon-add.png"))); // NOI18N
         Add.setContentAreaFilled(false);
 
-        Ctrl2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/icon-ctrl.png"))); // NOI18N
+        Ctrl2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/main/resources/images/icon-ctrl.png"))); // NOI18N
         Ctrl2.setContentAreaFilled(false);
 
         label6.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
@@ -83,25 +84,25 @@ public class Shortcuts extends javax.swing.JFrame {
         label7.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         label7.setText("Zoom Out:");
 
-        Ctrl3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/icon-right.png"))); // NOI18N
+        Ctrl3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/main/resources/images/icon-right.png"))); // NOI18N
         Ctrl3.setContentAreaFilled(false);
 
         label5.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         label5.setText("Move Left:");
 
-        Ctrl4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/icon-left.png"))); // NOI18N
+        Ctrl4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/main/resources/images/icon-left.png"))); // NOI18N
         Ctrl4.setContentAreaFilled(false);
 
         label8.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         label8.setText("Move Up:");
 
-        Ctrl5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/icon-up.png"))); // NOI18N
+        Ctrl5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/main/resources/images/icon-up.png"))); // NOI18N
         Ctrl5.setContentAreaFilled(false);
 
         label9.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         label9.setText("Move Down:");
 
-        Ctrl6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/icon-down.png"))); // NOI18N
+        Ctrl6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/main/resources/images/icon-down.png"))); // NOI18N
         Ctrl6.setContentAreaFilled(false);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
