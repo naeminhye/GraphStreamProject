@@ -25,8 +25,8 @@ public class Shortcuts extends javax.swing.JFrame {
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
         
-        Image helpIcon = new ImageIcon(Constants.WORKING_DIRECTORY + "/src/images/icon-help.png").getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH);
-        this.setIconImage(helpIcon);
+        Image shortCutIcon = new ImageIcon(Constants.WORKING_DIRECTORY + "/src/images/icon-pin-pad.png").getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH);
+        this.setIconImage(shortCutIcon);
     }
 
     /**
@@ -45,6 +45,7 @@ public class Shortcuts extends javax.swing.JFrame {
         label5 = new java.awt.Label();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Shortcuts");
         setBackground(new java.awt.Color(255, 255, 255));
         setType(java.awt.Window.Type.POPUP);
 

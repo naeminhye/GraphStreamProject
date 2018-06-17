@@ -248,7 +248,8 @@ public class GraphUtils {
      * @param graph
      * @param shownNodes 
      */
-    private static void runGraphQuery(String query, Graph graph, StorageObject graphInfo) {
+    private static String runGraphQuery(String query, Graph graph, StorageObject graphInfo) {
+        String note = "";
         /** TODO: Kiểm tra nếu Topic có màu rồi thì lấy màu có sẳn */
         Random random;
         String colorCode;
@@ -332,9 +333,10 @@ public class GraphUtils {
                         addEdgeToGraph(graph, p1.get("id").toString(), t.get("id").toString(), TypeOfRelationship.RELATED_TO, "black", prop, false);
 
                     } while (rs.next());
+                    note = "This graph has " + graph.getNodeCount() + " nodes.";
                 }
                 else {
-                    
+                    note = "No result.";
                     System.out.println("[" + dateFormat.format(Calendar.getInstance().getTime()) + "] No result.");
                 }
             }
@@ -352,6 +354,7 @@ public class GraphUtils {
         }  
         
         System.out.println("[INFO] Graph's information: " + graphInfo.getObject());
+        return note;
     }
     
     /** 
@@ -360,7 +363,8 @@ public class GraphUtils {
      * @param graph
      * @param graphInfo 
      */
-    private static void runTimelineQuery(String query, Graph graph, StorageObject graphInfo) {
+    private static String runTimelineQuery(String query, Graph graph, StorageObject graphInfo) {
+        String note = "";
         Random random;
         String colorCode;
         DateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm:ss a");
@@ -451,8 +455,10 @@ public class GraphUtils {
                         addEdgeToGraph(graph, p.get("id").toString(), t.get("id").toString(), TypeOfRelationship.RELATED_TO, "black", prop, true);
 
                     } while (rs.next());
+                    note = "This graph has " + graph.getNodeCount() + " nodes.";
                 }
                 else {
+                    note = "No result.";
                     System.out.println("[" + dateFormat.format(Calendar.getInstance().getTime()) + "] No result.");
                 }
             }
@@ -469,6 +475,7 @@ public class GraphUtils {
             } catch(Exception e) {}  
         }  
         System.out.println("[INFO] Graph's information: " + graphInfo.getObject());
+        return note;
     }
     
     /** 
@@ -477,8 +484,8 @@ public class GraphUtils {
      * @param graph
      * @param graphInfo 
      */
-    private static void runPaperFlowQuery(String query, Graph graph, StorageObject graphInfo) {
-//        int colCount= rs.getMetaData().getColumnCount();
+    private static String runPaperFlowQuery(String query, Graph graph, StorageObject graphInfo) {
+        String note = "";
         Random random;  
         String colorCode;
         DateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm:ss a");
@@ -545,8 +552,10 @@ public class GraphUtils {
                             }
                         } 
                     } while (rs.next());
+                    note = "This graph has " + graph.getNodeCount() + " nodes.";
                 }
                 else {
+                    note = "No result.";
                     System.out.println("[" + dateFormat.format(Calendar.getInstance().getTime()) + "] No result.");
                 }
             }
@@ -563,6 +572,7 @@ public class GraphUtils {
             } catch(Exception e) {}  
         }  
         System.out.println("[INFO] Graph's information: " + graphInfo.getObject());
+        return note;
     }
     
     public static boolean reset(JFrame frame, Graph graph, StorageObject graphInfo) {
@@ -598,7 +608,7 @@ public class GraphUtils {
      * @param graphInfo //shownNodes 
      * @param limit 
      */
-    public static void setGraph(int startYear, int endYear, String topic, Graph graph, StorageObject graphInfo, int limit) {
+    public static void setGraph(int startYear, int endYear, String topic, Graph graph, StorageObject graphInfo, int limit, JPanel panel, InfiniteProgressPanel glassPane, boolean autoLayout) {
         String query;
         if(topic.equals("All")) {
 //            query = "MATCH (p1:Paper)-[r:RELATED_TO]->(t:Topic), (p1)-[:CITES]->(p2:Paper) WHERE p1.Year >= " + startYear + " AND p1.Year <= " + endYear + " RETURN p1, p2, t, r.Proportion AS prop LIMIT " + limit;
@@ -613,11 +623,12 @@ public class GraphUtils {
                 query += " UNION MATCH (p1:Paper)-[r:RELATED_TO]->(t:Topic), (p1)-[:CITES]->(p2:Paper) WHERE p1.Year = " + year + " AND t.TopicId = " + topic + " RETURN p1, p2, t, r.Proportion AS prop LIMIT " + limit;
             }
         }
-        runGraphQuery(query, graph, graphInfo);
+        String note = runGraphQuery(query, graph, graphInfo);
         System.out.println("[INFO] Query: " + query);
+        showOnPanel(graph, graphInfo, panel, glassPane, autoLayout, note);
     }
     
-    public static void setTimeline(int startYear, int endYear, String topic, Graph graph, StorageObject graphInfo, int limit) {
+    public static void setTimeline(int startYear, int endYear, String topic, Graph graph, StorageObject graphInfo, int limit, JPanel panel, InfiniteProgressPanel glassPane, boolean autoLayout) {
         String query;
         if(topic.equals("All")) {
             query = "MATCH (p: Paper)-[r:RELATED_TO]->(t: Topic), (p)-[:CITES]->(p1: Paper) WHERE p.Year = " + startYear + " RETURN t, p, p1, p.Year AS year, r.Proportion AS prop ORDER BY p LIMIT " + limit;
@@ -631,11 +642,12 @@ public class GraphUtils {
                 query += " UNION MATCH (p: Paper)-[r:RELATED_TO]->(t: Topic), (p)-[:CITES]->(p1: Paper) WHERE p.Year = " + year + " AND t.TopicId = " + topic + " RETURN t, p, p1, p.Year AS year, r.Proportion AS prop ORDER BY p LIMIT " + limit;
             }
         }
-        runTimelineQuery(query, graph, graphInfo);
+        String note = runTimelineQuery(query, graph, graphInfo);
         System.out.println("[INFO] Query: " + query);
+        showOnPanel(graph, graphInfo, panel, glassPane, autoLayout, note);
     }
     
-    public static void setPaperFlow(String paperId, String topicId, int count, int limit, Graph graph, StorageObject graphInfo) {
+    public static void setPaperFlow(String paperId, String topicId, int count, int limit, Graph graph, StorageObject graphInfo, JPanel panel, InfiniteProgressPanel glassPane, boolean autoLayout) {
         String query = "MATCH (p0:Paper)-[:RELATED_TO]->(t:Topic), ";
         for(int i = 1; i < count; i++) {
                 query += "(p" + i + ":Paper)-[:RELATED_TO]->(t), (p" + (i - 1) + ")-[:CITES]->(p" + i + ") ";
@@ -651,82 +663,13 @@ public class GraphUtils {
                 }
         }
         query += ", t LIMIT " + limit;
-        runPaperFlowQuery(query, graph, graphInfo);
-
+        
+        String note = runPaperFlowQuery(query, graph, graphInfo);
         System.out.println("[INFO] Query: " + query);
+        showOnPanel(graph, graphInfo, panel, glassPane, autoLayout, note);
     }
-//    
-//    public static void showGraphOnPanel(Graph graph, StorageObject graphInfo, JPanel panel, InfiniteProgressPanel glassPane) {
-//               
-//        /** Tạo View Panel để chứa Graph    */
-//        Viewer viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
-//        viewer.enableAutoLayout(); // cho graph chuyển động       
-//        ViewPanel viewPanel = viewer.addDefaultView(false);    
-////        ((DefaultView) viewPanel).getCamera().setViewCenter(0, 0, 0);
-////        ((DefaultView) viewPanel).setForeLayoutRenderer(new LayerRenderer() {
-////            @Override
-////            public void render(Graphics2D graphics2D, GraphicGraph graphicGraph, double v, int i, int i1, double v1, double v2, double v3, double v4) {
-////                
-////                graphics2D.setColor(Color.BLACK);
-////                graphics2D.drawString("Hello", 50, 50);
-////            }
-////        });
-//        
-//        panel.removeAll();
-//        panel.setLayout(new GridLayout());
-//        //Panel chứa graph
-//        panel.add(viewPanel);
-//        panel.revalidate();
-//        
-//        // Xử lí sự kiện về Mouse của View Panel
-//        ViewerPipe fromViewer = viewer.newViewerPipe();
-//        fromViewer.addSink(graph);
-//        fromViewer.addViewerListener(new MouseHandler(graph, viewPanel, fromViewer, graphInfo, panel, glassPane, "Graph"));
-//    }
-//    
-//    public static void showTimeLineOnPanel(Graph graph, StorageObject graphInfo, JPanel panel, InfiniteProgressPanel glassPane) {
-//                
-//        /** Tạo View Panel để chứa Graph */
-//        Viewer viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
-////        viewer.enableAutoLayout(); // cho graph chuyển động       
-////        viewer.disableAutoLayout();
-//        
-//        DefaultView view = (DefaultView) viewer.addDefaultView(false);
-//        view.resizeFrame(panel.getWidth(), panel.getHeight());
-//        
-//        columnBackgroundRender(graph, graphInfo, view);
-//        
-//        panel.removeAll();
-//        panel.setLayout(new GridLayout());
-//        /** Panel chứa graph */
-//        panel.add(view);
-//        panel.revalidate();
-//        
-//        /** Xử lí sự kiện về Mouse của View Panel */
-//        ViewerPipe fromViewer = viewer.newViewerPipe();
-//        fromViewer.addSink(graph);
-//        fromViewer.addViewerListener(new MouseHandler(graph, view, fromViewer, graphInfo, panel, glassPane, "Timeline"));
-//
-//    }
-//    
-//    public static void showPaperFlowOnPanel(Graph graph, StorageObject graphInfo, JPanel panel, InfiniteProgressPanel glassPane) {
-//        /** Tạo View Panel để chứa Graph    */
-//        Viewer viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
-////        viewer.enableAutoLayout(); // cho graph chuyển động       
-//        ViewPanel viewPanel = viewer.addDefaultView(false);    
-//        panel.removeAll();
-//        panel.setLayout(new GridLayout());
-//        //Panel chứa graph
-//        panel.add(viewPanel);
-//        panel.revalidate();
-//        
-//        // Xử lí sự kiện về Mouse của View Panel
-//        ViewerPipe fromViewer = viewer.newViewerPipe();
-//        fromViewer.addSink(graph);
-//        fromViewer.addViewerListener(new MouseHandler(graph, viewPanel, fromViewer, graphInfo, panel, glassPane, "Flow"));
-//    }
     
-    public static void showOnPanel(Graph graph, StorageObject graphInfo, JPanel panel, InfiniteProgressPanel glassPane, boolean autoLayout) {
+    public static void showOnPanel(Graph graph, StorageObject graphInfo, JPanel panel, InfiniteProgressPanel glassPane, boolean autoLayout, String note) {
                 
         /** Tạo View Panel để chứa Graph */
         Viewer viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
@@ -739,6 +682,7 @@ public class GraphUtils {
         view.resizeFrame(panel.getWidth(), panel.getHeight());
         setUpGraphStyle(graph, graphInfo, panel);
         columnBackgroundRender(graph, graphInfo, view);
+        drawTextOnView(view, note, 20f, 20);
         
         panel.removeAll();
         panel.setLayout(new GridLayout());
@@ -754,10 +698,10 @@ public class GraphUtils {
     }
     
     public static void setUpGraphStyle(Graph graph, StorageObject graphInfo, JPanel panel) {
-//        // Import style từ file css thông qua lớp StyleImporter
-//        String style = getStyle("style.css");
-//        // Add style vào graph
-//        graph.addAttribute("ui.stylesheet", style);
+        // Import style từ file css thông qua lớp StyleImporter
+        String style = getStyle("style.css");
+        // Add style vào graph
+        graph.addAttribute("ui.stylesheet", style);
 //        
         if(!graphInfo.getObject().isNull("years")) {  
             Random _random;
@@ -924,7 +868,7 @@ public class GraphUtils {
      * @param graphInfo
      * @param limit 
      */
-    public static void getMoreNodes(Graph graph, String nodeId, StorageObject graphInfo, int limit){  
+    public static void getMoreNodes(Graph graph, String nodeId, StorageObject graphInfo, int limit, JPanel panel, InfiniteProgressPanel glassPane, boolean autoLayout){  
         boolean flag = false;
         if(!graphInfo.getObject().isNull("topics")) {
             for(Object topic: graphInfo.getObject().getJSONArray("topics")) {
@@ -950,8 +894,9 @@ public class GraphUtils {
             }
             
             String query = "MATCH (p1:Paper)-[r:RELATED_TO]->(t:Topic), (p1)-[:CITES]->(p2:Paper) WHERE ID(p1) = " + nodeId + " RETURN p1, p2, t, r.Proportion AS prop LIMIT " + limit;
-            runGraphQuery(query, graph, graphInfo);
+            String note = runGraphQuery(query, graph, graphInfo);
             System.out.println("[INFO] Query: " + query);
+            showOnPanel(graph, graphInfo, panel, glassPane, autoLayout, note);
         }
     }
     

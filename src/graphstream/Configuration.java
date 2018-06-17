@@ -79,6 +79,7 @@ public class Configuration extends javax.swing.JFrame {
         background = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Configuration");
         setResizable(false);
 
         jPanel1.setLayout(null);

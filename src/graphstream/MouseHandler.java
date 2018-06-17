@@ -156,8 +156,6 @@ public class MouseHandler implements ViewerListener {
                     }
                 }
             }
-//            System.out.println("SELECTED PAPER: " + selectedPaper);
-//            System.out.println("SELECTED TOPIC: " + selectedTopic);
         }
     };
     
@@ -256,25 +254,7 @@ public class MouseHandler implements ViewerListener {
             new Thread(new Runnable() {
                 public void run() {
 //                        graph.getNode(selectedId).setAttribute("ui.frozen");
-                        GraphUtils.getMoreNodes(graph, selectedId, graphInfo, 25);
-                        GraphUtils.showOnPanel(graph, graphInfo, panel, glassPane, autoLayout);
-//                        switch(displayType) {
-//                            case "Graph":
-//                                GraphUtils.showGraphOnPanel(graph, graphInfo, panel, glassPane);
-//                                break;
-//                            case "Timeline":
-//                                GraphUtils.showTimeLineOnPanel(graph, graphInfo, panel, glassPane);
-//                                break;
-//                            case "Flow":
-//                                GraphUtils.showPaperFlowOnPanel(graph, graphInfo, panel, glassPane);
-//                                break;
-//                            case "Free":
-//                                GraphUtils.showOnPanel(graph, graphInfo, panel, glassPane, false);
-//                                break;
-//                            default:
-//                                break;
-//                        }
-
+                        GraphUtils.getMoreNodes(graph, selectedId, graphInfo, 25, panel, glassPane, autoLayout);
                         glassPane.stop();
                     }
             }, "Performer").start();
