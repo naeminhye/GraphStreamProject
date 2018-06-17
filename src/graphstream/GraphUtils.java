@@ -265,6 +265,7 @@ public class GraphUtils {
             System.out.println("[" + dateFormat.format(Calendar.getInstance().getTime()) + "] Connecting " + con +" ...");
             /** Kiểm tra connection */
             if(con == null) {
+                note = "Unable to connect to " + Global.CONNECTION_URL + ", ensure the database is running and that there is a working network connection to it.";
                 System.out.println("[" + dateFormat.format(Calendar.getInstance().getTime()) + "] No connection!");
             }
             else {
@@ -341,7 +342,8 @@ public class GraphUtils {
                 }
             }
         } 
-        catch (SQLException ex) {
+        catch (SQLException ex) { 
+            note = "Unable to connect to " + Global.CONNECTION_URL + " with username " + Global.USERNAME + ", ensure the database is running and that there is a working network connection to it, and check if the client is authorized.";
             Logger.getLogger(GraphUtils.class.getName()).log(Level.SEVERE, null, ex);
         } 
         finally {  
@@ -377,6 +379,7 @@ public class GraphUtils {
             con = DriverManager.getConnection(Global.CONNECTION_URL, Global.USERNAME, Global.PASSWORD);
             System.out.println("[" + dateFormat.format(Calendar.getInstance().getTime()) + "] Connecting " + con +" ...");
             if(con == null) {
+                note = "Unable to connect to " + Global.CONNECTION_URL + ", ensure the database is running and that there is a working network connection to it.";
                 System.out.println("[" + dateFormat.format(Calendar.getInstance().getTime()) + "] No connection!");
             }
             else {
@@ -464,6 +467,7 @@ public class GraphUtils {
             }
         } 
         catch (SQLException ex) {
+            note = "Unable to connect to " + Global.CONNECTION_URL + " with username " + Global.USERNAME + ", ensure the database is running and that there is a working network connection to it, and check if the client is authorized.";
             Logger.getLogger(GraphUtils.class.getName()).log(Level.SEVERE, null, ex);
         }
         finally {  
@@ -498,6 +502,7 @@ public class GraphUtils {
             con = DriverManager.getConnection(Global.CONNECTION_URL, Global.USERNAME, Global.PASSWORD);
             System.out.println("[" + dateFormat.format(Calendar.getInstance().getTime()) + "] Connecting " + con +" ...");
             if(con == null) {
+                note = "Unable to connect to " + Global.CONNECTION_URL + ", ensure the database is running and that there is a working network connection to it.";
                 System.out.println("[" + dateFormat.format(Calendar.getInstance().getTime()) + "] No connection!");
             }
             else {
@@ -561,6 +566,7 @@ public class GraphUtils {
             }
         }
         catch (SQLException ex) {
+            note = "Unable to connect to " + Global.CONNECTION_URL + " with username " + Global.USERNAME + ", ensure the database is running and that there is a working network connection to it, and check if the client is authorized.";
             Logger.getLogger(GraphUtils.class.getName()).log(Level.SEVERE, null, ex);
         }
         finally {  
