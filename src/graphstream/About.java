@@ -1,23 +1,15 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package graphstream;
 
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Toolkit;
 import javax.swing.ImageIcon;
+import javax.swing.JFrame;
 
-/**
- *
- * @author Hieu Nguyen
- */
 public class About extends javax.swing.JFrame {
 
     /**
-     * Creates new form About
+     * Creates new form MainMenu
      */
     public About() {
         initComponents();
@@ -38,18 +30,55 @@ public class About extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        panel = new javax.swing.JPanel();
+        title = new javax.swing.JLabel();
+        teamInfo = new javax.swing.JLabel();
+        tutorInfo = new javax.swing.JLabel();
+        background = new javax.swing.JLabel();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("About");
+        setResizable(false);
+
+        panel.setLayout(null);
+
+        title.setFont(new java.awt.Font("Tahoma", 1, 36)); // NOI18N
+        title.setForeground(new java.awt.Color(41, 61, 107));
+        title.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        title.setText("<html><body>Đề tài: Trực quan hóa<br>mạng trích dẫn bài báo khoa học<br>sử dụng thư viện GraphStream</body></html>");
+        title.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        panel.add(title);
+        title.setBounds(30, 60, 596, 132);
+
+        teamInfo.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        teamInfo.setForeground(new java.awt.Color(41, 61, 107));
+        teamInfo.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        teamInfo.setText("<html><body><h3>Nhóm thực hiện: </h3><p>Phạm Nữ Tuyết An - 14520010</p><p>Nguyễn Minh Hiếu - 14520287</p></body></html>");
+        teamInfo.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        panel.add(teamInfo);
+        teamInfo.setBounds(370, 240, 194, 90);
+
+        tutorInfo.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        tutorInfo.setForeground(new java.awt.Color(41, 61, 107));
+        tutorInfo.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        tutorInfo.setText("<html><body><h3>Giảng viên hướng dẫn: </h3><p>ThS. Nguyễn Trác Thức</p></body></html>");
+        tutorInfo.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        panel.add(tutorInfo);
+        tutorInfo.setBounds(110, 230, 160, 90);
+
+        background.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/background02.png"))); // NOI18N
+        panel.add(background);
+        background.setBounds(0, -20, 800, 560);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addComponent(panel, javax.swing.GroupLayout.DEFAULT_SIZE, 658, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addComponent(panel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 507, Short.MAX_VALUE)
         );
 
         pack();
@@ -81,6 +110,7 @@ public class About extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(About.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
+        //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -91,5 +121,10 @@ public class About extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel background;
+    private javax.swing.JPanel panel;
+    private javax.swing.JLabel teamInfo;
+    private javax.swing.JLabel title;
+    private javax.swing.JLabel tutorInfo;
     // End of variables declaration//GEN-END:variables
 }

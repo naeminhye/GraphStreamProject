@@ -97,7 +97,7 @@ public class GraphUtils {
                         }
                         
                         DefaultView _view = (DefaultView) view;
-                        drawTextOnView(_view, label, 20f, 20f);
+                        drawTextOnView(_view, label, 20f, 40f);
                         return;
                     }
                 }
@@ -118,7 +118,7 @@ public class GraphUtils {
                         }
                         
                         DefaultView _view = (DefaultView) view;
-                        drawTextOnView(_view, label, 20f, 20f);
+                        drawTextOnView(_view, label, 20f, 40f);
                         return;
                     }
                 }
