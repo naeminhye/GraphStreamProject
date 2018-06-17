@@ -655,82 +655,82 @@ public class GraphUtils {
 
         System.out.println("[INFO] Query: " + query);
     }
-    
-    public static void showGraphOnPanel(Graph graph, StorageObject graphInfo, JPanel panel, InfiniteProgressPanel glassPane) {
-               
-        /** Tạo View Panel để chứa Graph    */
-        Viewer viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
-        viewer.enableAutoLayout(); // cho graph chuyển động       
-        ViewPanel viewPanel = viewer.addDefaultView(false);    
-//        ((DefaultView) viewPanel).getCamera().setViewCenter(0, 0, 0);
-//        ((DefaultView) viewPanel).setForeLayoutRenderer(new LayerRenderer() {
-//            @Override
-//            public void render(Graphics2D graphics2D, GraphicGraph graphicGraph, double v, int i, int i1, double v1, double v2, double v3, double v4) {
+//    
+//    public static void showGraphOnPanel(Graph graph, StorageObject graphInfo, JPanel panel, InfiniteProgressPanel glassPane) {
+//               
+//        /** Tạo View Panel để chứa Graph    */
+//        Viewer viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
+//        viewer.enableAutoLayout(); // cho graph chuyển động       
+//        ViewPanel viewPanel = viewer.addDefaultView(false);    
+////        ((DefaultView) viewPanel).getCamera().setViewCenter(0, 0, 0);
+////        ((DefaultView) viewPanel).setForeLayoutRenderer(new LayerRenderer() {
+////            @Override
+////            public void render(Graphics2D graphics2D, GraphicGraph graphicGraph, double v, int i, int i1, double v1, double v2, double v3, double v4) {
+////                
+////                graphics2D.setColor(Color.BLACK);
+////                graphics2D.drawString("Hello", 50, 50);
+////            }
+////        });
+//        
+//        panel.removeAll();
+//        panel.setLayout(new GridLayout());
+//        //Panel chứa graph
+//        panel.add(viewPanel);
+//        panel.revalidate();
+//        
+//        // Xử lí sự kiện về Mouse của View Panel
+//        ViewerPipe fromViewer = viewer.newViewerPipe();
+//        fromViewer.addSink(graph);
+//        fromViewer.addViewerListener(new MouseHandler(graph, viewPanel, fromViewer, graphInfo, panel, glassPane, "Graph"));
+//    }
+//    
+//    public static void showTimeLineOnPanel(Graph graph, StorageObject graphInfo, JPanel panel, InfiniteProgressPanel glassPane) {
 //                
-//                graphics2D.setColor(Color.BLACK);
-//                graphics2D.drawString("Hello", 50, 50);
-//            }
-//        });
-        
-        panel.removeAll();
-        panel.setLayout(new GridLayout());
-        //Panel chứa graph
-        panel.add(viewPanel);
-        panel.revalidate();
-        
-        // Xử lí sự kiện về Mouse của View Panel
-        ViewerPipe fromViewer = viewer.newViewerPipe();
-        fromViewer.addSink(graph);
-        fromViewer.addViewerListener(new MouseHandler(graph, viewPanel, fromViewer, graphInfo, panel, glassPane, "Graph"));
-    }
+//        /** Tạo View Panel để chứa Graph */
+//        Viewer viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
+////        viewer.enableAutoLayout(); // cho graph chuyển động       
+////        viewer.disableAutoLayout();
+//        
+//        DefaultView view = (DefaultView) viewer.addDefaultView(false);
+//        view.resizeFrame(panel.getWidth(), panel.getHeight());
+//        
+//        columnBackgroundRender(graph, graphInfo, view);
+//        
+//        panel.removeAll();
+//        panel.setLayout(new GridLayout());
+//        /** Panel chứa graph */
+//        panel.add(view);
+//        panel.revalidate();
+//        
+//        /** Xử lí sự kiện về Mouse của View Panel */
+//        ViewerPipe fromViewer = viewer.newViewerPipe();
+//        fromViewer.addSink(graph);
+//        fromViewer.addViewerListener(new MouseHandler(graph, view, fromViewer, graphInfo, panel, glassPane, "Timeline"));
+//
+//    }
+//    
+//    public static void showPaperFlowOnPanel(Graph graph, StorageObject graphInfo, JPanel panel, InfiniteProgressPanel glassPane) {
+//        /** Tạo View Panel để chứa Graph    */
+//        Viewer viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
+////        viewer.enableAutoLayout(); // cho graph chuyển động       
+//        ViewPanel viewPanel = viewer.addDefaultView(false);    
+//        panel.removeAll();
+//        panel.setLayout(new GridLayout());
+//        //Panel chứa graph
+//        panel.add(viewPanel);
+//        panel.revalidate();
+//        
+//        // Xử lí sự kiện về Mouse của View Panel
+//        ViewerPipe fromViewer = viewer.newViewerPipe();
+//        fromViewer.addSink(graph);
+//        fromViewer.addViewerListener(new MouseHandler(graph, viewPanel, fromViewer, graphInfo, panel, glassPane, "Flow"));
+//    }
     
-    public static void showTimeLineOnPanel(Graph graph, StorageObject graphInfo, JPanel panel, InfiniteProgressPanel glassPane) {
+    public static void showOnPanel(Graph graph, StorageObject graphInfo, JPanel panel, InfiniteProgressPanel glassPane, boolean autoLayout) {
                 
         /** Tạo View Panel để chứa Graph */
         Viewer viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
-//        viewer.enableAutoLayout(); // cho graph chuyển động       
-//        viewer.disableAutoLayout();
-        
-        DefaultView view = (DefaultView) viewer.addDefaultView(false);
-        view.resizeFrame(panel.getWidth(), panel.getHeight());
-        
-        columnBackgroundRender(graph, graphInfo, view);
-        
-        panel.removeAll();
-        panel.setLayout(new GridLayout());
-        /** Panel chứa graph */
-        panel.add(view);
-        panel.revalidate();
-        
-        /** Xử lí sự kiện về Mouse của View Panel */
-        ViewerPipe fromViewer = viewer.newViewerPipe();
-        fromViewer.addSink(graph);
-        fromViewer.addViewerListener(new MouseHandler(graph, view, fromViewer, graphInfo, panel, glassPane, "Timeline"));
-
-    }
-    
-    public static void showPaperFlowOnPanel(Graph graph, StorageObject graphInfo, JPanel panel, InfiniteProgressPanel glassPane) {
-        /** Tạo View Panel để chứa Graph    */
-        Viewer viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
-//        viewer.enableAutoLayout(); // cho graph chuyển động       
-        ViewPanel viewPanel = viewer.addDefaultView(false);    
-        panel.removeAll();
-        panel.setLayout(new GridLayout());
-        //Panel chứa graph
-        panel.add(viewPanel);
-        panel.revalidate();
-        
-        // Xử lí sự kiện về Mouse của View Panel
-        ViewerPipe fromViewer = viewer.newViewerPipe();
-        fromViewer.addSink(graph);
-        fromViewer.addViewerListener(new MouseHandler(graph, viewPanel, fromViewer, graphInfo, panel, glassPane, "Flow"));
-    }
-    
-    public static void showOnPanel(Graph graph, StorageObject graphInfo, JPanel panel, InfiniteProgressPanel glassPane, boolean isDynamic) {
-                
-        /** Tạo View Panel để chứa Graph */
-        Viewer viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
-        if(isDynamic) {
+        if(autoLayout) {
             viewer.enableAutoLayout(); // cho graph chuyển động       
         }
 //        viewer.disableAutoLayout();
@@ -749,7 +749,7 @@ public class GraphUtils {
         /** Xử lí sự kiện về Mouse của View Panel */
         ViewerPipe fromViewer = viewer.newViewerPipe();
         fromViewer.addSink(graph);
-        fromViewer.addViewerListener(new MouseHandler(graph, view, fromViewer, graphInfo, panel, glassPane, "Free"));
+        fromViewer.addViewerListener(new MouseHandler(graph, view, fromViewer, graphInfo, panel, glassPane, autoLayout));
 
     }
     

@@ -49,6 +49,7 @@ public class SearchPaper extends javax.swing.JFrame {
         startYear.setValue(1980); 
         limit.setValue(5);
         count.setValue(5);
+        showPnlBtn.setVisible(false);
 
         Image iconHelp = new ImageIcon(Constants.WORKING_DIRECTORY + "/src/images/icon-help.png").getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH);
         infoBtn.setIcon(new ImageIcon(iconHelp));
@@ -62,6 +63,13 @@ public class SearchPaper extends javax.swing.JFrame {
         Image iconSetting = new ImageIcon(Constants.WORKING_DIRECTORY + "/src/images/icon-setting.png").getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH);
         settingBtn.setIcon(new ImageIcon(iconSetting));
         settingBtn.setContentAreaFilled(false);
+        
+        Image showPanel = new ImageIcon(Constants.WORKING_DIRECTORY + "/src/images/show-panel.png").getImage().getScaledInstance(23, 23, java.awt.Image.SCALE_SMOOTH);
+        Image hidePanel = new ImageIcon(Constants.WORKING_DIRECTORY + "/src/images/hide-panel.png").getImage().getScaledInstance(23, 23, java.awt.Image.SCALE_SMOOTH);
+        showPnlBtn.setIcon(new ImageIcon(showPanel));
+        showPnlBtn.setContentAreaFilled(false);
+        hidePnlBtn.setIcon(new ImageIcon(hidePanel));
+        hidePnlBtn.setContentAreaFilled(false);
         
         glassPane = new InfiniteProgressPanel("Loading ...", 8);
         this.setGlassPane(glassPane);
@@ -88,6 +96,10 @@ public class SearchPaper extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        showPnlBtn = new javax.swing.JButton();
+        controlPanel = new javax.swing.JPanel();
+        jPanel1 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
         controlPanel1 = new javax.swing.JPanel();
         lblFrom = new javax.swing.JLabel();
         startYear = new javax.swing.JSpinner();
@@ -99,8 +111,7 @@ public class SearchPaper extends javax.swing.JFrame {
         displaySeletion = new javax.swing.JComboBox<>();
         lblLimit = new javax.swing.JLabel();
         limit = new javax.swing.JSpinner();
-        infoBtn = new javax.swing.JButton();
-        settingBtn = new javax.swing.JButton();
+        autoLayoutChkBox = new javax.swing.JCheckBox();
         searchPaperBtn = new javax.swing.JButton();
         controlPanel2 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
@@ -110,20 +121,45 @@ public class SearchPaper extends javax.swing.JFrame {
         searchMoreBtn = new javax.swing.JButton();
         count = new javax.swing.JSpinner();
         lblLimit1 = new javax.swing.JLabel();
+        hidePnlBtn = new javax.swing.JButton();
+        settingBtn = new javax.swing.JButton();
+        infoBtn = new javax.swing.JButton();
         displayPanel = new javax.swing.JPanel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Search Paper");
         setBackground(new java.awt.Color(255, 255, 255));
         setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowClosed(java.awt.event.WindowEvent evt) {
-                formWindowClosed(evt);
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
             }
         });
 
+        showPnlBtn.setMaximumSize(new java.awt.Dimension(28, 23));
+        showPnlBtn.setMinimumSize(new java.awt.Dimension(28, 23));
+        showPnlBtn.setPreferredSize(new java.awt.Dimension(28, 23));
+        showPnlBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                showPnlBtnActionPerformed(evt);
+            }
+        });
+
+        controlPanel.setBackground(new java.awt.Color(255, 255, 255));
+        controlPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel1.setLayout(null);
+
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/icon-gs.png"))); // NOI18N
+        jLabel1.setMaximumSize(new java.awt.Dimension(80, 80));
+        jLabel1.setMinimumSize(new java.awt.Dimension(80, 80));
+        jLabel1.setPreferredSize(new java.awt.Dimension(80, 80));
+        jPanel1.add(jLabel1);
+        jLabel1.setBounds(0, 20, 120, 60);
+
         controlPanel1.setBackground(new java.awt.Color(204, 204, 204));
-        controlPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        controlPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         controlPanel1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
         lblFrom.setText("From");
@@ -146,27 +182,8 @@ public class SearchPaper extends javax.swing.JFrame {
 
         limit.setMinimumSize(new java.awt.Dimension(30, 20));
 
-        infoBtn.setBackground(new java.awt.Color(255, 255, 255));
-        infoBtn.setBorder(null);
-        infoBtn.setIconTextGap(0);
-        infoBtn.setName("infoBtn"); // NOI18N
-        infoBtn.setPreferredSize(new java.awt.Dimension(30, 30));
-        infoBtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                infoBtnActionPerformed(evt);
-            }
-        });
-
-        settingBtn.setBackground(new java.awt.Color(255, 255, 255));
-        settingBtn.setBorder(null);
-        settingBtn.setIconTextGap(0);
-        settingBtn.setName("infoBtn"); // NOI18N
-        settingBtn.setPreferredSize(new java.awt.Dimension(30, 30));
-        settingBtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                settingBtnActionPerformed(evt);
-            }
-        });
+        autoLayoutChkBox.setBackground(new java.awt.Color(204, 204, 204));
+        autoLayoutChkBox.setText("Enable Auto Layout");
 
         searchPaperBtn.setBackground(new java.awt.Color(255, 255, 255));
         searchPaperBtn.setBorder(null);
@@ -197,55 +214,51 @@ public class SearchPaper extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(controlPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(controlPanel1Layout.createSequentialGroup()
+                        .addComponent(lblDisplay)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(displaySeletion, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(autoLayoutChkBox)
+                        .addGap(38, 38, 38)
+                        .addComponent(searchPaperBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(controlPanel1Layout.createSequentialGroup()
                         .addComponent(lblTopic)
                         .addGap(18, 18, 18)
                         .addComponent(topicSelection, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(lblLimit)
                         .addGap(18, 18, 18)
-                        .addComponent(limit, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(controlPanel1Layout.createSequentialGroup()
-                        .addComponent(lblDisplay)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(displaySeletion, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(18, 18, 18)
-                .addComponent(searchPaperBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 113, Short.MAX_VALUE)
-                .addComponent(settingBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(infoBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                        .addComponent(limit, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         controlPanel1Layout.setVerticalGroup(
             controlPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(controlPanel1Layout.createSequentialGroup()
-                .addGroup(controlPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(controlPanel1Layout.createSequentialGroup()
-                        .addGap(14, 14, 14)
-                        .addGroup(controlPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(limit, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(topicSelection, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblTopic)
-                            .addComponent(startYear, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblFrom)
-                            .addComponent(lblLimit))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(controlPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(endYear, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblTo)
-                            .addComponent(lblDisplay)
-                            .addComponent(displaySeletion, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(controlPanel1Layout.createSequentialGroup()
-                        .addGap(32, 32, 32)
-                        .addGroup(controlPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(settingBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(infoBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(searchPaperBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap()
+                .addGroup(controlPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(limit, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(topicSelection, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblTopic)
+                    .addComponent(startYear, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblFrom)
+                    .addComponent(lblLimit))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(controlPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(endYear, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblTo)
+                    .addComponent(lblDisplay)
+                    .addComponent(displaySeletion, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(autoLayoutChkBox))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(controlPanel1Layout.createSequentialGroup()
+                .addGap(32, 32, 32)
+                .addComponent(searchPaperBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         controlPanel2.setBackground(new java.awt.Color(204, 204, 204));
-        controlPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        controlPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         jLabel6.setText("Selected Paper: ");
         jLabel6.setName(""); // NOI18N
@@ -291,14 +304,14 @@ public class SearchPaper extends javax.swing.JFrame {
                                 .addComponent(selectedPaper, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(controlPanel2Layout.createSequentialGroup()
                                 .addGap(7, 7, 7)
-                                .addComponent(selectedTopic, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                .addComponent(selectedTopic, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(searchMoreBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addGroup(controlPanel2Layout.createSequentialGroup()
                         .addComponent(lblLimit1)
                         .addGap(57, 57, 57)
                         .addComponent(count, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(18, 18, 18)
-                .addComponent(searchMoreBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(20, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         controlPanel2Layout.setVerticalGroup(
             controlPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -323,8 +336,79 @@ public class SearchPaper extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
+        hidePnlBtn.setMaximumSize(new java.awt.Dimension(28, 23));
+        hidePnlBtn.setMinimumSize(new java.awt.Dimension(28, 23));
+        hidePnlBtn.setPreferredSize(new java.awt.Dimension(28, 23));
+        hidePnlBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                hidePnlBtnActionPerformed(evt);
+            }
+        });
+
+        settingBtn.setBackground(new java.awt.Color(255, 255, 255));
+        settingBtn.setBorder(null);
+        settingBtn.setIconTextGap(0);
+        settingBtn.setName("infoBtn"); // NOI18N
+        settingBtn.setPreferredSize(new java.awt.Dimension(30, 30));
+        settingBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                settingBtnActionPerformed(evt);
+            }
+        });
+
+        infoBtn.setBackground(new java.awt.Color(255, 255, 255));
+        infoBtn.setBorder(null);
+        infoBtn.setIconTextGap(0);
+        infoBtn.setName("infoBtn"); // NOI18N
+        infoBtn.setPreferredSize(new java.awt.Dimension(30, 30));
+        infoBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                infoBtnActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout controlPanelLayout = new javax.swing.GroupLayout(controlPanel);
+        controlPanel.setLayout(controlPanelLayout);
+        controlPanelLayout.setHorizontalGroup(
+            controlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, controlPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(controlPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(controlPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 14, Short.MAX_VALUE)
+                .addGroup(controlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(hidePnlBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(controlPanelLayout.createSequentialGroup()
+                        .addComponent(settingBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(infoBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
+        );
+        controlPanelLayout.setVerticalGroup(
+            controlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(controlPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(controlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addGroup(controlPanelLayout.createSequentialGroup()
+                        .addGroup(controlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(settingBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(infoBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(hidePnlBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(controlPanel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(controlPanel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(12, Short.MAX_VALUE))
+        );
+
+        controlPanel1.getAccessibleContext().setAccessibleName("Search Filter");
+        controlPanel1.getAccessibleContext().setAccessibleDescription("");
+
         displayPanel.setBackground(new java.awt.Color(255, 255, 255));
-        displayPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        displayPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         javax.swing.GroupLayout displayPanelLayout = new javax.swing.GroupLayout(displayPanel);
         displayPanel.setLayout(displayPanelLayout);
@@ -334,66 +418,39 @@ public class SearchPaper extends javax.swing.JFrame {
         );
         displayPanelLayout.setVerticalGroup(
             displayPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 689, Short.MAX_VALUE)
+            .addGap(0, 609, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(controlPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(controlPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addComponent(displayPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(showPnlBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(controlPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(displayPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(controlPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(controlPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                .addContainerGap()
+                .addComponent(controlPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(displayPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(showPnlBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(displayPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
-
-        controlPanel1.getAccessibleContext().setAccessibleName("Search Filter");
-        controlPanel1.getAccessibleContext().setAccessibleDescription("");
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void infoBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_infoBtnActionPerformed
-        Shortcuts shortcuts = new Shortcuts();
-        shortcuts.setVisible(true);
-    }//GEN-LAST:event_infoBtnActionPerformed
-
-    private void settingBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_settingBtnActionPerformed
-        Configuration config = new Configuration();
-        config.setVisible(true);
-    }//GEN-LAST:event_settingBtnActionPerformed
-
-    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
-        new MainMenu().setVisible(true);
-        this.dispose();
-    }//GEN-LAST:event_formWindowClosed
-
-    private void searchPaperBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchPaperBtnActionPerformed
-        if((int)endYear.getValue() - (int)startYear.getValue() <= 4) {
-            if(GraphUtils.reset(thisFrame, graph, graphInfo))
-                loading();
-        }
-        else {
-            Object[] options = {"OK"};
-            int n = JOptionPane.showOptionDialog(thisFrame,
-                "You just can search within 5 years.","Note",
-                JOptionPane.PLAIN_MESSAGE,
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                options,
-                options[0]);
-        }
-    }//GEN-LAST:event_searchPaperBtnActionPerformed
 
     private void searchMoreBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchMoreBtnActionPerformed
         if(!selectedPaper.getText().equals("") && !selectedTopic.getText().equals("")) {
@@ -421,20 +478,70 @@ public class SearchPaper extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_searchMoreBtnActionPerformed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        String ObjButtons[] = {"Yes","No"};
+        int PromptResult = JOptionPane.showOptionDialog(null,"Are you sure you want to exit?","Search Paper",JOptionPane.DEFAULT_OPTION,JOptionPane.WARNING_MESSAGE,null,ObjButtons,ObjButtons[1]);
+        if(PromptResult==JOptionPane.YES_OPTION)
+        {
+            System.exit(0);
+        }
+        
+    }//GEN-LAST:event_formWindowClosing
+
+    private void showPnlBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showPnlBtnActionPerformed
+        if(!controlPanel.isVisible()) {
+            controlPanel.setVisible(true);
+            hidePnlBtn.setVisible(true);
+            showPnlBtn.setVisible(false); 
+        }
+    }//GEN-LAST:event_showPnlBtnActionPerformed
+
+    private void hidePnlBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hidePnlBtnActionPerformed
+        controlPanel.setVisible(false);
+        hidePnlBtn.setVisible(false);
+        showPnlBtn.setVisible(true); 
+    }//GEN-LAST:event_hidePnlBtnActionPerformed
+
+    private void settingBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_settingBtnActionPerformed
+        Configuration config = new Configuration();
+        config.setVisible(true);
+    }//GEN-LAST:event_settingBtnActionPerformed
+
+    private void infoBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_infoBtnActionPerformed
+        Shortcuts shortcuts = new Shortcuts();
+        shortcuts.setVisible(true);
+    }//GEN-LAST:event_infoBtnActionPerformed
+
+    private void searchPaperBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchPaperBtnActionPerformed
+        if((int)endYear.getValue() - (int)startYear.getValue() <= 4) {
+            if(GraphUtils.reset(thisFrame, graph, graphInfo))
+            loading();
+        }
+        else {
+            Object[] options = {"OK"};
+            int n = JOptionPane.showOptionDialog(thisFrame,
+                "You just can search within 5 years.","Note",
+                JOptionPane.PLAIN_MESSAGE,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                options[0]);
+        }
+    }//GEN-LAST:event_searchPaperBtnActionPerformed
    
     private void display() {
         switch(displaySeletion.getSelectedItem().toString()) {
             case "Graph":
                 GraphUtils.setGraph((int)startYear.getValue(), (int)endYear.getValue(), (String)topicSelection.getSelectedItem(), graph, graphInfo, (int)limit.getValue());
-                showOnPanel(graph, graphInfo, displayPanel, glassPane, true);
                 break;
             case "Timeline":
                 GraphUtils.setTimeline((int)startYear.getValue(), (int)endYear.getValue(), (String)topicSelection.getSelectedItem(), graph, graphInfo, (int)limit.getValue());
-                showOnPanel(graph, graphInfo, displayPanel, glassPane, false);   
                 break;
             default:
                 break;
         }
+        showOnPanel(graph, graphInfo, displayPanel, glassPane, autoLayoutChkBox.isSelected());
     }
     
     /**
@@ -472,15 +579,20 @@ public class SearchPaper extends javax.swing.JFrame {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JCheckBox autoLayoutChkBox;
+    private javax.swing.JPanel controlPanel;
     private javax.swing.JPanel controlPanel1;
     private javax.swing.JPanel controlPanel2;
     private javax.swing.JSpinner count;
     private javax.swing.JPanel displayPanel;
     private javax.swing.JComboBox<String> displaySeletion;
     private javax.swing.JSpinner endYear;
+    private javax.swing.JButton hidePnlBtn;
     private javax.swing.JButton infoBtn;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel lblDisplay;
     private javax.swing.JLabel lblFrom;
     private javax.swing.JLabel lblLimit;
@@ -493,6 +605,7 @@ public class SearchPaper extends javax.swing.JFrame {
     private javax.swing.JLabel selectedPaper;
     private javax.swing.JLabel selectedTopic;
     private javax.swing.JButton settingBtn;
+    private javax.swing.JButton showPnlBtn;
     private javax.swing.JSpinner startYear;
     private javax.swing.JComboBox<String> topicSelection;
     // End of variables declaration//GEN-END:variables

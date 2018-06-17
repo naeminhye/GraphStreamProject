@@ -46,7 +46,8 @@ public class MouseHandler implements ViewerListener {
     private boolean isClicked = false;
     private StorageObject graphInfo;
     private InfiniteProgressPanel glassPane;
-    private String displayType;
+//    private String displayType;
+    private boolean autoLayout;
     private SpriteManager sman;// = new SpriteManager(graph);
     
     private DefaultMouseManager mouseManager = new DefaultMouseManager() {
@@ -211,7 +212,7 @@ public class MouseHandler implements ViewerListener {
       	}
     };
     
-    public MouseHandler(Graph graph, View view, ViewerPipe pipe, StorageObject array, JPanel pnl, InfiniteProgressPanel glassPane, String displayType) {
+    public MouseHandler(Graph graph, View view, ViewerPipe pipe, StorageObject array, JPanel pnl, InfiniteProgressPanel glassPane, boolean autoLayout/*String displayType*/) {
         this.loop = true;
         this.graph = graph;
         this.panel = pnl;
@@ -219,7 +220,8 @@ public class MouseHandler implements ViewerListener {
         this.pipe = pipe;
         this.graphInfo = array;
         this.glassPane = glassPane;
-        this.displayType = displayType;
+//        this.displayType = displayType;
+        this.autoLayout = autoLayout;
         this.view.setMouseManager(mouseManager);
         this.view.setShortcutManager(shortcutManager);
         this.sman = new SpriteManager(graph);
@@ -255,22 +257,23 @@ public class MouseHandler implements ViewerListener {
                 public void run() {
 //                        graph.getNode(selectedId).setAttribute("ui.frozen");
                         GraphUtils.getMoreNodes(graph, selectedId, graphInfo, 25);
-                        switch(displayType) {
-                            case "Graph":
-                                GraphUtils.showGraphOnPanel(graph, graphInfo, panel, glassPane);
-                                break;
-                            case "Timeline":
-                                GraphUtils.showTimeLineOnPanel(graph, graphInfo, panel, glassPane);
-                                break;
-                            case "Flow":
-                                GraphUtils.showPaperFlowOnPanel(graph, graphInfo, panel, glassPane);
-                                break;
-                            case "Free":
-                                GraphUtils.showOnPanel(graph, graphInfo, panel, glassPane, false);
-                                break;
-                            default:
-                                break;
-                        }
+                        GraphUtils.showOnPanel(graph, graphInfo, panel, glassPane, autoLayout);
+//                        switch(displayType) {
+//                            case "Graph":
+//                                GraphUtils.showGraphOnPanel(graph, graphInfo, panel, glassPane);
+//                                break;
+//                            case "Timeline":
+//                                GraphUtils.showTimeLineOnPanel(graph, graphInfo, panel, glassPane);
+//                                break;
+//                            case "Flow":
+//                                GraphUtils.showPaperFlowOnPanel(graph, graphInfo, panel, glassPane);
+//                                break;
+//                            case "Free":
+//                                GraphUtils.showOnPanel(graph, graphInfo, panel, glassPane, false);
+//                                break;
+//                            default:
+//                                break;
+//                        }
 
                         glassPane.stop();
                     }
