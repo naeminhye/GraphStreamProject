@@ -68,5 +68,5 @@ sprite {
     text-alignment: along;
     text-padding: 3px, 2px; 
     fill-mode: image-scaled; 
-    fill-image: url('src/images/icon-plus.png');
+    fill-image: url('src/main/resources/images/icon-plus.png');
 }
