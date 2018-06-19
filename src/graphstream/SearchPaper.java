@@ -536,7 +536,7 @@ public class SearchPaper extends javax.swing.JFrame {
             int n = JOptionPane.showOptionDialog(thisFrame,
                 "You just can search within 5 years.","Note",
                 JOptionPane.PLAIN_MESSAGE,
-                JOptionPane.QUESTION_MESSAGE,
+                JOptionPane.ERROR_MESSAGE,
                 null,
                 options,
                 options[0]);

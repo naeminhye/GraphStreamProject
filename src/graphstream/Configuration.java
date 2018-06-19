@@ -12,9 +12,13 @@ import java.awt.Toolkit;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
         
 /**
  *
@@ -170,7 +174,8 @@ public class Configuration extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void saveBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveBtnActionPerformed
-        // TODO add your handling code here:
+        DateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm:ss a");
+        Object[] options = {"OK"};
         Connection con = null;
         String driver = "";
         String host = hostTxtBox.getText();
@@ -192,22 +197,39 @@ public class Configuration extends javax.swing.JFrame {
         
         if(!isSavable) {
             try {
-                con = DriverManager.getConnection(Global.CONNECTION_URL, Global.USERNAME, String.valueOf(Global.PASSWORD));
+                con = DriverManager.getConnection(connection_url, username, String.valueOf(password));
                 if(con == null) {
-                    System.out.println("null connection: " + con);
+                    /** Connection failed */
+                    System.out.println("[" + dateFormat.format(Calendar.getInstance().getTime()) + "] No connection!");
+                    JOptionPane.showOptionDialog(this,
+                        "Connection failed. Please try again","Failed",
+                        JOptionPane.PLAIN_MESSAGE,
+                        JOptionPane.ERROR_MESSAGE,
+                        null,
+                        options,
+                        options[0]);
                 }
-                System.out.println("connection: " + con);
+                else {
+                    System.out.println("[" + dateFormat.format(Calendar.getInstance().getTime()) + "] Database connected.");
+                    isSavable = true;
+                    saveBtn.setText("Save");
+                }
             }
             catch (SQLException ex) {
                 /** Connection failed */
                 System.out.println(ex);
                 Logger.getLogger(Configuration.class.getName()).log(Level.SEVERE, null, ex);
+                JOptionPane.showOptionDialog(this,
+                    "Connection failed. Please try again","Failed",
+                    JOptionPane.PLAIN_MESSAGE,
+                    JOptionPane.ERROR_MESSAGE,
+                    null,
+                    options,
+                    options[0]);
             }
             finally { 
                 if (con != null) try { 
                     con.close(); 
-                    isSavable = true;
-                    saveBtn.setText("Save");
                 } catch(Exception e) {}  
             }  
         }

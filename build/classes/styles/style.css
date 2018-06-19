@@ -6,9 +6,6 @@ node:clicked {
     text-background-color: #e6e6e6e6; 
     text-color: #222;
     text-offset: 5px, 0px;
-    /*stroke-mode: plain;*/
-    /*stroke-width: 1px;*/
-    /*stroke-color: #555;*/
 } 
 node {
     size: 10px; 
@@ -37,11 +34,6 @@ edge {
 }
 
 edge:clicked {
-/*    shadow-mode: plain; 
-    shadow-width: 3px; 
-    shadow-color: #ffff66; 
-    shadow-offset: 0px;*/
-    
     size: 3px; 
     fill-color: #ffff66;
     text-mode: normal; 
@@ -62,7 +54,6 @@ edge.highlight {
 }
 
 sprite {
-    /*fill-mode: none;*/ 
     text-size: 15;
     size: 20px;
     text-alignment: along;
