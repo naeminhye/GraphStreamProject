@@ -117,6 +117,7 @@ public class MouseHandler implements ViewerListener {
                 }
                 /** Nếu click vào Sprite ... */
                 else if(curElement.getSelectorType() == Selector.Type.SPRITE) {
+//                    System.out.println("URL: " + getClass().getResource("/main/resources/images/icon-ok.png").toString());
                     String thisSprite = curElement.getId();
                     if(thisSprite.equals(selectedId)) {
                         Sprite sprite = sman.getSprite(selectedId);
@@ -128,12 +129,11 @@ public class MouseHandler implements ViewerListener {
                                         ToggleNodeOff(graph.getNode(selectedPaper), sman);
                                     }
                                     selectedPaper = selectedId;
-                                    sprite.setAttribute("ui.style", "fill-image: url('src/main/resources/images/icon-ok.png');");
-                                    
+                                    sprite.setAttribute("ui.style", "fill-image: url('" + getClass().getResource("/main/resources/images/icon-ok.png").toString() + "');");
                                 }
                                 else {
                                     selectedPaper = "";
-                                    sprite.setAttribute("ui.style", "fill-image: url('src/main/resources/images/icon-plus.png');");
+                                    sprite.setAttribute("ui.style", "fill-image: url('" + getClass().getResource("/main/resources/images/icon-plus.png").toString() + "');");
                                 }
                                 break;
                             case TOPIC: 
@@ -142,11 +142,11 @@ public class MouseHandler implements ViewerListener {
                                         ToggleNodeOff(graph.getNode(selectedTopic), sman);
                                     }
                                     selectedTopic = selectedId;
-                                    sprite.setAttribute("ui.style", "fill-image: url('src/main/resources/images/icon-ok.png');");
+                                    sprite.setAttribute("ui.style", "fill-image: url('" + getClass().getResource("/main/resources/images/icon-ok.png").toString() + "');");
                                 }
                                 else {
                                     selectedTopic = "";
-                                    sprite.setAttribute("ui.style", "fill-image: url('src/main/resources/images/icon-plus.png');");
+                                    sprite.setAttribute("ui.style", "fill-image: url('" + getClass().getResource("/main/resources/images/icon-plus.png").toString() + "');");
                                 }
                                 break;
                             default: 
@@ -265,11 +265,11 @@ public class MouseHandler implements ViewerListener {
      * Xử lý sự kiện khi click đơn vào node
      */
     private void singleClickOnNode() {
-        
         /** Nếu node hiện tại không được click trước đó */
         if(!oldSelectedId.equals(selectedId) || oldSelectedId.equals("")) {
+            String icon = getClass().getResource("/main/resources/images/icon-plus.png").toString();
             isClicked = true;
-            ToggleNodeOn(thisNode, sman);
+            ToggleNodeOn(thisNode, sman, icon);
             showHiddenNodes(graph, selectedId, graphInfo);
                        
             for (Node otherNode : graph.getEachNode()) {
@@ -306,11 +306,12 @@ public class MouseHandler implements ViewerListener {
         }
     }
     
-    private static void ToggleNodeOn (Node node, SpriteManager sman) {
+    private static void ToggleNodeOn (Node node, SpriteManager sman, String icon) {
         node.setAttribute("ui.style", "size: 50px;");
         node.setAttribute("ui.clicked");
         if(!sman.hasSprite(node.getId())) {
             Sprite spr = sman.addSprite(node.getId());
+            spr.addAttribute("ui.style", "fill-image: url('" + icon + "');");
             spr.attachToNode(node.getId());
 //            spr.setPosition(0.2);
             spr.setPosition(StyleConstants.Units.PX, 30, -100, 0);
@@ -328,7 +329,7 @@ public class MouseHandler implements ViewerListener {
         node.removeAttribute("ui.clicked");
         node.setAttribute("ui.style", "size: 10px;");
         if(sman.hasSprite(node.getId())) {
-            sman.getSprite(node.getId()).setAttribute("ui.style", "fill-image: url('src/main/resources/images/icon-plus.png');");
+            sman.getSprite(node.getId()).setAttribute("ui.style", "fill-image: url('" + getClass().getResource("/main/resources/images/icon-plus.png").toString() + "');");
             sman.getSprite(node.getId()).setAttribute("ui.hide");
             sman.getSprite(node.getId()).detach();
             sman.removeSprite(node.getId());

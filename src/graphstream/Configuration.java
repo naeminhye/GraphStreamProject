@@ -25,6 +25,7 @@ public class Configuration extends javax.swing.JFrame {
     /**
      * Creates new form Configuration
      */
+    private boolean isSavable;
     public Configuration() {
         initComponents();
         // Set JFrame vào giữa màn hình
@@ -32,7 +33,8 @@ public class Configuration extends javax.swing.JFrame {
         this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
         
 //        Image settingIcon = new javax.swing.ImageIcon(Constants.WORKING_DIRECTORY + "/src/main/resources/images/icon-setting.png").getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH);
-//        this.setIconImage(settingIcon);
+        Image settingIcon = new ImageIcon(getClass().getResource("/main/resources/images/icon-setting.png")).getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH);
+        this.setIconImage(settingIcon);
         
         switch(Global.DRIVER) {
             case "bolt":
@@ -44,11 +46,11 @@ public class Configuration extends javax.swing.JFrame {
             default:
                 break;
         }
-        
+        isSavable = false;
         hostTxtBox.setText(Global.HOST);
         portTxtBox.setText(Global.PORT);
         userNameTxtBox.setText(Global.USERNAME);
-        passWordTxtBox.setText(Global.PASSWORD);
+        passWordTxtBox.setText(String.valueOf(Global.PASSWORD));
     }
     
     private void formValidation() {
@@ -120,14 +122,14 @@ public class Configuration extends javax.swing.JFrame {
         passWordLbl.setBounds(250, 410, 97, 30);
 
         saveBtn.setBackground(new java.awt.Color(153, 153, 153));
-        saveBtn.setText("Save");
+        saveBtn.setText("Check");
         saveBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 saveBtnActionPerformed(evt);
             }
         });
         jPanel1.add(saveBtn);
-        saveBtn.setBounds(400, 460, 100, 30);
+        saveBtn.setBounds(420, 460, 100, 30);
 
         cancelBtn.setBackground(new java.awt.Color(153, 153, 153));
         cancelBtn.setText("Cancel");
@@ -137,7 +139,7 @@ public class Configuration extends javax.swing.JFrame {
             }
         });
         jPanel1.add(cancelBtn);
-        cancelBtn.setBounds(270, 460, 100, 30);
+        cancelBtn.setBounds(240, 460, 100, 30);
 
         hostLbl.setFont(new java.awt.Font("Arial Black", 0, 14)); // NOI18N
         hostLbl.setText("Host:");
@@ -170,48 +172,57 @@ public class Configuration extends javax.swing.JFrame {
     private void saveBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveBtnActionPerformed
         // TODO add your handling code here:
         Connection con = null;
-        String connection = "";
-        String driver = portTypeComboBox.getSelectedItem().toString();
+        String driver = "";
         String host = hostTxtBox.getText();
         String port = portTxtBox.getText();
         String username = userNameTxtBox.getText();
-        String password = passWordTxtBox.getPassword().toString();
-        Global.DRIVER = driver;
-        Global.HOST = host;
-        Global.PORT = port;
-        Global.USERNAME = username;
-        Global.PASSWORD = password;
-        System.out.println("GlobalVariables.port: " + Global.PORT);
-        System.out.println("GlobalVariables.username: " + Global.USERNAME);
-        System.out.println("GlobalVariables.password: " + Global.PASSWORD);
-        try {
-            //passWordTxtBox.getPassword().toString()
-            //  "jdbc:neo4j:bolt://localhost:7687"
-            switch(portTypeComboBox.getSelectedIndex()) {
-                case 0:
-                    Global.DRIVER = "bolt";
-                    break;
-                case 1:
-                    Global.DRIVER = "http";
-                    break;
-                default: 
-                    break;
-            }
-            Global.CONNECTION_URL = "jdbc:neo4j:" + Global.DRIVER + "://" + Global.HOST + ":" + Global.PORT;
-            con = DriverManager.getConnection(connection, Global.USERNAME, Global.PASSWORD);
-            if(con == null) {
-                System.out.println("null connection: " + connection);
-            }
-            System.out.println("connection: " + connection);
+        String connection_url = "";
+        char[] password = passWordTxtBox.getPassword();
+        switch(portTypeComboBox.getSelectedIndex()) {
+            case 0:
+                driver = "bolt";
+                break;
+            case 1:
+                driver = "http";
+                break;
+            default: 
+                break;
         }
-        catch (SQLException ex) {
-            System.out.println(ex);
-            Logger.getLogger(Configuration.class.getName()).log(Level.SEVERE, null, ex);
+        connection_url = "jdbc:neo4j:" + driver + "://" + host + ":" + port;
+        
+        if(!isSavable) {
+            try {
+                con = DriverManager.getConnection(Global.CONNECTION_URL, Global.USERNAME, String.valueOf(Global.PASSWORD));
+                if(con == null) {
+                    System.out.println("null connection: " + con);
+                }
+                System.out.println("connection: " + con);
+            }
+            catch (SQLException ex) {
+                /** Connection failed */
+                System.out.println(ex);
+                Logger.getLogger(Configuration.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            finally { 
+                if (con != null) try { 
+                    con.close(); 
+                    isSavable = true;
+                    saveBtn.setText("Save");
+                } catch(Exception e) {}  
+            }  
         }
-        finally { 
-            if (con != null) try { con.close(); } catch(Exception e) {}  
+        else { 
+            Global.DRIVER = driver;
+            Global.HOST = host;
+            Global.PORT = port;
+            Global.USERNAME = username;
+            Global.PASSWORD = password;
+            Global.CONNECTION_URL = connection_url;
+            System.out.println("GlobalVariables.port: " + Global.PORT);
+            System.out.println("GlobalVariables.username: " + Global.USERNAME);
+            System.out.println("GlobalVariables.password: " + String.valueOf(Global.PASSWORD));
             this.dispose();
-        }  
+        }
     }//GEN-LAST:event_saveBtnActionPerformed
 
     private void cancelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelBtnActionPerformed

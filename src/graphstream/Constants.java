@@ -19,8 +19,9 @@ public class Constants {
     public static String HOST = "localhost";
     public static String PORT = "7687";
     public static final String USERNAME = "neo4j";//"reader";
-    public static final String PASSWORD = "1234";
+    public static final char[] PASSWORD = { '1', '2', '3', '4' };
     public static final String CONNECTION_URL = "jdbc:neo4j:bolt://localhost:7687";
     public static final String WORKING_DIRECTORY = System.getProperty("user.dir");
+
     
 }

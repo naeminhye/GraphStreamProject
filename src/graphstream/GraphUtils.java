@@ -261,7 +261,7 @@ public class GraphUtils {
         // Kết nối
         Connection con = null;
         try {
-            con = DriverManager.getConnection(Global.CONNECTION_URL, Global.USERNAME, Global.PASSWORD);
+            con = DriverManager.getConnection(Global.CONNECTION_URL, Global.USERNAME, String.valueOf(Global.PASSWORD));
             System.out.println("[" + dateFormat.format(Calendar.getInstance().getTime()) + "] Connecting " + con +" ...");
             /** Kiểm tra connection */
             if(con == null) {
@@ -376,7 +376,7 @@ public class GraphUtils {
         // Kết nối
         Connection con = null;
         try {
-            con = DriverManager.getConnection(Global.CONNECTION_URL, Global.USERNAME, Global.PASSWORD);
+            con = DriverManager.getConnection(Global.CONNECTION_URL, Global.USERNAME, String.valueOf(Global.PASSWORD));
             System.out.println("[" + dateFormat.format(Calendar.getInstance().getTime()) + "] Connecting " + con +" ...");
             if(con == null) {
                 note = "Unable to connect to " + Global.CONNECTION_URL + ", ensure the database is running and that there is a working network connection to it.";
@@ -499,7 +499,7 @@ public class GraphUtils {
         // Kết nối
         Connection con = null;
         try {     
-            con = DriverManager.getConnection(Global.CONNECTION_URL, Global.USERNAME, Global.PASSWORD);
+            con = DriverManager.getConnection(Global.CONNECTION_URL, Global.USERNAME, String.valueOf(Global.PASSWORD));
             System.out.println("[" + dateFormat.format(Calendar.getInstance().getTime()) + "] Connecting " + con +" ...");
             if(con == null) {
                 note = "Unable to connect to " + Global.CONNECTION_URL + ", ensure the database is running and that there is a working network connection to it.";

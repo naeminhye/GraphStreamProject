@@ -18,7 +18,7 @@ public class Global {
     public static String HOST = Constants.HOST;//"localhost";
     public static String PORT = Constants.PORT;//"7687";
     public static String USERNAME = Constants.USERNAME;//"neo4j";
-    public static String PASSWORD = Constants.PASSWORD;//"1234";
+    public static char[] PASSWORD = Constants.PASSWORD;//"1234";
     public static String CONNECTION_URL = Constants.CONNECTION_URL;//"jdbc:neo4j:bolt://localhost:7687";
     
 }

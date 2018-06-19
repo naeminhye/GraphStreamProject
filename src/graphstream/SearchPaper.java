@@ -40,9 +40,9 @@ public class SearchPaper extends javax.swing.JFrame {
         // Set JFrame vào giữa màn hình
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
-        
-//        Image appIcon = new ImageIcon(Constants.WORKING_DIRECTORY + "/src/main/resources/images/app-icon.png").getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH);
-//        this.setIconImage(appIcon);
+        //new ImageIcon(getClass().getResource("/src/main/resources/images/app-icon.png")).getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH)
+        Image appIcon = new ImageIcon(getClass().getResource("/main/resources/images/app-icon.png")).getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH);
+        this.setIconImage(appIcon);
         
         // Set giá trị mặc định cho 2 number box startYear và endYear
         endYear.setValue(1981);        
@@ -50,32 +50,6 @@ public class SearchPaper extends javax.swing.JFrame {
         limit.setValue(5);
         count.setValue(5);
         showPnlBtn.setVisible(false);
-
-//        Image iconInfo = (Image)new ImageIcon(Constants.WORKING_DIRECTORY + "/src/main/resources/images/icon-info.png").getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH);
-//        infoBtn.setIcon(new ImageIcon((Image)new ImageIcon(Constants.WORKING_DIRECTORY + "/src/main/resources/images/icon-info.png").getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH)));
-//        infoBtn.setContentAreaFilled(false);
-        
-//        Image iconHelp = (Image) new ImageIcon(Constants.WORKING_DIRECTORY + "/src/main/resources/images/icon-help.png").getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH);
-//        shortCutBtn.setIcon(new ImageIcon((Image) new ImageIcon(Constants.WORKING_DIRECTORY + "/src/main/resources/images/icon-help.png").getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH)));
-//        shortCutBtn.setContentAreaFilled(false);
-        
-//        Image iconSearchMore = (Image) new ImageIcon(Constants.WORKING_DIRECTORY + "/src/main/resources/images/icon-search.png").getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH);
-//        searchMoreBtn.setIcon(new ImageIcon((Image) new ImageIcon(Constants.WORKING_DIRECTORY + "/src/main/resources/images/icon-search.png").getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH)));
-//        searchMoreBtn.setContentAreaFilled(false);
-//        searchPaperBtn.setIcon(new ImageIcon(iconSearchMore));
-//        searchPaperBtn.setContentAreaFilled(false);
-        
-//        Image iconSetting = (Image) new ImageIcon(Constants.WORKING_DIRECTORY + "/src/main/resources/images/icon-setting.png").getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH);
-//        settingBtn.setIcon(new ImageIcon((Image) new ImageIcon(Constants.WORKING_DIRECTORY + "/src/main/resources/images/icon-setting.png").getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH)));
-//        settingBtn.setContentAreaFilled(false);
-        
-//        Image showPanel = (Image) new ImageIcon(Constants.WORKING_DIRECTORY + "/src/main/resources/images/show-panel.png").getImage().getScaledInstance(23, 23, java.awt.Image.SCALE_SMOOTH);
-//        Image hidePanel = (Image) new ImageIcon(Constants.WORKING_DIRECTORY + "/src/main/resources/images/hide-panel.png").getImage().getScaledInstance(23, 23, java.awt.Image.SCALE_SMOOTH);
-//        showPnlBtn.setIcon(new ImageIcon((Image) new ImageIcon(Constants.WORKING_DIRECTORY + "/src/main/resources/images/show-panel.png").getImage().getScaledInstance(23, 23, java.awt.Image.SCALE_SMOOTH)));
-//        showPnlBtn.setContentAreaFilled(false);
-//        hidePnlBtn.setIcon(new ImageIcon((Image) new ImageIcon(Constants.WORKING_DIRECTORY + "/src/main/resources/images/hide-panel.png").getImage().getScaledInstance(23, 23, java.awt.Image.SCALE_SMOOTH)));
-//        hidePnlBtn.setContentAreaFilled(false);
-        
         glassPane = new InfiniteProgressPanel("Loading ...", 8);
         this.setGlassPane(glassPane);
     }
@@ -136,7 +110,6 @@ public class SearchPaper extends javax.swing.JFrame {
         setTitle("Search Paper");
         setBackground(new java.awt.Color(255, 255, 255));
         setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        setIconImage(new ImageIcon(Constants.WORKING_DIRECTORY + "/src/main/resources/images/app-icon.png").getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH));
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
