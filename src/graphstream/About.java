@@ -17,7 +17,6 @@ public class About extends javax.swing.JFrame {
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
         
-//        Image helpIcon = new ImageIcon(Constants.WORKING_DIRECTORY + "/src/main/resources/images/icon-help.png").getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH);
         Image infoIcon = new ImageIcon(getClass().getResource("/main/resources/images/icon-info.png")).getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH);
         this.setIconImage(infoIcon);
     }
